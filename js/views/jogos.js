@@ -19,6 +19,8 @@ import * as velha from '../jogos/velha.js';
 import * as bingo from '../jogos/bingo.js';
 import * as cara from '../jogos/cara.js';
 import * as quebra from '../jogos/quebra.js';
+import * as genius from '../jogos/genius.js';
+import * as treino from '../jogos/treino-livre.js';
 import * as stop from '../jogos/stop.js';
 import * as toca from '../jogos/toca.js';
 import * as detetive from '../jogos/detetive-note.js';
@@ -54,6 +56,8 @@ const GAMES = [
   ['detetive', 'Detetive Note', 'eco.svg', detetive, 'escute e monte o ritmo · comida, parque, corpo, animal'],
   ['figurix', 'Figurix', 'figuras.svg', figurix, 'figuras rítmicas em 12 fases'],
   ['rudimentos', 'Rudimentix', 'taiko.svg', rudimentos, 'toque os padrões das mãos: E e D · 11 fases'],
+  ['genius', 'Eco do Paul', 'genius.svg', genius, 'o Paul toca, você repete · cada rodada ganha 1 nota · xilofone, piano, bateria e violão'],
+  ['treino', 'Treino livre', 'treino.svg', treino, 'jogue à vontade os jogos da Fuga e do Figurix · sem trilha e sem estrela'],
   ['copia', 'Copia Aí', 'copia.svg', copia, 'o Paul toca, você copia · a melodia cresce'],
   ['paultavivo', 'pauLta ao Vivo', 'pauta-vivo.svg', paultavivo, 'leia a nota e toque de verdade'],
   ['groove', 'Eco de Groove', 'groove.svg', groove, 'repita a levada do Paul · bumbo, caixa e chimbal'],
@@ -76,7 +80,7 @@ const GAMES = [
 ];
 const BY = Object.fromEntries(GAMES.map((g) => [g[0], g]));
 // jogos abertos: abrem direto no jogo, sem escolher modo e sem Modo Aventura (pra ninguém, nem na Bea)
-const SEM_AVENTURA = new Set(['aula-ouvido', 'terca', 'acorde-ouvido', 'maior-menor', 'escala', 'paulbox', 'copia', 'paultavivo', 'groove', 'fantasma', 'toca', 'detetive', 'figurix', 'rudimentos', 'memart', 'quizuno', 'cartas', 'un', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
+const SEM_AVENTURA = new Set(['genius', 'treino', 'aula-ouvido', 'terca', 'acorde-ouvido', 'maior-menor', 'escala', 'paulbox', 'copia', 'paultavivo', 'groove', 'fantasma', 'toca', 'detetive', 'figurix', 'rudimentos', 'memart', 'quizuno', 'cartas', 'un', 'bingo', 'velha', 'quebra', 'cara', 'stop']);
 const inner = (id) => [id, BY[id][1], BY[id][2], BY[id][3], BY[id][4]];
 // Tudo que é jogo mora aqui. Quem tem módulo próprio abre dentro desta tela (#/jogos/<id>); o resto leva à sua tela e volta pra cá.
 const link = (href, title, img, sub, only) => [href, title, img, null, sub, href, only];
@@ -89,6 +93,8 @@ const SECTIONS = [
     inner('detetive'),
     inner('figurix'),
     inner('rudimentos'),
+    inner('genius'),
+    inner('treino'),
     inner('paulbox'), // brinquedo livre (sem código, sem estrela): monta a banda tocando nos Pauls
   ]],
   ['Tocar de verdade', [
@@ -126,7 +132,7 @@ const savePrefs = (p) => store.upsert('setting', PK, p);
 const change = (next, msg) => { const prev = prefs(); savePrefs(next); toast(msg, { action: 'desfazer', onAction: () => savePrefs(prev), ms: 5000 }); };
 const keyOf = (x) => x[5] || `#/jogos/${x[0]}`;
 // fundo escuro: alguns jogos (de palco/noite) e, na Bea, todos
-const DARK = new Set(['cara', 'quebra']);
+const DARK = new Set(['cara', 'quebra', 'genius', 'treino']);
 const darkOn = (id) => document.documentElement.dataset.space === 'bea' || (id && DARK.has(id));
 
 /** Atalho no topo da tela de Jogos: digite o código da sala (5 letras = jogo de 2 celulares; 6 = bingo) e o app abre o jogo certo já entrando na sala. */

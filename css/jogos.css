@@ -2326,3 +2326,91 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 /* troca de foto no passe do Início (sheet): mesmas bolinhas do Perfil, em linha que quebra */
 .in-foto-lista { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 8px 0 12px; }
 .in-foto-lista .pf-paul-op { width: 56px; height: 56px; flex: none; }
+
+/* ---------- Genius infinito (js/jogos/genius.js): reaproveita as pílulas e os botões redondos do cara a cara ---------- */
+.jg-genius .gn-tabs { flex: none; display: flex; gap: 6px; }
+.jg-genius .gn-tab { flex: 1; min-height: 38px; padding: 0 6px; border-radius: 999px !important; border: 1px solid rgb(255 255 255 / .3); background: rgb(255 255 255 / .08); color: #fff; font: 700 13px/1 var(--body, inherit); cursor: pointer; }
+.jg-genius .gn-tab.on { background: linear-gradient(180deg, #ffe58a, #f7b733); color: #142036; border-color: #fff4c2; }
+.jg-genius .gn-tab:disabled:not(.on) { opacity: .45; }
+.jg-genius .gn-stage { align-items: center; justify-content: center; position: relative; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.jg-genius .gn-stage.gn-trava { cursor: default; }
+.jg-genius .gn-on { filter: brightness(1.55) saturate(1.2) drop-shadow(0 0 10px rgb(255 235 140 / .95)); transform: scale(1.04); }
+.jg-genius .gn-xilo { width: 100%; height: 100%; max-height: 420px; display: flex; align-items: center; justify-content: center; gap: 1.2%; position: relative; padding: 0 1%; }
+.jg-genius .gn-xilo::before, .jg-genius .gn-xilo::after { content: ""; position: absolute; left: 4%; right: 4%; height: 9px; border-radius: 5px; background: #8a5a33; z-index: 0; }
+.jg-genius .gn-xilo::before { top: 26%; } .jg-genius .gn-xilo::after { bottom: 20%; }
+.jg-genius .gn-bar { position: relative; z-index: 1; flex: 1; max-width: 62px; height: var(--h); border: 3px solid #142036; border-radius: 10px !important; background: var(--c); color: #fff; font: 800 14px/1 var(--body, inherit); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; cursor: pointer; box-shadow: inset 6px 0 0 rgb(255 255 255 / .22); transition: transform .08s, filter .08s; }
+.jg-genius .gn-piano { position: relative; width: 100%; max-width: 560px; height: 100%; max-height: 340px; display: flex; gap: 0; padding: 8px; border-radius: 16px; background: #0d1526; border: 2px solid rgb(255 255 255 / .3); border-top: 14px solid #b3182f; }
+.jg-genius .gn-key { flex: 1; min-width: 0; border: 2.5px solid #142036; border-radius: 0 0 8px 8px !important; background: #fffdf7; color: #142036; font: 800 14px/1 var(--body, inherit); display: flex; align-items: flex-end; justify-content: center; padding-bottom: 12px; cursor: pointer; position: relative; transition: transform .08s, filter .08s; }
+.jg-genius .gn-key::before { content: ""; position: absolute; bottom: 38px; width: 12px; height: 12px; border-radius: 50%; background: var(--c); }
+.jg-genius .gn-key.gn-on { background: #ffe58a; }
+.jg-genius .gn-preta { position: absolute; top: 8px; width: 6.8%; height: 58%; border-radius: 0 0 6px 6px; background: #142036; border: 2px solid #000; pointer-events: none; z-index: 2; }
+.jg-genius .gn-violao { position: relative; width: 100%; max-width: 560px; height: 100%; max-height: 340px; display: flex; flex-direction: column; justify-content: space-around; padding: 6px 0; border-radius: 14px; background: linear-gradient(90deg, #6e421f, #8a5a33 40%, #7a4a26); border: 3px solid #3a2410; overflow: hidden; }
+.jg-genius .gn-traste { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(90deg, transparent 0 88px, rgb(230 230 230 / .75) 88px 92px); opacity: .65; }
+.jg-genius .gn-corda { position: relative; flex: 1; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; padding: 0 10px; color: #fff; font: 800 12px/1 var(--body, inherit); }
+.jg-genius .gn-corda::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: var(--e); transform: translateY(-50%); border-radius: 2px; background: linear-gradient(180deg, #f4f4f4, #b8b8b8); box-shadow: 0 1px 0 rgb(0 0 0 / .4); }
+.jg-genius .gn-corda span { position: relative; z-index: 1; background: rgb(20 32 54 / .8); padding: 3px 7px; border-radius: 9px; }
+.jg-genius .gn-corda.gn-on { filter: none; transform: none; }
+.jg-genius .gn-corda.gn-on::after { height: calc(var(--e) + 3px); background: #fff6c2; box-shadow: 0 0 14px #ffe58a; animation: gn-vibra .22s linear 2; }
+@keyframes gn-vibra { 50% { transform: translateY(calc(-50% - 3px)); } }
+.jg-genius .gn-kit { width: auto; max-width: 100%; max-height: 100%; height: 100%; overflow: visible; }
+.jg-genius .gn-kit [data-p] { cursor: pointer; transition: filter .08s; }
+.jg-genius .gn-kit .gn-on { transform: none; }
+.jg-genius .gn-stage.gn-trava .gn-bar, .jg-genius .gn-stage.gn-trava .gn-key, .jg-genius .gn-stage.gn-trava .gn-corda, .jg-genius .gn-stage.gn-trava .gn-kit [data-p] { cursor: default; }
+.jg-genius .gn-msg { min-height: 40px; display: flex; align-items: center; justify-content: center; margin: 0; line-height: 1.25; }
+@media (max-height: 640px) { .jg-genius .gn-tab { min-height: 32px; font-size: 12px; } }
+@media (prefers-reduced-motion: reduce) { .jg-genius .gn-corda.gn-on::after { animation: none; } .jg-genius .gn-on { transform: none; } }
+
+/* ---------- Treino livre (js/jogos/treino-livre.js) ---------- */
+.jg-treino { display: flex; flex-direction: column; gap: 8px; }
+.jg-treino .tl-cab .jg-h { margin: 0 0 4px; } .jg-treino .tl-cab .jg-p { margin: 0; }
+.jg-treino .tl-nivel-linha { display: flex; align-items: center; gap: 10px; } .jg-treino .tl-nivel-linha b { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; opacity: .8; }
+.jg-treino .tl-niveis { flex: 1; display: flex; gap: 6px; }
+.jg-treino .tl-nivel { flex: 1; min-height: 38px; border-radius: 999px !important; border: 1px solid rgb(255 255 255 / .3); background: rgb(255 255 255 / .08); color: inherit; font: 700 13px/1 var(--body, inherit); cursor: pointer; }
+.jg-treino .tl-nivel.on { background: linear-gradient(180deg, #ffe58a, #f7b733); color: #142036; border-color: #fff4c2; }
+.jg-treino .tl-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.jg-treino .tl-card { display: grid; grid-template-columns: 32px 1fr; grid-template-areas: "e b" "e s"; column-gap: 8px; align-items: center; text-align: left; padding: 6px 10px; min-height: 52px; border-radius: 14px !important; border: 2px solid var(--c); border-left-width: 6px; background: rgb(255 255 255 / .07); color: inherit; cursor: pointer; }
+.jg-treino .tl-card:hover { background: rgb(255 255 255 / .13); } .jg-treino .tl-card:active { transform: translateY(2px); }
+.jg-treino .tl-emo { grid-area: e; font-size: 22px; text-align: center; } .jg-treino .tl-card b { grid-area: b; font-size: 13px; line-height: 1.12; } .jg-treino .tl-card small { grid-area: s; font-size: 10.5px; opacity: .8; line-height: 1.15; }
+.jg-treino .tl-mais-t { margin: 6px 0 0; }
+.jg-treino .tl-outros { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.jg-treino .tl-outro { display: flex; align-items: center; gap: 8px; padding: 6px 10px; min-height: 40px; border-radius: 12px !important; background: rgb(255 255 255 / .06); border: 1px dashed rgb(255 255 255 / .35); color: inherit; text-decoration: none; }
+.jg-treino .tl-outro > span:first-child { font-size: 18px; } .jg-treino .tl-outro b { font-size: 12.5px; }
+.jg-treino .tl-barra { display: flex; align-items: center; gap: 10px; } .jg-treino .tl-tit { font: 700 14px/1.2 var(--body, inherit); }
+.jg-treino .tl-fim { text-align: center; display: grid; gap: 8px; }
+@media (max-width: 380px) { .jg-treino .tl-grade { grid-template-columns: 1fr 1fr; } }
+@media (max-height: 520px) and (min-width: 640px) { .jg-treino .tl-grade { grid-template-columns: repeat(5, 1fr); } .jg-treino .tl-outros { grid-template-columns: repeat(4, 1fr); } .jg-treino .tl-cab .jg-p, .jg-treino .tl-mais-t { display: none; } .jg-treino .tl-cab .jg-h { font-size: 20px; } .jg-treino .tl-card small { display: none; } .jg-treino .tl-card { min-height: 44px; } }
+
+/* Treino livre: os jogos da Fuga eram em cartão bege; aqui ficam no azul da casa (mesmo clima do Genius infinito). Troca só as cores do tema dentro do treino. */
+.jg-treino { --card: #1a2a49; --card-soft: #223457; --field: #14213a; --note: #243a63; --ink-rgb: 255 247 230; --muted: #b7c3dd; --line: rgb(255 247 230 / .18); --line-strong: rgb(255 247 230 / .35); color: #fff7e6; }
+.jg-treino .card { background: linear-gradient(180deg, #1d2f52, #15233f); border: 1px solid rgb(255 255 255 / .14); box-shadow: 0 6px 18px rgb(0 0 0 / .35); color: #fff7e6; }
+.jg-treino .card::before { display: none; }
+/* … e o que ainda era bege/escuro demais dentro do treino */
+.jg-treino .fgn-cena { background: linear-gradient(#e6edf8, #b8c6dc); border-color: #0b1224; }
+.jg-treino .fgn-banca .btn.primary { background: linear-gradient(180deg, #ffe58a, #f7b733); color: #142036; border-color: #b27a12; }
+.jg-treino .dc-cell { background: #f1f6ff; }
+.jg-treino .dc-cell.hint { background: #dbe8ff; color: #c4122c; }
+.jg-treino .dc-cell small, .jg-treino .dc-cell sup { color: #142036; }
+.jg-treino h3.tag, .jg-treino .card .tag { color: #ffe08a !important; }
+.jg-treino .dc-dir { color: #9fb3d9; }
+.jg-treino .dc-input, .jg-treino .dc-wrap input { background: #f1f6ff; color: #142036; }
+.jg-treino .dc-chip { background: #f1f6ff; color: #142036 !important; border-color: #9fb3d9; }
+.jg-treino .dc-cell.hint, .jg-treino .dc-cell.hint * { color: #c4122c !important; font-weight: 800; }
+.jg-treino .dc-cell.on, .jg-treino .dc-cell.on * { color: #142036 !important; }
+/* cada jogo do treino ganha a sua cor (a mesma do cartão da lista): faixa em cima do cartão e na barra, pra não ficar tudo só azul */
+.jg-treino .tl-caixa .card { border-top: 6px solid var(--tl-c, #f7b733); }
+.jg-treino .tl-tit { padding: 6px 12px; border-radius: 999px; background: #0f1b33; color: #fff; border: 2px solid var(--tl-c, #f7b733); text-shadow: none; font-weight: 800; }
+.jg-treino .tl-caixa .tr-count { color: #fff7e6; font-weight: 800; }
+.jg-treino .dc-como { text-align: left; line-height: 1.35; } .jg-treino .dc-como b { color: #ffe08a; }
+.jg-treino .tl-barra .btn { white-space: nowrap; flex: none; } .jg-treino .tl-tit { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- paleta dos jogos da Fuga (pedido da Bea, 28/nov): nada de roxo nem rosa; azul-marinho, ouro, vermelho, azul-céu e creme. Pads mais vivos (antes ficavam apagados). ---------- */
+.fgm-pads, .fgm-grade, .fgn-banca { background: radial-gradient(120% 100% at 50% 0, #24406b, #0b1830 72%); border-color: #050a16; box-shadow: inset 0 2px 0 #ffffff22, inset 0 -8px 18px #000a, 0 10px 24px #0009, 0 0 0 2px #355a8a; }
+.fgm-pad, .fgm-cel { filter: brightness(.86) saturate(1); }
+.fgm-pad:disabled:not(.on) { filter: brightness(.8) saturate(.95); }
+.fgm-hub { background: radial-gradient(circle at 35% 28%, #36598c, #081224 72%); box-shadow: inset 0 3px 6px #ffffff2a, 0 0 0 3px #1f3355, 0 6px 14px #000c; }
+.fgm-grade .fgm-cel:nth-child(6) { --c: #f4efe4; } .fgm-grade .fgm-cel:nth-child(7) { --c: #2fb6c4; }
+.fgn-peca.c4 { --c: #3b8cff; }
+.fgm-carta { border-color: #2f6bb5; background: #10284f; color: #ffd23f; }
+.fgm-carta.up { background: #fff6e0; color: #0f1b33; border-color: #ffd23f; } .fgm-carta.par { color: #0f1b33; } .fgm-sym, .fgm-carta.up .fgm-sym { color: #0f1b33; }
+.fgq-campo { background: radial-gradient(120% 90% at 50% 0, #1f5a96, #0a1a33 70%); }
+.fgq-nome { background: linear-gradient(165deg, #2f6bb5, #173a69); border-color: #8cc0ff; }
