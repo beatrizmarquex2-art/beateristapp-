@@ -7,7 +7,7 @@ import { precoPasse, URL_CARTAO } from '../passe-preco.js';
 import { GRATIS } from '../amostra.js';
 import * as AC from '../acesso.js';
 import { premios } from './premios.js';
-import { BANNERS, TELAS_PASSE, PILARES_PASSE, UNIVERSO, BANCA, MUSICOS, COMBOS, COMBO_ITENS, GRATIS_ITENS } from '../loja-vitrine-config.js';
+import { BANNERS, TELAS_PASSE, PILARES_PASSE, UNIVERSO, BANCA, MUSICOS, ADULTOS, COMBOS, COMBO_ITENS, GRATIS_ITENS } from '../loja-vitrine-config.js';
 
 const CONTATO = 'fale com a equipe #BeateristaTeam pelo WhatsApp (18) 99180-4150';
 const prod = (id) => PRODUTOS.find((p) => p.id === id);
@@ -225,10 +225,7 @@ const ALVO = { cards: 'banca', ensina: 'universo', evoluir: 'musicos' }; // rota
 export function vitrine(secao_ = '', { abrirCodigo, inicio = '#/inicio' } = {}) {
   const universo = secao('universo', 'Universo Robôterista', 'as apostilas do Paul: toque na capa e folheie por dentro', { src: 'assets/entrada/paul-professor.webp', alt: 'Paul professor' }, produtos(UNIVERSO));
   const musicos = secao('musicos', 'Para músicos', 'estudo de bateria, violão e os exercícios que a Bea leva pro palco', { src: 'assets/entrada/paul-guitarra.webp', alt: 'Paul com a guitarra' }, produtos(MUSICOS));
-  // aba nova (adolescentes e adultos): enquanto os materiais não chegam, aparece "em breve" (a Bea manda os produtos e aqui entram os cartões)
-  const adultos = secao('adultos', 'Adolescentes e adultos', 'materiais novos pra quem quer tocar de verdade', { src: 'assets/paul/animacoes/web/paul-pensativo.webp', alt: 'Paul pensando' },
-    h('div', { class: 'ljv-breve' }, h('span', { class: 'ljv-breve-tag' }, 'em breve'), h('b', {}, 'novidades a caminho'), h('p', {}, 'estamos preparando materiais novos pra adolescentes e adultos. quando chegarem, aparecem aqui.'),
-      h('button', { type: 'button', class: 'lj-btn breve', onclick: () => abrirPagamento({}) }, 'em breve')));
+  const adultos = secao('adultos', 'Adolescentes e adultos', 'apostilas pra quem quer tocar de verdade: bateria e teclado', { src: 'assets/paul/animacoes/web/paul-pensativo.webp', alt: 'Paul pensando' }, produtos(ADULTOS));
   const combos = secao('combos', 'Combos completos', 'tudo que vem dentro e quanto você economiza', { src: 'assets/paul/animacoes/web/paul-bau.webp', alt: 'Paul com o baú' }, ...COMBOS.map(combo));
   const resp = h('details', { class: 'ljv-resp' },
     h('summary', {}, 'para os responsáveis: pagamento e informações'),

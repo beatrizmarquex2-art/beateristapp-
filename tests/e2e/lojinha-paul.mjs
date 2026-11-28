@@ -15,7 +15,7 @@ check('A banca do Paul: colorir, kids, memória e os 3 baralhos', pb.join() === 
 check('Bateria Start: PROMOÇÃO BLACK FRIDAY, de R$ 29,90 por R$ 14,90', await (async () => { await page.locator('.ljv-cap[data-id="start"]').click(); await sleep(250); const t = await page.locator('#lj-musicos .ljv-painel').textContent(); return /BLACK FRIDAY/.test(t) && /R\$ 29,90/.test(t) && /R\$ 14,90/.test(t); })());
 check('preço do Ritmo e Figuras: R$ 29,90', /29,90/.test(await preco('ritmo')));
 check('aviso de materiais digitais (estudar e imprimir)', /digitais/.test(await page.locator('.ljv-resp').textContent()) && /imprimir/.test(await page.locator('.ljv-resp').textContent()));
-check('nenhum botão "em breve" nos produtos (todos têm link); só a aba nova de adolescentes e adultos avisa "em breve"', (await page.locator('.lj-btn.breve:not(#lj-adultos .lj-btn)').count()) === 0);
+check('nenhum botão "em breve" nos produtos (todos têm link)', (await page.locator('.lj-btn.breve').count()) === 0);
 check('o Passe leva pra página de pagamento (Pix) e a janela oferece Pix ou cartão', await page.evaluate(async () => { const { PASSE } = await import('/js/loja-config.js'); return /jogos\.beaterista\.com\.br\/pix\//.test(PASSE.link); }) && (await (async () => { await page.evaluate(() => document.querySelector('.lj-btn[data-id="passe"]').click()); await sleep(300); const dois = (await page.locator('.lj-pay-op').count()) === 2; await page.keyboard.press('Escape'); await sleep(200); return dois; })()));
 // pensamentos do Paul
 const itens = await page.evaluate(async () => { const m = await import('/js/paul-talk.js'); return m.THOUGHTS.filter((t) => t[2] === 'aluno').map((t) => t[1]); });

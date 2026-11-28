@@ -38,6 +38,7 @@ export const BANCA = [
   { id: 'cartas', nome: 'cartas', ids: ['cards-teoria', 'cards-instrumentos', 'cards-dicionario'] },
 ];
 export const MUSICOS = ['start', 'mood', 'violao'];
+export const ADULTOS = ['toca-bateria', 'toca-teclado', 'toca-violao']; // aba Adolescentes e adultos
 
 // Combos (config nova da Bea em loja-config.js): aqui só dizemos quais produtos soltos cada um reúne, pra mostrar o que vem dentro e calcular a economia real.
 export const COMBO_ITENS = { 'combo-ensina': ['ritmo', 'harmonia', 'pratica'], 'combo-brincando': ['memoria', 'colorir'], 'combo-cards': ['cards-teoria', 'cards-instrumentos', 'cards-dicionario'] };
