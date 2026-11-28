@@ -46,7 +46,7 @@ await page.screenshot({ path: SH('treino-lobby') });
 for (let i = 0; i < 10; i++) {
   await page.evaluate(() => { location.hash = '#/jogos'; }); await sleep(300); await page.evaluate(() => { location.hash = '#/jogos/treino'; }); await sleep(600);
   await page.locator('.tl-card').nth(i).click(); await sleep(1600);
-  const ok = (await page.locator('.tl-caixa').count()) === 1 && (await page.locator('.tl-caixa').first().innerText()).trim().length > 5;
+  const txt = (await page.locator('.tl-caixa').first().innerText()).trim(); const ok = (await page.locator('.tl-caixa').count()) === 1 && txt.length > 5 && !/não consegui abrir/.test(txt); // (a mensagem de erro também é texto: por isso a checagem explícita)
   check(`jogo ${i + 1} (${nomes[i]}) abre com conteúdo`, ok);
   if (i === 0 || i === 8) await page.screenshot({ path: SH(`treino-jogo-${i}`) });
 }

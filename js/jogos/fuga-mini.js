@@ -26,7 +26,8 @@ const erroSom = () => { try { epiano(agora(), [43], 0.35, 0.9); } catch { /* sem
 
 /* ---------- Genius: repete a sequência de sons ---------- */
 export function genius(box, { nivel = 'facil', fim = () => {}, area = 'notas', extra = 0, rodadas = 0 } = {}) {
-  const cfg = cfgMini(nivel, 'genius', extra); if (rodadas) cfg.rodadas = Math.min(12, rodadas + extra); // a Fuga manda quantas notas (cresce a cada aparição) const pads = padsDe(area, cfg.pads); const seq = sequenciaGenius(cfg.rodadas, pads.length);
+  const cfg = cfgMini(nivel, 'genius', extra); if (rodadas) cfg.rodadas = Math.min(12, rodadas + extra); /* a Fuga manda quantas notas (cresce a cada aparição) */
+  const pads = padsDe(area, cfg.pads); const seq = sequenciaGenius(cfg.rodadas, pads.length);
   let rodada = 1; let pos = 0; let erros = 0; let vez = false; let feitas = 0; let acabou = false; const timers = [];
   const later = (fn, ms) => { timers.push(setTimeout(() => { if (viva(box)) fn(); }, ms)); };
   const conta = h('p', { class: 'tr-count' }); const msg = h('p', { class: 'fgm-msg', role: 'status' }, 'toque em começar e ouça a sequência');
