@@ -396,7 +396,7 @@ async function boot() {
   if ('serviceWorker' in navigator) {
     // versão nova: o aviso "tem coisa nova no app!" com o botão atualizar (e o pino vermelho no ⟳ do topo, ver atualizar-btn.js); procura versão nova sempre que o app volta pra tela
     const tinha = !!navigator.serviceWorker.controller;
-    navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha && !document.querySelector('.atualiza-bar')) document.body.append(h('div', { class: 'atualiza-bar', role: 'status', 'aria-live': 'polite' }, h('span', {}, 'tem coisa nova no app!'), h('button', { class: 'btn small primary', type: 'button', onclick: atualizarAgora }, 'atualizar'))); });
+    navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha && !document.querySelector('.atualiza-bar')) document.body.append(h('div', { class: 'atualiza-bar', role: 'status', 'aria-live': 'polite' }, h('span', {}, 'tem coisa nova no app!'), h('button', { class: 'btn small primary', type: 'button', onclick: atualizarAgora }, 'atualizar'), h('button', { class: 'atualiza-x', type: 'button', 'aria-label': 'dispensar o aviso', onclick: (e) => e.currentTarget.parentElement.remove() }, '✕'))); });
     navigator.serviceWorker.register('sw.js').then((reg) => { document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); }); }).catch(() => {});
   }
   try {

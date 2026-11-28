@@ -606,7 +606,7 @@ async function start() {
     const atualizar = () => { try { sessionStorage.setItem('bt-atualizou', '1'); } catch { /* ok */ } location.reload(); };
     const tenta = () => { if (!recarregar) return; if (document.documentElement.classList.contains('em-jogo')) return; atualizar(); };
     // pedido da Bea: quando tem coisa nova o app AVISA o aluno e mostra o botão "atualizar" (ao trocar de tela fora de um jogo ele também atualiza sozinho)
-    const avisaNovidade = () => { if (document.querySelector('.atualiza-bar')) return; document.body.append(h('div', { class: 'atualiza-bar', role: 'status', 'aria-live': 'polite' }, h('span', {}, 'tem coisa nova no app!'), h('button', { class: 'btn small primary', type: 'button', onclick: atualizar }, 'atualizar'))); };
+    const avisaNovidade = () => { if (document.querySelector('.atualiza-bar')) return; document.body.append(h('div', { class: 'atualiza-bar', role: 'status', 'aria-live': 'polite' }, h('span', {}, 'tem coisa nova no app!'), h('button', { class: 'btn small primary', type: 'button', onclick: atualizar }, 'atualizar'), h('button', { class: 'atualiza-x', type: 'button', 'aria-label': 'dispensar o aviso', onclick: (e) => e.currentTarget.parentElement.remove() }, '✕'))); };
     navigator.serviceWorker.addEventListener('controllerchange', () => { if (tinha) { recarregar = true; avisaNovidade(); } });
     try { if (sessionStorage.getItem('bt-atualizou') === '1') { sessionStorage.removeItem('bt-atualizou'); setTimeout(() => toast('app atualizado! tem novidade pra você ✨', { ms: 4500 }), 1200); } } catch { /* ok */ }
     addEventListener('hashchange', () => setTimeout(tenta, 300));

@@ -138,3 +138,24 @@ html.lite .mp-stk { animation: none; }
 .mp-gsec { margin: 12px 0 4px; padding: 4px 10px 12px; border: 3px solid var(--mp-purple); border-top: 3px solid var(--mp-yellow); background: linear-gradient(180deg, rgba(0, 0, 0, .22), rgba(0, 0, 0, .08)); box-shadow: 0 4px 0 rgba(0, 0, 0, .3); }
 .mp-gsec .mp-grg { margin-top: 10px; text-transform: none; letter-spacing: .04em; font-size: 13px; }
 .mp-gt { font-size: 11px; font-weight: 700; }
+
+/* ===== visual SÉRIO do mapa (pedido da Bea, 28/nov/2026): sem adesivos, sem Paul, sem pixel art; discos lisos, traço fino, texto grande e legível =====
+   Liga pelo botão "kids/adulto" do cabeçalho (js/campanha/tema.js, html[data-estilo="serio"]). Só desliga o enfeite: fases, regras, progresso e cliques são os mesmos. */
+html[data-estilo="serio"] .mp-stk, html[data-estilo="serio"] .mp-deco, html[data-estilo="serio"] .mp-paul, html[data-estilo="serio"] .mp-sign small { display: none !important; }
+html[data-estilo="serio"] .mp-world, html[data-estilo="serio"] .mp-world.beat-mapa[data-beat-mundo]:has([data-beat-regiao]) { background: var(--avp-bg) !important; background-image: none !important; }
+html[data-estilo="serio"] .mp-band { background: var(--avp-bg) !important; background-image: none !important; border-top: 1px solid var(--avp-line) !important; image-rendering: auto; }
+html[data-estilo="serio"] .mp-band::before, html[data-estilo="serio"] .mp-band::after, html[data-estilo="serio"] .mp-world::before, html[data-estilo="serio"] .mp-world::after { display: none !important; }
+html[data-estilo="serio"] .mp-sign { background: transparent; border: 0; box-shadow: none; padding: 2cqw 0 0; } html[data-estilo="serio"] .mp-sign b { color: var(--avp-soft); font-size: 4.2cqw; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+html[data-estilo="serio"] .mp-road { stroke: var(--avp-line); stroke-width: 2; opacity: .55; } html[data-estilo="serio"] .mp-edge { display: none; } html[data-estilo="serio"] .mp-lit { stroke: var(--avp-gold); stroke-width: 3; filter: none; }
+html[data-estilo="serio"] .mp-disc { width: 74%; background: var(--avp-card); border: 2px solid var(--avp-line); box-shadow: none; } html[data-estilo="serio"] .mp-disc::before, html[data-estilo="serio"] .mp-disc::after { display: none; }
+html[data-estilo="serio"] .mp-lab { position: static; background: none; color: var(--avp-text); font: 800 6.4cqw var(--body, system-ui); text-shadow: none; }
+html[data-estilo="serio"] .mp-node.st-done .mp-disc { border-color: var(--avp-gold); } html[data-estilo="serio"] .mp-node.st-current .mp-disc { border: 3px solid var(--avp-gold); background: var(--avp-accent); } html[data-estilo="serio"] .mp-node.st-current .mp-lab { color: var(--avp-accent-ink); }
+html[data-estilo="serio"] .mp-node.st-locked .mp-disc { opacity: .5; border-style: dashed; }
+html[data-estilo="serio"] .mp-tag { background: transparent; color: var(--avp-text); font: 700 3.6cqw var(--body, system-ui); text-shadow: none; padding: 0; }
+html[data-estilo="serio"] .mp-reg small { font-size: 13px; }
+/* subtítulo da região legível em qualquer tema (antes podia ficar escuro sobre escuro) */
+.mp-reg small { color: var(--avp-text) !important; opacity: .88 !important; }
+.av-estilo { font: 800 12px var(--body, system-ui) !important; letter-spacing: .04em; }
+.mp-head .mp-gradebtn, .mp-head .av-tema, .mp-head .mp-snd { min-width: 42px; min-height: 42px; padding: 0 8px; } .mp-head { gap: 6px; }
+.mp-head { flex-wrap: wrap; } .mp-head .mp-reg { flex: 1 1 100%; }
+html[data-estilo="serio"] .mp-sign { width: 92%; max-width: 92%; } html[data-estilo="serio"] .mp-sign b { white-space: normal; text-transform: none; letter-spacing: .02em; font-size: 4.4cqw; line-height: 1.2; }
