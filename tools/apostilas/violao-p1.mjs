@@ -8,7 +8,6 @@ export function registra(B, c) {
 <li><b>Uma página por vez.</b> Não precisa decorar tudo. Aprenda dois acordes, treine a troca entre eles, e só depois passe para o próximo.</li>
 <li><b>Use a trilha.</b> Na seção ${N('treino')}, o treino progressivo tem 11 etapas com quadradinhos para marcar. É o caminho mais curto até tocar a primeira música inteira.</li>
 <li><b>Consulte e revise.</b> O dicionário de acordes (seção ${N('dicionario')}) e os mapas do braço (seção ${N('braco')}) servem de consulta rápida. Cada módulo termina com revisão e autoavaliação.</li></ul>
-<div class="cit-p">“Todo violonista que você admira já tocou um Fá horrível um dia.”</div>
 <h2 class="s">A sua mão vai se adaptar, e tem um limite</h2>
 <p>Nas primeiras semanas, é comum sentir uma <b>sensibilidade leve</b> na ponta dos dedos da mão esquerda: a pele está se adaptando às cordas. Isso pode acontecer, e costuma melhorar com treinos curtos e regulares.</p>
 <p><b>Dor intensa, dor que não passa ou dor nas articulações (dedos, punho, cotovelo, ombro) não é normal.</b> Pare o exercício na hora, descanse, solte a mão e revise a postura. Se a dor continuar, procure um profissional de saúde. Tensão excessiva piora o som e machuca: aperte só o necessário.</p>
