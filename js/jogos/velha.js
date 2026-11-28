@@ -8,6 +8,8 @@ import { getGame, setGame, sfx, figureEl, reduced } from './base.js';
 import { symbolEl } from './cartas-simbolos.js';
 import { LEVELS } from './velha-data.js';
 import { lobby, linkBadge, salaAutoPara } from './online.js';
+import { soRobo, partidaUsar, partidasRestam, avisoFimPartidas } from '../amostra.js';
+import { pedir } from '../tocar-plano.js';
 import { camposNomes, nomeDe } from './nomes.js';
 import { iconeTopo } from '../top-icons.js';
 const MESA = { vitoria: (j, n) => import('../figurinhas/mesa.js').then((M) => M.vitoria(j, n)).catch(() => 0) }; // carrega só quando alguém ganha (mantém o jogo testável fora do navegador)
@@ -30,7 +32,9 @@ export function mount(host, opts) {
   let gone = false; let timer = 0;
   const saved = mission ? {} : getGame(ID);
   const prefs = mission ? { mode: MP.ai === 'estrategica' ? 'estrategico' : 'facil', variant: MP.variant === 'desafio' ? 'desafio' : 'classico', level: LEVELS.some((l) => l[0] === MP.level) ? MP.level : 'facil' } : { mode: MODES.some((m) => m[0] === saved.mode) ? saved.mode : (saved.mode === 'facil' || saved.mode === 'estrategico') ? 'paul' : 'local', variant: 'desafio', level: LEVELS.some((l) => l[0] === saved.level) ? saved.level : 'facil' };
-  if (!mission && salaAutoPara(ID)) prefs.mode = 'online'; // veio de "tenho um código de sala"
+  if (!mission && salaAutoPara(ID) && !soRobo()) prefs.mode = 'online'; // veio de "tenho um código de sala"
+  const SO_ROBO = ['paul', 'estrategico']; // sem código só contra o Paul (plano grátis: 2 partidas, sem dupla e sem sala)
+  if (!mission && soRobo() && !SO_ROBO.includes(prefs.mode)) prefs.mode = 'paul';
   let g = null; let msg = ''; let fb = null;
   let conn = null; let lob = null; const badge = linkBadge();
   const me0 = () => (conn ? conn.me : 0);
@@ -46,17 +50,18 @@ export function mount(host, opts) {
     stop(); leave(); g = null;
     const resume = V.validMatch(saved.match) && saved.match.variant === 'desafio' ? saved.match : null; // partida antiga do modo clássico não continua
     if (auto && resume && resume.pending && resume.mode !== 'online' && !resume.over) return begin(resume); // saiu no meio de uma pergunta (foi estudar): volta direto na MESMA pergunta
-    const seg = (key, list) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${prefs[key] === v ? 'on' : ''}${ic ? (ic[0] === '#' ? ' jg-tiny' : ' jg-ic') : ''}`, onclick: () => { prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, ic ? (ic[0] === '#' ? ic.slice(1) : bq(ic)) : l)));
+    const seg = (key, list) => h('div', { class: 'jg-seg', role: 'radiogroup' }, ...list.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(prefs[key] === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${prefs[key] === v ? 'on' : ''}${key === 'mode' && soRobo() && !SO_ROBO.includes(v) ? ' jg-trav' : ''}${ic ? (ic[0] === '#' ? ' jg-tiny' : ' jg-ic') : ''}`, onclick: () => { if (key === 'mode' && soRobo() && !SO_ROBO.includes(v)) { pedir('jogar em dupla ou com sala'); return; } prefs[key] = v; setGame(ID, { [key]: v }); intro(); } }, ic ? (ic[0] === '#' ? ic.slice(1) : bq(ic)) : l)));
     root.replaceChildren(
       h('h2', { class: 'jg-h hand' }, 'jogo da velha'),
       h('ol', { class: 'jg-big' },
         h('li', {}, prefs.variant === 'desafio' ? 'toque numa casa e responda a pergunta' : 'toque numa casa vazia'),
         h('li', {}, '3 marcas em linha ganha')),
+      soRobo() && !mission ? h('p', { class: 'jg-p am-resta', role: 'note' }, partidasRestam(ID) > 0 ? `plano grátis: ${partidasRestam(ID)} partida${partidasRestam(ID) === 1 ? '' : 's'} contra o Paul. com o código de aluno é sem limite e dá pra jogar em dupla ou com sala.` : 'as partidas grátis acabaram. com o código de aluno é sem limite.') : null,
       h('p', { class: 'jg-lab big' }, 'quem joga?'), seg('mode', MODES),
       prefs.mode === 'local' ? camposNomes(2) : null,
       prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => V.newMatch({ ...prefs, mode: 'online' }), onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume) }, `continuar (rodada ${resume.round})`) : null,
-          h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(V.newMatch(prefs)) }, resume ? 'novo placar' : 'iniciar')));
+          h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => comeca() }, resume ? 'novo placar' : 'iniciar')));
   }
   function startOnline(c, state) {
     conn = c; lob = null; badge.set(true); c.on.link = (v) => badge.set(v);
@@ -68,6 +73,11 @@ export function mount(host, opts) {
   }
   /** manda a jogada pro outro celular (jogada completa; a pergunta aberta fica só no celular de quem joga) */
   function sync() { if (conn && g.mode === 'online') conn.push(g).then((ok) => { if (!ok) msg = 'o outro celular jogou ao mesmo tempo, veja o tabuleiro'; }); }
+  /** Começa uma partida NOVA (conta uma das 2 grátis, sem código). Continuar partida salva não conta. */
+  function comeca() {
+    if (!mission && !partidaUsar(ID)) { root.replaceChildren(h('h2', { class: 'jg-h hand' }, 'jogo da velha'), avisoFimPartidas('jogo da velha', ID)); return; }
+    begin(V.newMatch(prefs));
+  }
   function begin(m) { g = m; msg = ''; fb = null; persist(); draw(); afterTurn(); }
 
   function draw() {

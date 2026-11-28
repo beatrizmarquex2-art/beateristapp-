@@ -94,10 +94,10 @@ const trancada = (p) => p.locator('.al-lock').count();
   await p.goto(`${url}/aluno.html#/paulta`); await sleep(2000);
   check('pauLta trancada sem código', (await trancada(p)) === 1);
   await go(p, '#/jogos/toca'); check('Toca Aqui trancado sem código', (await trancada(p)) === 1);
-  await go(p, '#/jogos/cartas'); check('Uno Musical trancado sem código', (await trancada(p)) === 1);
+  await go(p, '#/jogos/cartas'); check('Uno Musical abre sem código (plano grátis: 2 partidas contra o robô)', (await trancada(p)) === 0);
   await go(p, '#/jogos');
   const lk = await p.locator('.jg-card.locked b').allTextContents();
-  check('no catálogo: Toca Aqui, PauLta, Uno, Detetive Note e Rudimentix com cadeado; memória, bingo, velha, quebra-cabeça, cara a cara e stop abertos', ['Toca Aqui', 'PauLta', 'Uno', 'Detetive Note', 'Rudimentix'].every((n) => lk.some((t) => t.includes(n))) && !lk.some((t) => /memória|bingo|velha|quebra|cara a cara|stop/i.test(t)), lk.join(' | '));
+  check('no catálogo: Toca Aqui, PauLta, Detetive Note e Rudimentix com cadeado; memória, bingo, velha, Uno, quebra-cabeça, cara a cara e stop abertos', ['Toca Aqui', 'PauLta', 'Detetive Note', 'Rudimentix'].every((n) => lk.some((t) => t.includes(n))) && !lk.some((t) => /memória|bingo|velha|uno|quebra|cara a cara|stop/i.test(t)), lk.join(' | '));
   for (const g of ['memart', 'bingo', 'velha', 'quebra', 'cara', 'stop']) { await go(p, `#/jogos/${g}`); check(`#/jogos/${g} abre direto no jogo (sem escolher modo aventura)`, (await trancada(p)) === 0 && (await p.locator('.av-root, .av-modes').count()) === 0 && (await p.locator('.jg-game').count()) === 1); }
   check('sem erros de página', errs.length === 0, errs.join(' | '));
   await ctx.close();

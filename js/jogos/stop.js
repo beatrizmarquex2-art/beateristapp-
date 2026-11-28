@@ -8,6 +8,8 @@ import { addCustom, bankSize } from './stop-valid.js';
 import * as FX from './stop-sfx.js';
 import { getGame, setGame } from './base.js';
 import { lobby, linkBadge, salaAutoPara } from './online.js';
+import { soRobo, partidaUsar, partidasRestam, avisoFimPartidas } from '../amostra.js';
+import { pedir } from '../tocar-plano.js';
 import { linha, chips, ajuda } from './opcoes.js';
 /** As 5 categorias do STOP, sempre as mesmas (pedido da Bea): instrumento e derivados, acessórios e equipamentos, cantor(a), banda e nome de música. */
 const FIXAS = ['instrumento', 'equipamento', 'cantor', 'banda', 'musica'];
@@ -25,8 +27,9 @@ const sleepToken = (ms, fn) => setTimeout(fn, ms);
 export function mount(host, opts) {
   const M = opts && opts.mission ? opts.mission : null; // Modo Aventura: partida montada pelos params, sem ler nem gravar nada do Modo Livre
   const saved = M ? {} : getGame(ID);
+  const trav = (el) => { if (!M && soRobo()) [...el.querySelectorAll('button')].forEach((bt, i) => { if (i > 0) bt.classList.add('jg-trav'); }); return el; }; // plano grátis: só "individual"
   const prefs = {
-    mode: ['solo', 'dupla', 'sala', 'online'].includes(saved.mode) ? saved.mode : 'solo',
+    mode: !M && soRobo() ? 'solo' : ['solo', 'dupla', 'sala', 'online'].includes(saved.mode) ? saved.mode : 'solo', // sem código: só individual (plano grátis: 2 partidas, sem dupla/sala/celulares)
     cats: FIXAS.slice(), // categorias sempre as mesmas (sem escolher)
     seconds: 90, // sempre 90 segundos (pedido da Bea)
     rounds: 3, // sempre 3 rodadas
@@ -102,12 +105,14 @@ export function mount(host, opts) {
     const catBtns = S.CATS.map((c) => { const on = prefs.cats.includes(c.id); return h('button', { type: 'button', class: `st-cat${on ? ' on' : ''}`, 'aria-pressed': String(on), onclick: () => toggle(c.id) }, h('i', { 'aria-hidden': 'true' }, on ? '✔' : ''), h('span', {}, c.label)); });
     const start = () => {
       if (!okCats || !eligible.length) return;
+      if (!M && !partidaUsar(ID)) { root.replaceChildren(h('h2', { class: 'jg-h hand' }, 'stop'), avisoFimPartidas('stop', ID)); return; }
       save({}); try { begin(newMatch()); } catch (e) { toast(e.message === 'sem-letra' ? 'nenhuma letra serve pra essas categorias' : e.message); }
     };
     root.replaceChildren(...[
       h('div', { class: 'st-head' }, h('h2', { class: 'jg-h hand' }, 'STOP musical'), h('div', { class: 'st-tools' }, h('button', { class: 'btn small ghost', type: 'button', onclick: audioPanel }, '⚙ som'), h('button', { class: 'btn small ghost', type: 'button', onclick: historyPanel }, 'histórico'))),
+      !M && soRobo() ? h('p', { class: 'jg-p am-resta', role: 'note' }, partidasRestam(ID) > 0 ? `plano grátis: ${partidasRestam(ID)} partida${partidasRestam(ID) === 1 ? '' : 's'}, só individual. com o código de aluno é sem limite, em dupla, sala ou com amigos.` : 'as partidas grátis acabaram. com o código de aluno é sem limite.') : null,
       h('div', { class: 'jo-card' },
-        linha('quem joga', chips([['solo', 'individual', 'um'], ['dupla', 'no mesmo celular (2 a 4 pessoas)', 'mais'], ['sala', 'sala de aula', 'sala'], ['online', '2 a 4 celulares', 'celular']], prefs.mode, (v) => { FX.play('tap'); save({ mode: v }); setup(); }, 'modo de jogo'),
+        linha('quem joga', trav(chips([['solo', 'individual', 'um'], ['dupla', 'no mesmo celular (2 a 4 pessoas)', 'mais'], ['sala', 'sala de aula', 'sala'], ['online', '2 a 4 celulares', 'celular']], prefs.mode, (v) => { FX.play('tap'); if (!M && soRobo() && v !== 'solo') { pedir('jogar em dupla, em sala ou com amigos'); return; } save({ mode: v }); setup(); }, 'modo de jogo')),
         prefs.mode === 'dupla' ? linha('quantos jogam', chips([[2, '2'], [3, '3'], [4, '4']], prefs.nDupla, (v) => { FX.play('tap'); save({ nDupla: v }); setup(); }, 'quantos jogam')) : null,
           ajuda('Como funciona', prefs.mode === 'dupla' ? 'um celular só: cada um joga o seu turno, com a mesma letra, as mesmas categorias e o mesmo tempo. as respostas ficam escondidas até o fim da rodada.'
             : prefs.mode === 'sala' ? 'modo professor: de 2 a 12 participantes jogam um depois do outro neste aparelho. você escolhe tempo e rodadas, revisa as respostas e aprova ou rejeita as contestadas.'
@@ -354,6 +359,7 @@ export function mount(host, opts) {
   }
   function rematch() {
     if (g.online) { const ng = { ...newMatch('dupla', g.players.length > 2 ? g.players : null), online: true }; g = ng; sync(); return turnStartOrWait(); }
+    if (!M && !partidaUsar(ID)) { root.replaceChildren(h('h2', { class: 'jg-h hand' }, 'stop'), avisoFimPartidas('stop', ID)); return; }
     try { begin(newMatch()); } catch (e) { toast(e.message); }
   }
   const turnStartOrWait = () => (g.turn === me0() ? turnStart() : waiting());

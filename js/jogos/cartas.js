@@ -7,6 +7,8 @@ import { SYMS, SYM_NAME, SYM_SHORT, SYM_LEARN, symbolEl, actionEl } from './cart
 import { getGame, setGame, soundOn, setSound, reduced } from './base.js';
 import * as S from './cartas-sfx.js';
 import { lobby, linkBadge, salaAutoPara } from './online.js';
+import { soRobo, partidaUsar, partidasRestam, avisoFimPartidas } from '../amostra.js';
+import { pedir } from '../tocar-plano.js';
 import { bq } from './bonequinhos.js';
 import { placar, poseDisponivel } from './placar.js';
 import { camposNomes, nomeDe, deNome, paraNome, nomeDigitado } from './nomes.js';
@@ -58,10 +60,10 @@ export function mount(host, opts) {
   const timers = new Set(); const anims = new Set();
   const saved = adv ? {} : getGame(ID);
   const prefs = adv ? { mode: 'paul', opps: 1, hint: mp.hint === false ? 'sem' : 'com', help: true, sfx: true } : {
-    mode: ['paul', 'local', 'online'].includes(saved.mode) ? saved.mode : 'paul', opps: [1, 2, 3].includes(saved.opps) ? saved.opps : 1,
+    mode: soRobo() ? 'paul' : ['paul', 'local', 'online'].includes(saved.mode) ? saved.mode : 'paul', opps: [1, 2, 3].includes(saved.opps) ? saved.opps : 1,
     hint: 'com', help: true, sfx: saved.sfx !== false, learn: false, names: true, // sempre jogo normal (nunca pausa), as cartas que servem sempre brilham e o nome da figura sempre aparece: // o nome da figura aparece sempre em todas as cartas
   };
-  if (!adv && salaAutoPara(ID)) prefs.mode = 'online'; // veio de "tenho um código de sala"
+  if (!adv && salaAutoPara(ID) && !soRobo()) prefs.mode = 'online'; // veio de "tenho um código de sala"
   const dica = () => !UN && prefs.hint !== 'sem'; // com dica: cartas que servem ficam destacadas
   const rec = () => ({ w: 0, l: 0, e: 0, ...(saved.rec || {}) });
   let dup = null; let settleT = 0; let g = null; let hidden = false; let picking = null; let recorded = false; let viewer = 0; let queued = null; let flashT = 0;
@@ -137,7 +139,7 @@ export function mount(host, opts) {
   function intro() {
     clearTimers(); busy = false; leave(); g = null; picking = null; stage = null; handEl = null; deckEl = null; pileEl = null; tip = null; S.stopAll();
     const resume = C.validGame(saved.game) && !saved.game.over ? saved.game : null; const r = rec();
-    const seg = (name, opts, cur, on) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': name }, ...opts.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(cur === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${cur === v ? 'on' : ''}${ic ? ' jg-ic' : ''}`, onclick: () => { on(v); intro(); } }, ic ? bq(ic) : l)));
+    const seg = (name, opts, cur, on) => h('div', { class: 'jg-seg', role: 'radiogroup', 'aria-label': name }, ...opts.map(([v, l, ic]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(cur === v), 'aria-label': ic ? l : null, title: ic ? l : null, class: `${cur === v ? 'on' : ''}${name === 'modo' && !adv && soRobo() && v !== 'paul' ? ' jg-trav' : ''}${ic ? ' jg-ic' : ''}`, onclick: () => { if (name === 'modo' && !adv && soRobo() && v !== 'paul') { pedir('jogar em dupla ou com amigos'); return; } on(v); intro(); } }, ic ? bq(ic) : l)));
     const legend = h('div', { class: 'cx-legend', role: 'list', 'aria-label': 'as dez figuras das cartas' }, ...SYMS.map((s, i) => {
       const card = cardEl({ id: `lg${i}`, color: C.COLORS[i % 4], kind: 'fig', sym: s });
       const b = h('button', { type: 'button', class: 'cx-leg', role: 'listitem', 'aria-label': SYM_NAME[s], onclick: () => { snd('tap'); showTip(b, SYM_NAME[s], 1500); } }, card, h('small', {}, SYM_NAME[s]));
@@ -147,6 +149,7 @@ export function mount(host, opts) {
       h('h2', { class: 'jg-h hand' }, TITLE),
       h('p', { class: 'jg-p' }, 'jogue a carta da mesma cor ou da mesma figura. reconhecer as figuras é o segredo!'),
       h('p', { class: 'jg-lab' }, 'as 12 figuras (toque pra ver o nome)'), legend,
+      !adv && !UN && soRobo() ? h('p', { class: 'jg-p am-resta', role: 'note' }, partidasRestam(ID) > 0 ? `plano grátis: ${partidasRestam(ID)} partida${partidasRestam(ID) === 1 ? '' : 's'} contra o robô. com o código de aluno é sem limite, em dupla ou com amigos.` : 'as partidas grátis acabaram. com o código de aluno é sem limite.') : null,
       h('p', { class: 'jg-lab' }, 'contra quem?'),
       seg('modo', [['paul', 'contra o robô (1 a 3)', 'paul'], ['local', 'no mesmo celular (2 a 4 pessoas)', 'mais'], ['online', '2 a 4 celulares (código)', 'celular']], prefs.mode, (v) => { prefs.mode = v; keepPrefs(); }),
       prefs.mode === 'paul' ? h('p', { class: 'jg-lab' }, 'quantos adversários?') : null,
@@ -169,7 +172,7 @@ export function mount(host, opts) {
         h('li', {}, 'nada brilha: você descobre quais cartas servem.')))] : []),
       prefs.mode === 'online' ? (lob = lobby({ jogo: ID, makeState: () => C.newGame({ mode: 'online', un: UN }), n: { makeState: (num, nomes) => ({ ...C.newGame({ mode: 'online', players: num, un: UN }), nomes: nomes.map((x) => String(x || '').slice(0, 14)) }) }, onStart: startOnline })).el
         : h('div', { class: 'jg-actions' }, resume ? h('button', { class: 'btn primary', type: 'button', onclick: () => begin(resume, true) }, 'continuar partida') : null,
-          h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => begin(C.newGame({ mode: prefs.mode, players: prefs.opps + 1, un: UN })) }, resume ? 'nova partida' : 'iniciar')),
+          h('button', { class: resume ? 'btn' : 'btn primary', type: 'button', onclick: () => novoJogo(() => C.newGame({ mode: prefs.mode, players: prefs.opps + 1, un: UN })) }, resume ? 'nova partida' : 'iniciar')),
       r.w + r.l + r.e ? h('p', { class: 'jg-p muted' }, `contra o computador: ${r.w} vitória${r.w === 1 ? '' : 's'} · ${r.l} derrota${r.l === 1 ? '' : 's'} · ${r.e} empate${r.e === 1 ? '' : 's'}`) : null,
     ].filter(Boolean));
   }
@@ -204,7 +207,12 @@ export function mount(host, opts) {
   function sync() { if (conn && g.mode === 'online') conn.push(g).then((ok) => { if (!ok && !gone) flash('outro jogador jogou ao mesmo tempo, veja a mesa'); }); }
   function again() {
     if (prefs.mode === 'online') { const ng = C.newGame({ mode: 'online', players: g ? g.n : 2, un: UN }); if (g && g.nomes) ng.nomes = g.nomes; if (g && C.foraDe(g).length) { const seq = ng.seq; const t = C.tirar(ng, C.foraDe(g), rnd); t.ev = { t: 'start' }; t.seq = seq; Object.assign(ng, t); } begin(ng); sync(); return; } // quem saiu continua fora na revanche // revanche na sala: mesma quantidade de jogadores e os mesmos nomes
-    begin(C.newGame({ mode: prefs.mode, players: prefs.opps + 1, un: UN }));
+    novoJogo(() => C.newGame({ mode: prefs.mode, players: prefs.opps + 1, un: UN }));
+  }
+  /** Começa partida NOVA: conta uma das 2 grátis (sem código). Continuar partida salva não conta. */
+  function novoJogo(mk) {
+    if (!adv && !UN && !partidaUsar(ID)) { clearTimers(); root.replaceChildren(h('h2', { class: 'jg-h hand' }, TITLE), avisoFimPartidas('Uno Musical', ID)); return; }
+    begin(mk());
   }
 
   /* ----- começo de partida: embaralhar e distribuir ----- */

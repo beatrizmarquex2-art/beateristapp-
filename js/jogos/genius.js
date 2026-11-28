@@ -9,11 +9,13 @@ import { arte } from '../kids/kit-modelos.js';
 import { getGame, setGame } from './base.js';
 import { ico } from './fluido-ui.js';
 import * as L from './genius-logic.js';
+import { soRobo } from '../amostra.js';
+import { pedir } from '../tocar-plano.js';
 
 const ID = 'genius';
 export function mount(host) {
   const saved = getGame(ID);
-  let inst = L.instrumentoValido(saved.inst); let recs = saved.recs && typeof saved.recs === 'object' ? saved.recs : {};
+  let inst = soRobo() ? 'xilofone' : L.instrumentoValido(saved.inst); /* plano grátis: só o xilofone */ let recs = saved.recs && typeof saved.recs === 'object' ? saved.recs : {};
   let seq = []; let rodada = 0; let pos = 0; let vez = false; let jogando = false; let over = false; let ouvirRest = L.OUVIR_DE_NOVO; let gone = false; let batido = false; // batido: já bateu o recorde nesta partida
   const timers = []; const later = (fn, ms) => { const t = setTimeout(() => { if (!gone) fn(); }, ms); timers.push(t); return t; };
   const limpa = () => { timers.splice(0).forEach(clearTimeout); };
@@ -70,7 +72,7 @@ export function mount(host) {
     travaPads(!vez);
   }
   function desenhaTabs() {
-    tabs.replaceChildren(...L.ORDEM.map((k) => h('button', { type: 'button', role: 'radio', class: 'gn-tab', 'data-i': k, 'aria-checked': String(k === inst), onclick: () => { if (jogando && !over) return; inst = k; setGame(ID, { inst, recs }); fimLimpa(); desenhaInstrumento(); pinta(); } }, L.INSTRUMENTOS[k].nome)));
+    tabs.replaceChildren(...L.ORDEM.map((k) => h('button', { type: 'button', role: 'radio', class: `gn-tab${soRobo() && k !== 'xilofone' ? ' jg-trav' : ''}`, 'data-i': k, 'aria-checked': String(k === inst), onclick: () => { if (jogando && !over) return; if (soRobo() && k !== 'xilofone') { pedir(`o ${L.INSTRUMENTOS[k].nome} no Eco do Paul`); return; } inst = k; setGame(ID, { inst, recs }); fimLimpa(); desenhaInstrumento(); pinta(); } }, L.INSTRUMENTOS[k].nome)));
   }
 
   /* ---------- a partida ---------- */

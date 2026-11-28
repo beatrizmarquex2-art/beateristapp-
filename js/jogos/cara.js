@@ -3,6 +3,8 @@ import { h } from '../util.js';
 import { placar, poseDisponivel } from './placar.js';
 import { linha, chips, ajuda } from './opcoes.js';
 import { confirmSheet } from '../ui.js';
+import { soRobo } from '../amostra.js';
+import { pedir } from '../tocar-plano.js';
 import * as K from './cara-logic.js';
 import { BY_ID, QUESTIONS, answerFor } from './cara-data.js';
 import { getGame, setGame, sfx } from './base.js';
@@ -18,10 +20,10 @@ export function mount(host, opts = {}) {
   let inner = null;
   let morto = false;
   const abrir = async () => {
-    const musical = MUSICAL_LIBERADO && !opts.mission; // só artistas: a versão de instrumentos saiu do jogo livre
+    const musical = MUSICAL_LIBERADO && !opts.mission && !soRobo(); // sem código de aluno: só o tema "instrumentos" contra o Paul (o musical, com artistas e salas, abre com o código)
     const troca = (v) => { setGame(ID, { tema: v }); inner && inner.destroy && inner.destroy(); abrir(); };
     if (musical) { const { mountMusical } = await import('./cara-musical/tela.js'); if (morto) return; inner = mountMusical(host, { onTema: troca }); } // importado só quando usa (some do build dos alunos)
-    else inner = mountInstrumentos(host, opts, { onTema: opts.mission || !MUSICAL_LIBERADO ? null : troca });
+    else inner = mountInstrumentos(host, opts, { onTema: opts.mission || !MUSICAL_LIBERADO ? null : (v) => { if (soRobo()) { pedir('o cara a cara musical, com artistas e salas'); return; } troca(v); } });
   };
   abrir();
   return { inProgress: () => !!(inner && inner.inProgress()), restart: () => inner && inner.restart(), destroy: () => { morto = true; inner && inner.destroy(); } };
@@ -32,6 +34,7 @@ function mountInstrumentos(host, opts, { onTema } = {}) {
   let gone = false;
   const saved = mission ? {} : getGame(ID);
   const prefs = { manual: mission ? MP.manual === true : saved.manual === true };
+  const trav = (el) => { if (soRobo()) { const b = el.querySelectorAll('button')[1]; if (b) b.classList.add('jg-trav'); } return el; }; // plano grátis: o tema musical fica com cadeado
   let g = null; let picked = null; let msg = '';
   const root = h('div', { class: `jg jg-cara${mission ? ' jg-game jg-dark' : ''}` }); host.replaceChildren(root);
   const persist = () => mission || setGame(ID, { ...prefs, game: g && !g.over ? g : null, best: saved.best });
@@ -42,7 +45,7 @@ function mountInstrumentos(host, opts, { onTema } = {}) {
     root.replaceChildren(...[
       h('h2', { class: 'jg-h hand' }, 'cara a cara'),
       h('div', { class: 'jo-card' },
-        onTema ? linha('tema', chips([['instrumentos', 'instrumentos'], ['musical', 'cara a cara musical']], 'instrumentos', (v) => { if (v !== 'instrumentos') onTema(v); }, 'tema')) : null,
+        onTema ? linha('tema', trav(chips([['instrumentos', 'instrumentos'], ['musical', 'cara a cara musical']], 'instrumentos', (v) => { if (v !== 'instrumentos') onTema(v); }, 'tema'))) : null,
         linha('cartas', chips([[false, 'automático'], [true, 'manual']], prefs.manual, (v) => { prefs.manual = v; setGame(ID, { manual: v }); intro(); }, 'eliminar cartas'),
           ajuda('Eliminar cartas', prefs.manual ? 'manual: você vira as cartas sozinho e pode desfazer a última virada.' : 'automático: cada resposta tira as cartas que não combinam.')),
         linha('regras', ajuda('Como jogar', 'o paul escolheu um instrumento em segredo. faça perguntas de sim ou não e descubra qual é. você tem 3 chutes.'))),
