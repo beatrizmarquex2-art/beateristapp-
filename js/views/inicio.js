@@ -238,6 +238,7 @@ export function mount(host, { nome = '' } = {}) {
     h('a', { href: '#/jogos' }, h('b', {}, 'jogos'), 'Hero Drum, Piano Hero, Beat Hero e mais'),
     h('a', { href: '#/estudos' }, h('b', {}, 'estudos'), 'aulas do Paul e dicionário'),
     h('a', { href: '#/tocar' }, h('b', {}, 'palco'), 'bateria, violão, teclado e xilofone'),
+    h('a', { href: '#/ranking' }, h('b', {}, 'ranking'), 'quem terminou mundos, juntou figurinhas e estudou mais'),
     h('a', { href: '#/lojinha' }, h('b', {}, 'lojinha'), 'cards e apostilas pra imprimir'));
 
   // aviso de versão nova: aparece aqui dentro do Início (cartão no topo) e o aviso solto do topo some nesta aba (css/inicio.css)

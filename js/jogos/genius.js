@@ -85,7 +85,7 @@ export function mount(host) {
   function ouvirDeNovo() { if (!jogando || over || ouvirRest <= 0 || !seq.length) return; ouvirRest--; mostra(); }
   function acabou(esperado) {
     vez = false; over = true; travaPads(true); erroSom(); limpa(); acende(esperado, 900); // mostra a que era
-    const n = L.decoradas(rodada, true); const r = L.atualizaRecorde(recs, inst, n); recs = r.recs; if (r.novo && n > 0) setGame(ID, { inst, recs });
+    const n = L.decoradas(rodada, true); const r = L.atualizaRecorde(recs, inst, n); recs = r.recs; if (r.novo && n > 0) { setGame(ID, { inst, recs }); try { window.dispatchEvent(new Event('bt-rank-sujo')); } catch { /* sem janela */ } }
     msg.textContent = `você decorou ${n} nota${n === 1 ? '' : 's'}! ${(r.novo || batido) && n > 0 ? '🏆 novo recorde! ' : ''}${L.elogio(n)}`; pinta();
   }
   function toque(i) {
@@ -94,7 +94,7 @@ export function mount(host) {
     if (r === 'erro') { acabou(seq[pos]); return; }
     pos++;
     if (r === 'fim') {
-      vez = false; travaPads(true); const rr = L.atualizaRecorde(recs, inst, rodada); recs = rr.recs; if (rr.novo) { batido = true; setGame(ID, { inst, recs }); }
+      vez = false; travaPads(true); const rr = L.atualizaRecorde(recs, inst, rodada); recs = rr.recs; if (rr.novo) { batido = true; setGame(ID, { inst, recs }); try { window.dispatchEvent(new Event('bt-rank-sujo')); } catch { /* sem janela */ } }
       msg.textContent = rr.novo && rodada > 1 ? `isso! ${rodada} notas · novo recorde 🏆` : `isso! ${rodada} nota${rodada === 1 ? '' : 's'} certas`; pinta(); later(proxima, 900);
     }
   }

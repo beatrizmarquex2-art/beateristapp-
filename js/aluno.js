@@ -8,6 +8,8 @@ import { atualizarButton } from './atualizar-btn.js';
 import * as store from './store.js';
 import * as P from './kids/progress.js';
 import * as RK from './ranking.js';
+import * as rankTela from './views/ranking-tela.js';
+import * as RKV from './ranking-envio.js';
 import * as ESTRELAS from './figurinhas/estrelas.js';
 import * as CODE from './codigo.js';
 import * as AC from './acesso.js';
@@ -155,25 +157,14 @@ function sendScores() {
     const me = P.profiles().find((p) => p.name.toLowerCase() === name.toLowerCase());
     if (me) RK.add('kids|estrelas', name, ESTRELAS.estrelasTotais(me.id)); // Kids + ritmo + aventura (tudo que vale roleta)
     const xp = store.get('setting-xp'); if (xp && xp.data.total) RK.add('xp', name, xp.data.total);
+    RKV.agendar(0); // quadros novos do ranking (mundos, fases, figurinhas, estudos, Eco do Paul)
   }, 3000);
 }
 
 function rankingView(view) {
-  const me = getName().toLowerCase();
-  const box = (title, sub, board, unit) => {
-    const list = h('ol', { class: 'al-rank' }, h('li', { class: 'muted' }, 'carregando…'));
-    RK.top(board, { fresh: true }).then((rows) => {
-      list.replaceChildren(...(rows.length ? rows.map((r, i) => h('li', { class: r.name.toLowerCase() === me ? 'me' : '' }, h('span', { class: 'al-pos' }, `${i + 1}º`), h('span', { class: 'al-nm' }, r.name), h('b', {}, `${Number(r.score).toLocaleString('pt-BR')} ${unit}`)))
-        : [h('li', { class: 'muted' }, 'ninguém ainda. seja o primeiro!')]));
-    });
-    return h('section', { class: 'card pad' }, h('h2', { class: 'tag' }, title), h('p', { class: 'muted' }, sub), list);
-  };
-  view.append(banner('Ranking', 'os melhores da escola'),
-    h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
-      box('estrelas nos jogos', 'quem juntou mais estrelas nas fases', 'kids|estrelas', '★'),
-      socialRow(),
-      footerBlock(),
-      h('p', { class: 'lib-note' }, 'o ranking de cada música aparece no fim do jogo de ritmo. só vale a sua melhor pontuação.')));
+  const off = rankTela.mount(view); // quadros com setinhas, pódio 1º 2º 3º (views/ranking-tela.js)
+  view.append(h('div', { class: 'pad-x', style: 'display:grid;gap:12px;margin-top:12px' }, socialRow(), footerBlock(), h('p', { class: 'lib-note' }, 'o ranking de cada música aparece no fim do jogo de ritmo. só vale a sua melhor pontuação. no ranking aparece só o seu primeiro nome e a inicial do sobrenome.')));
+  return off;
 }
 
 /** Tela de uma parte que só vale com código: gerar o código, contar pra professora e liberar sozinho. */
@@ -597,6 +588,7 @@ async function start() {
   if (window.__primeiraVez) { window.__primeiraVez = false; import('./boas-vindas.js').then((M) => M.mostrar({ nome: name, aoCodigo: abrirCodigo })).catch(() => { /* sem boas-vindas */ }); }
   sendScores();
   store.subscribe((i) => { if (!i.kind || i.kind === 'setting') sendScores(); });
+  window.addEventListener('bt-rank-sujo', () => RKV.agendar(1500)); // bateu recorde no Eco do Paul
 }
 
 (async () => {

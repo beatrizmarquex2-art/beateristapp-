@@ -2414,3 +2414,24 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 .fgm-carta.up { background: #fff6e0; color: #0f1b33; border-color: #ffd23f; } .fgm-carta.par { color: #0f1b33; } .fgm-sym, .fgm-carta.up .fgm-sym { color: #0f1b33; }
 .fgq-campo { background: radial-gradient(120% 90% at 50% 0, #1f5a96, #0a1a33 70%); }
 .fgq-nome { background: linear-gradient(165deg, #2f6bb5, #173a69); border-color: #8cc0ff; }
+
+/* ---------- Ranking dos alunos (js/views/ranking-tela.js) ---------- */
+.rk { background: linear-gradient(180deg, #1d2f52, #121f38); color: #fff7e6; border-radius: 18px; padding: 14px 12px 12px; box-shadow: 0 8px 20px rgb(0 0 0 / .3); display: grid; gap: 10px; }
+.rk-cab { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; }
+.rk-seta { width: 44px; height: 44px; border-radius: 50% !important; border: 2px solid rgb(255 255 255 / .55); background: rgb(255 255 255 / .12); color: #fff; font: 800 26px/1 var(--body, inherit); cursor: pointer; padding: 0 0 4px; }
+.rk-seta:active { transform: scale(.94); }
+.rk-tit { text-align: center; display: grid; gap: 2px; min-width: 0; } .rk-emo { font-size: 26px; } .rk-tit b { font: 400 22px/1.05 var(--display, 'Anton', sans-serif); letter-spacing: .01em; color: #ffe08a; } .rk-tit small { font-size: 12px; opacity: .8; }
+.rk-pts { display: flex; justify-content: center; gap: 8px; } .rk-pts button { width: 9px; height: 9px; padding: 0; border-radius: 50% !important; border: 0; background: rgb(255 255 255 / .35); cursor: pointer; } .rk-pts button.on { width: 22px; border-radius: 6px !important; background: #f7b733; }
+.rk-abas { display: flex; justify-content: center; gap: 6px; } .rk-abas button { min-height: 34px; padding: 0 16px; border-radius: 999px !important; border: 1px solid rgb(255 255 255 / .3); background: rgb(255 255 255 / .08); color: #fff; font: 700 13px/1 var(--body, inherit); cursor: pointer; } .rk-abas button.on { background: linear-gradient(180deg, #ffe58a, #f7b733); color: #142036; border-color: #fff4c2; }
+.rk-corpo { min-height: 220px; display: grid; gap: 10px; align-content: start; } .rk-vazio { text-align: center; opacity: .85; padding: 40px 10px; margin: 0; }
+.rk-podio { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 8px; padding-top: 8px; }
+.rk-lugar { display: grid; justify-items: center; gap: 2px; text-align: center; min-width: 0; } .rk-lugar.vazio { visibility: hidden; }
+.rk-med { font-size: 34px; line-height: 1; } .rk-lugar.l1 .rk-med { font-size: 46px; }
+.rk-nome { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; } .rk-lugar.l1 .rk-nome { font-size: 17px; color: #ffe08a; } .rk-lugar small { font-size: 12px; opacity: .85; }
+.rk-base { width: 100%; font: 400 26px/1 var(--display, 'Anton', sans-serif); font-style: normal; padding: 10px 0 6px; border-radius: 10px 10px 0 0; color: #142036; margin-top: 4px; }
+.rk-lugar.l1 .rk-base { background: linear-gradient(180deg, #ffe58a, #f7b733); padding-top: 26px; } .rk-lugar.l2 .rk-base { background: linear-gradient(180deg, #eef1f6, #b9c2d3); padding-top: 16px; } .rk-lugar.l3 .rk-base { background: linear-gradient(180deg, #f0b27a, #c07c3f); padding-top: 8px; }
+.rk-lugar.eu .rk-nome { background: rgb(247 183 51 / .3); border-radius: 8px; padding: 1px 8px; }
+.rk-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; } .rk-lista li { display: grid; grid-template-columns: 38px 1fr auto; gap: 8px; align-items: center; padding: 7px 10px; border-radius: 10px; background: rgb(255 255 255 / .07); } .rk-lista li.eu { background: rgb(247 183 51 / .28); font-weight: 700; } .rk-pos { opacity: .8; font-weight: 800; } .rk-nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rk-fora { text-align: center; font-size: 13px; opacity: .9; margin: 0; }
+.rk-eu { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; font-size: 13px; padding-top: 6px; border-top: 1px solid rgb(255 255 255 / .15); } .rk-toggle { display: inline-flex; align-items: center; gap: 6px; opacity: .85; font-size: 12px; } .rk-toggle input { width: 18px; height: 18px; }
+@media (max-width: 380px) { .rk-tit b { font-size: 19px; } .rk-nome { font-size: 13px; } }
