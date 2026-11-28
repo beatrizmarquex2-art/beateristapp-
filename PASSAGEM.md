@@ -1297,3 +1297,7 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - **Estudos (feito)**: Ritmos só o 1º ritmo; Acordes só a 1ª aba (violão; teclado com cadeado); Aulas só a 1ª fase (já era); Curiosidades livre; Dicionário 3 termos e o resto trancado (já era).
 - **Prévias** do Álbum e do Ranking na tela de cadeado e na vitrine `#/premium` (`assets/previa/album-*.webp`, `ranking-*.webp`).
 
+
+## Ranking: SQL contra trapaça (`supabase/024_ranking_limites.sql`, 28/nov/2026) — NÃO APLICADO, a Bea roda no SQL Editor quando quiser
+- Só nos quadros novos (`rk|...`): teto por quadro, teto de quem entra e limite de SUBIDA POR DIA (horário de Brasília); passou do limite o servidor guarda o máximo (sem erro). Quadros antigos (kids|estrelas, xp, Beat Hero) iguais. Idempotente; bloco "DESFAZER" no fim. Testado num Postgres 16 local descartável (limites, virada de dia, rodar 2×); não testado no Supabase real.
+- Limites: mundos 36 (+2/dia), longe 600 (+40), estrelas 5000 (+150), figurinhas 400 (+40), estudos 3000 (+80), eco 200 (entra com até 60, +15), dias 400 (entra até 60, +1).
