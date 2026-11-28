@@ -2396,3 +2396,9 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 .jg-treino .dc-chip { background: #f1f6ff; color: #142036 !important; border-color: #9fb3d9; }
 .jg-treino .dc-cell.hint, .jg-treino .dc-cell.hint * { color: #c4122c !important; font-weight: 800; }
 .jg-treino .dc-cell.on, .jg-treino .dc-cell.on * { color: #142036 !important; }
+/* cada jogo do treino ganha a sua cor (a mesma do cartão da lista): faixa em cima do cartão e na barra, pra não ficar tudo só azul */
+.jg-treino .tl-caixa .card { border-top: 6px solid var(--tl-c, #f7b733); }
+.jg-treino .tl-tit { padding: 5px 12px; border-radius: 999px; background: var(--tl-c, #f7b733); color: #142036; text-shadow: none; }
+.jg-treino .tl-caixa .tr-count { color: var(--tl-c, #ffe08a); filter: brightness(1.25); }
+.jg-treino .dc-como { text-align: left; line-height: 1.35; } .jg-treino .dc-como b { color: #ffe08a; }
+.jg-treino .tl-barra .btn { white-space: nowrap; flex: none; } .jg-treino .tl-tit { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

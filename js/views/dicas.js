@@ -175,7 +175,7 @@ function cruzadinha(box, D) {
         else { erros++; FB.lose(inp, { paul: false }); inp.select(); }
       });
       return h('li', { class: `${ok ? 'ok ' : ''}dc-k${e.idx % COLORS}`, value: e.n }, h('span', { class: 'dc-dir' }, `${e.dir === 'h' ? '→' : '↓'} ${e.w.length} letras · começa com ${e.w[0]}`), h('p', {}, T.clueOf(it)), inp); }));
-    box.replaceChildren(...[h('section', { class: 'card pad' }, h('p', { class: 'tr-count' }, `${solved.size} de ${cw.entries.length} palavras`), h('p', { class: 'muted' }, 'as respostas estão aqui embaixo, é só encaixar cada uma na pista certa:'), bank, grid), last ? explain(last) : null, h('section', { class: 'card pad' }, h('h3', { class: 'tag' }, 'pistas'), clues),
+    box.replaceChildren(...[h('section', { class: 'card pad' }, h('p', { class: 'tr-count' }, `${solved.size} de ${cw.entries.length} palavras`), h('p', { class: 'muted dc-como' }, h('b', {}, 'como jogar: '), 'leia uma pista lá embaixo ↓, ache a resposta nas palavras desta lista e ', h('b', {}, 'escreva a palavra no campo da pista'), '. ela aparece na grade!'), bank, grid), last ? explain(last) : null, h('section', { class: 'card pad' }, h('h3', { class: 'tag' }, 'pistas'), clues),
       solved.size === cw.entries.length && !D ? h('button', { class: 'btn primary', type: 'button', onclick: () => { box.replaceChildren(); cruzadinha(box); } }, 'outra cruzadinha') : null].filter(Boolean));
     if (focus != null) { const el = box.querySelectorAll('.dc-clues input')[focus]; el && el.focus(); }
   };

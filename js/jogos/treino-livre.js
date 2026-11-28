@@ -13,7 +13,7 @@ export function mount(host) {
   const root = h('div', { class: 'jg jg-treino' }); host.replaceChildren(root);
 
   function lobby() {
-    jogando = false; api = null; atual = null; root.replaceChildren();
+    jogando = false; api = null; atual = null; root.style.removeProperty('--tl-c'); root.replaceChildren();
     const chips = h('div', { class: 'tl-niveis', role: 'radiogroup', 'aria-label': 'nível' }, ...L.NIVEIS.map(([k, t]) => h('button', { type: 'button', role: 'radio', 'aria-checked': String(k === nivel), class: `tl-nivel${k === nivel ? ' on' : ''}`, onclick: () => { nivel = k; setGame(ID, { nivel }); lobby(); } }, t)));
     root.append(
       h('div', { class: 'tl-cab' }, h('h2', { class: 'jg-h hand' }, '🎯 treino livre'), h('p', { class: 'jg-p' }, 'à vontade e sem parar: rodadas novas no nível que você escolher. não vale estrela nem figurinha.')),
@@ -25,7 +25,7 @@ export function mount(host) {
 
   async function joga(j) {
     atual = j; jogando = true; api = null;
-    const caixa = h('div', { class: 'tl-caixa' }); const barra = h('div', { class: 'tl-barra' }, h('button', { type: 'button', class: 'btn small ghost', onclick: () => lobby() }, '‹ treino livre'), h('span', { class: 'tl-tit' }, `${j.emoji} ${j.nome} · ${L.NIVEIS.find(([k]) => k === nivel)[1]}`));
+    root.style.setProperty('--tl-c', j.cor); const caixa = h('div', { class: 'tl-caixa' }); const barra = h('div', { class: 'tl-barra' }, h('button', { type: 'button', class: 'btn small ghost', onclick: () => lobby() }, '‹ treino livre'), h('span', { class: 'tl-tit' }, `${j.emoji} ${j.nome} · ${L.NIVEIS.find(([k]) => k === nivel)[1]}`));
     root.replaceChildren(barra, caixa);
     const fim = () => setTimeout(() => { if (gone || !caixa.isConnected) return; resultado(j, caixa); }, 600);
     try {
