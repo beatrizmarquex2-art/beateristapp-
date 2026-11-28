@@ -150,6 +150,8 @@ export function tablatura(evs, { cordas, largura = 360, cor = false, sel = -1 } 
 }
 
 /* ---------- pauta de bateria ---------- */
+/** Opções globais da pauta. `pesNotados`: a voz dos pés (bumbo, chimbal de pé) ganha figura própria (bandeirola e feixe), calculada pela distância até o próximo toque do pé, sem escrever pausas dos pés. Usado só nas apostilas; o PRO mantém o desenho de sempre. */
+export const OPC = { pesNotados: false };
 /** Tamanho (largura em px) de cada peça desenhada quando a pauta usa o kit ilustrado no lugar das cabeças. */
 const TAM_ICONE = { hh: 32, ho: 32, hf: 26, sn: 30, bd: 32, tt: 30, mt: 30, ft: 30, cr: 32, rd: 32 };
 /** Desenha a pauta de bateria. opts: { largura, cor, sel, icones, faixa, altFaixa }.
@@ -171,6 +173,15 @@ export function bateria(evs, { largura = 360, cor = false, sel = -1, icones = nu
       const feixes = []; let cur = []; const fecha = () => { if (cur.length > 1) feixes.push(cur); cur = []; };
       cols.forEach((c) => { if (c.rest || c.alto === null || c.d > 2) { fecha(); return; } if (cur.length && (cur[0].pos >> 2) !== (c.pos >> 2)) fecha(); cur.push(c); }); fecha();
       const emFeixe = new Set(feixes.flat());
+      const dpDe = new Map(); const feixesPe = []; const emFeixePe = new Set();
+      if (OPC.pesNotados) {
+        // só os toques de pé que caem junto de uma nota de mão ganham figura própria; pé sozinho no instante (ritmo linear) segue a duração do instante
+        const fa = cols.filter((c) => !c.rest && c.baixo !== null);
+        fa.forEach((c, i) => { if (c.alto === null) return; const ini = c.g.ini; const fimComp = (Math.floor(ini / 16) + 1) * 16; const prox = fa[i + 1]; const lim = prox && prox.g.ini < fimComp ? prox.g.ini : fimComp; const cap = ini % 4 ? 4 - (ini % 4) : 4; const gap = Math.min(lim - ini, cap); dpDe.set(c, gap >= 4 ? 4 : gap >= 2 ? 2 : 1); });
+        let atual = []; const fechaP = () => { if (atual.length > 1) feixesPe.push(atual); atual = []; };
+        fa.forEach((c) => { if (!dpDe.has(c) || dpDe.get(c) > 2) { fechaP(); return; } if (atual.length && (atual[0].g.ini >> 2) !== (c.g.ini >> 2)) fechaP(); atual.push(c); }); fechaP();
+        feixesPe.flat().forEach((c) => emFeixePe.add(c));
+      }
       cols.forEach((c) => {
         const it = c.it; if (c.rest) { o += pausa(it.d, it.x, y0 + 2 * G); return; }
         const g = c.g; const x = it.x; let gg = ''; const maoTxt = [];
@@ -188,10 +199,14 @@ export function bateria(evs, { largura = 360, cor = false, sel = -1, icones = nu
         const d = g.d;
         // hastes: mãos pra cima (da cabeça mais baixa até acima da pauta), pés pra baixo
         if (c.alto !== null && d < 16) { const sx = x + off; gg += `<line x1="${sx}" x2="${sx}" y1="${c.alto}" y2="${topo}" stroke="${INK}" stroke-width="1.3"/>${emFeixe.has(c) ? '' : bandeiras(d, sx, topo, true)}`; }
-        if (c.baixo !== null && d < 16) { const sx = x - off; const fundo = yb + 26; gg += `<line x1="${sx}" x2="${sx}" y1="${c.baixo}" y2="${fundo}" stroke="${INK}" stroke-width="1.3"/>${c.alto === null ? bandeiras(d, sx, fundo, false) : ''}`; }
+        if (c.baixo !== null && d < 16) { const sx = x - off; const fundo = yb + 26; gg += `<line x1="${sx}" x2="${sx}" y1="${c.baixo}" y2="${fundo}" stroke="${INK}" stroke-width="1.3"/>${OPC.pesNotados && dpDe.has(c) ? (emFeixePe.has(c) || dpDe.get(c) > 2 ? '' : bandeiras(dpDe.get(c), sx, fundo, false)) : (c.alto === null ? bandeiras(d, sx, fundo, false) : '')}`; }
         if (maoTxt.length) gg += `<text x="${x}" y="${y0 - 36}" text-anchor="middle" font-size="11" font-weight="800" font-family="${FONT}" fill="#6b6558">${esc([...new Set(maoTxt)].join(''))}</text>`;
         o += gg;
       });
+      feixesPe.forEach((fx) => { const yy = yb + 26; o += `<line x1="${fx[0].x - off}" y1="${yy}" x2="${fx[fx.length - 1].x - off}" y2="${yy}" stroke="${INK}" stroke-width="3.4"/>`; const y2 = yy - 5;
+        fx.forEach((c, i) => { if (dpDe.get(c) !== 1) return; const prox = fx[i + 1]; const ant = fx[i - 1]; const xs = c.x - off;
+          if (prox && dpDe.get(prox) === 1) o += `<line x1="${xs}" y1="${y2}" x2="${prox.x - off}" y2="${y2}" stroke="${INK}" stroke-width="3.4"/>`;
+          else if (!(ant && dpDe.get(ant) === 1)) { const lado = prox ? 1 : -1; o += `<line x1="${xs}" y1="${y2}" x2="${xs + lado * 8}" y2="${y2}" stroke="${INK}" stroke-width="3.4"/>`; } }); });
       feixes.forEach((fx) => { const x1 = fx[0].x + off; const x2 = fx[fx.length - 1].x + off; o += `<line x1="${x1}" y1="${topo}" x2="${x2}" y2="${topo}" stroke="${INK}" stroke-width="3.4"/>`; const y2 = topo + 5;
         fx.forEach((c, i) => { if (c.d !== 1) return; const prox = fx[i + 1]; const ant = fx[i - 1]; const xs = c.x + off;
           if (prox && prox.d === 1) o += `<line x1="${xs}" y1="${y2}" x2="${prox.x + off}" y2="${y2}" stroke="${INK}" stroke-width="3.4"/>`;
