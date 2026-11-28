@@ -67,7 +67,7 @@ export const DENTRO = {
   'bateria-kids': ['36 páginas pra colorir, aprender e se divertir', 'peças da bateria, baquetas, postura e partitura', 'figuras rítmicas, labirinto e metrônomo', 'caça-palavras, cruzadinha e mais', 'brinde: desenhos pra colorir'],
   colorir: ['50 páginas com o Paul pra imprimir e pintar do seu jeito', 'só desenhos pra colorir (não é aula)'],
   start: ['44 páginas, ebook pra quem está começando', 'peças da bateria', 'figuras rítmicas', 'partitura e rudimentos'],
-  mood: ['55 páginas + 20 páginas de atividades bônus', 'estudo estruturado, prática eficiente e musicalidade real', 'exercícios que a Bea estuda, ensina e leva pro palco', 'com o material de estudo: cronograma de estudo + 30 dicas práticas de estudo'],
+  mood: ['e-book da Beatriz Marques: 55 páginas + 20 páginas de atividades bônus', 'estudo estruturado, prática eficiente e musicalidade real', 'atividades de figuras rítmicas, toque simples, duplo e paradiddle', 'com o material de estudo: cronograma de estudo + 30 dicas práticas de estudo'],
   violao: ['47 páginas, da primeira corda à primeira música'],
   'toca-bateria': ['97 páginas em PDF, pra ler e imprimir', 'apostila para adultos: da primeira baqueta ao primeiro groove, em 15 minutos por dia', 'grooves por estilo (rock, meio-tempo e pop dançante) com partitura', 'uma música de 8 compassos, em partitura, pra ver o mapa funcionando'],
   'toca-violao': ['124 páginas em PDF, pra ler e imprimir', 'do zero: da primeira corda à primeira música', 'os acordes maiores abertos, com o desenho do braço e os dedos', 'melodias em partitura e tablatura (ex.: Parabéns pra você)'],
