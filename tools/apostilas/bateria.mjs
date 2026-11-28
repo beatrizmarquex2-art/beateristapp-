@@ -40,7 +40,7 @@ B.como = () => pg({ tag: T('como', 'COMECE AQUI'), titulo: 'Como usar esta apost
 <table class="t"><tr><th>Tempo</th><th>O que fazer</th></tr><tr><td>3 min</td><td>Aquecimento: pulso no chimbal com o metrônomo, bem devagar (seção ${N('aquec')}).</td></tr><tr><td>7 min</td><td>O groove ou a virada da semana, em andamento lento.</td></tr><tr><td>3 min</td><td>Rudimento (seção ${N('rudimentos')}) para a coordenação das mãos.</td></tr><tr><td>2 min</td><td>Toque o que você já domina, sem parar, só pelo prazer.</td></tr></table>
 ${L.dica('Dica de estudo', 'marque o horário na agenda como um compromisso. estudar “quando sobrar tempo” quase nunca acontece.')}${L.caderno()}` });
 
-B.pecas = () => { const evs = ['hh', 'sn', 'bd', 'tt', 'mt', 'ft', 'cr', 'rd'].map((p, i) => ev(p, i * 4, 4)); const nomes = { hh: 'chimbal', sn: 'caixa', bd: 'bumbo', tt: 'tom 1', mt: 'tom 2', ft: 'surdo', cr: 'prato', rd: 'condução' }; const leg = L.comContagem(sem(evs), evs, (e) => nomes[e.p]);
+B.pecas = () => { const evs = ['hh', 'sn', 'bd', 'tt', 'mt', 'ft', 'cr', 'rd'].map((p, i) => ev(p, i * 4, 4)); const nomes = { hh: 'chimbal', sn: 'caixa', bd: 'bumbo', tt: 'tom 1', mt: 'tom 2', ft: 'surdo', cr: 'prato', rd: 'condução' }; const leg = L.comContagem(sem(evs), evs, (e) => nomes[e.p], 14);
   return pg({ tag: T('pecas', 'BÁSICO'), titulo: 'Conheça as peças da bateria', sub: 'O nome de cada peça e o lugar dela na partitura.', corpo: `
 ${L.card('Cada peça tem um lugar na pauta', 'lido da esquerda para a direita, uma peça por tempo', leg)}
 <table class="t"><tr><th>Peça</th><th>O que é</th><th>Onde aparece na pauta</th></tr>

@@ -2,5 +2,5 @@
 import { createRequire } from 'node:module'; const require = createRequire(import.meta.url); const { chromium } = require('playwright'); import { pathToFileURL } from 'node:url'; import path from 'node:path';
 const [,, entrada, saida] = process.argv; const b = await chromium.launch({ args: ['--no-sandbox'] }); const p = await b.newPage({ viewport: { width: 794, height: 1123 } });
 await p.goto(pathToFileURL(path.resolve(entrada)).href); await p.evaluate(() => document.fonts.ready);
-const n = await p.evaluate(() => { let g = 0, q = 0; document.querySelectorAll('.sec').forEach((e) => { const h = e.getBoundingClientRect().height * 25.4 / 96; if (h > 150) { g++; } else { e.classList.add('pequena'); q++; } }); return [g, q]; });
+const n = await p.evaluate(() => { let g = 0, q = 0; document.querySelectorAll('.sec').forEach((e) => { const h = e.getBoundingClientRect().height * 25.4 / 96; if (h > 150) { g++; } else { e.classList.add('pequena'); q++; } }); document.querySelectorAll('.sec.nova').forEach((e) => { const h = e.getBoundingClientRect().height * 25.4 / 96; if (h > 224) e.style.zoom = String(Math.max(0.68, 222 / h)); }); return [g, q]; });
 await p.pdf({ path: saida, preferCSSPageSize: true, printBackground: true }); await b.close(); console.log('ok', saida, `${n[0]} seções grandes, ${n[1]} pequenas`);

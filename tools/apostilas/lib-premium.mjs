@@ -4,22 +4,22 @@ import { pathToFileURL } from 'node:url'; import path from 'node:path';
 const F = (n) => pathToFileURL(path.resolve(import.meta.dirname, '../../assets/fonts', n)).href;
 export const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 const TEMAS = { vinho: { v: '#5b0f22', ouro: '#c9993a', papel: '#f3ead9' }, azul: { v: '#0f2a57', ouro: '#c9993a', papel: '#f3ead9' } };
-const INK = '#150a0d';
+const INK = '#0a0406';
 export const css = (tema, modulos) => { const T = TEMAS[tema]; return `
 @font-face{font-family:'Anton';src:url('${F('Anton-latin.woff2')}')}
 @font-face{font-family:'Bodoni';src:url('${F('BodoniModa-latin.woff2')}');font-weight:400 900}
 @font-face{font-family:'Hanken';src:url('${F('HankenGrotesk-latin.woff2')}');font-weight:100 900}
-:root{--v:${T.v};--ouro:${T.ouro};--papel:${T.papel};--ink:${INK};--cinza:#4a3c37;--linha:#c9bba8}
+:root{--v:${T.v};--ouro:${T.ouro};--papel:${T.papel};--ink:${INK};--cinza:#2b1f1b;--linha:#c9bba8}
 @page{size:A4;margin:0}
 @page conteudo{margin:27mm 16mm 24mm 16mm;background:var(--papel);
-  @top-left{content:'BATERIA PARA ADULTOS';width:50%;font:800 8.4pt Hanken;letter-spacing:.24em;color:var(--ink);border-bottom:.45mm solid var(--ink);vertical-align:bottom;padding-bottom:3mm}
-  @top-right{content:'';width:50%;font:800 8.4pt Hanken;letter-spacing:.24em;text-align:right;color:var(--v);border-bottom:.45mm solid var(--ink);vertical-align:bottom;padding-bottom:3mm}
-  @bottom-left{content:'BEATERISTA · MÉTODO';font:700 8pt Hanken;letter-spacing:.22em;color:#6a5a52;vertical-align:top;padding-top:4mm}
+  @top-left{content:'BATERIA PARA ADULTOS';width:50%;font:800 9pt Hanken;letter-spacing:.24em;color:var(--ink);border-bottom:.45mm solid var(--ink);vertical-align:bottom;padding-bottom:3mm}
+  @top-right{content:'';width:50%;font:800 9pt Hanken;letter-spacing:.24em;text-align:right;color:var(--v);border-bottom:.45mm solid var(--ink);vertical-align:bottom;padding-bottom:3mm}
+  @bottom-left{content:'BEATERISTA · MÉTODO';font:800 8.6pt Hanken;letter-spacing:.22em;color:#2b1f1b;vertical-align:top;padding-top:4mm}
   @bottom-right{content:counter(page);font:400 16pt Anton;color:var(--v);vertical-align:top;padding-top:2.4mm}}
-${modulos.map((m, i) => `@page m${i}{margin:27mm 16mm 24mm 16mm;background:var(--papel);@top-left{content:'${m.livro}';width:50%;font:800 8.4pt Hanken;letter-spacing:.24em;color:var(--ink);border-bottom:.45mm solid var(--ink);vertical-align:bottom;padding-bottom:3mm}@top-right{content:'${m.nome}';width:50%;font:800 8.4pt Hanken;letter-spacing:.24em;text-align:right;color:var(--v);border-bottom:.45mm solid var(--ink);vertical-align:bottom;padding-bottom:3mm}@bottom-left{content:'BEATERISTA · MÉTODO';font:700 8pt Hanken;letter-spacing:.22em;color:#6a5a52;vertical-align:top;padding-top:4mm}@bottom-right{content:counter(page);font:400 16pt Anton;color:var(--v);vertical-align:top;padding-top:2.4mm}}`).join('\n')}
+${modulos.map((m, i) => `@page m${i}{margin:27mm 16mm 24mm 16mm;background:var(--papel);@top-left{content:'${m.livro}';width:50%;font:800 9pt Hanken;letter-spacing:.24em;color:var(--ink);border-bottom:.45mm solid var(--ink);vertical-align:bottom;padding-bottom:3mm}@top-right{content:'${m.nome}';width:50%;font:800 9pt Hanken;letter-spacing:.24em;text-align:right;color:var(--v);border-bottom:.45mm solid var(--ink);vertical-align:bottom;padding-bottom:3mm}@bottom-left{content:'BEATERISTA · MÉTODO';font:800 8.6pt Hanken;letter-spacing:.22em;color:#2b1f1b;vertical-align:top;padding-top:4mm}@bottom-right{content:counter(page);font:400 16pt Anton;color:var(--v);vertical-align:top;padding-top:2.4mm}}`).join('\n')}
 @page cheia{margin:0}
 *{box-sizing:border-box}html,body{margin:0;background:var(--papel)}
-body{font-family:'Hanken',sans-serif;font-weight:500;color:var(--ink);font-size:11.4pt;line-height:1.52;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:'Hanken',sans-serif;font-weight:600;color:var(--ink);font-size:12.6pt;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 b,strong{font-weight:800}
 .mk{position:absolute;left:0;top:0;font-size:3pt;line-height:1;color:var(--papel);white-space:nowrap}
 /* ---- seção em fluxo ---- */
@@ -28,63 +28,63 @@ b,strong{font-weight:800}
 .sec{position:relative;padding-top:5mm}.sec+.sec{margin-top:13mm}
 .sec .trilho{position:absolute;left:0;top:0;width:32mm}
 .sec .trilho .num{font-family:'Anton';font-size:76pt;line-height:.86;color:var(--v)}
-.sec .trilho .area{margin-top:3mm;font-size:8pt;letter-spacing:.2em;text-transform:uppercase;font-weight:800;border-top:.45mm solid var(--ink);padding-top:2.2mm;line-height:1.4}
+.sec .trilho .area{margin-top:3mm;font-size:8.8pt;letter-spacing:.2em;text-transform:uppercase;font-weight:800;border-top:.45mm solid var(--ink);padding-top:2.2mm;line-height:1.4}
 .sec .col{margin-left:38mm}.sec.larga .col{margin-left:0}
 .barra{width:18mm;height:2mm;background:var(--v);margin-bottom:4mm;break-after:avoid}
 h1.t{font-family:'Anton';font-weight:400;text-transform:uppercase;font-size:32pt;line-height:1.02;margin:0 0 2.4mm;color:var(--ink);break-after:avoid;break-inside:avoid}
-.sub{font-family:'Bodoni';font-style:italic;font-weight:600;font-size:14.5pt;line-height:1.3;color:var(--cinza);margin:0 0 5mm;break-after:avoid;break-inside:avoid}.sub+*{break-before:avoid}p{orphans:3;widows:3}
+.sub{font-family:'Hanken';font-style:normal;font-weight:700;font-size:14.5pt;line-height:1.32;color:var(--ink);margin:0 0 5mm;break-after:avoid;break-inside:avoid}.sub+*{break-before:avoid}p{orphans:3;widows:3}
 h2.s{font-size:9pt;letter-spacing:.24em;text-transform:uppercase;font-weight:800;color:var(--v);margin:6mm 0 2.4mm;display:flex;align-items:center;gap:3mm;break-after:avoid}
 h2.s::after{content:'';flex:1;height:.4mm;background:var(--ink);opacity:.4}
-p{margin:0 0 2.8mm}.mut{color:var(--cinza)}
+p{margin:0 0 2.8mm}.cit-p,.dica,.cad{break-before:avoid}.mut{color:var(--cinza)}
 .card{border-top:.45mm solid var(--ink);padding:2.4mm 0 3mm;margin:0 0 1mm;break-inside:avoid}
 .card h4{margin:0;display:flex;justify-content:space-between;align-items:baseline;font:800 9pt Hanken;letter-spacing:.2em;text-transform:uppercase;color:var(--v)}
-.card .meta{font-size:10.4pt;color:var(--cinza);font-weight:600;margin:.6mm 0 1mm}
+.card .meta{font-size:11.4pt;color:var(--cinza);font-weight:700;margin:.6mm 0 1mm}
 .card svg{display:block;width:100%;height:auto;max-height:33mm;margin:1mm 0}
 .card svg.alto{max-height:78mm}.card svg.xl{max-height:120mm}
-.card p{margin:1mm 0 0;font-size:11pt}
+.card p{margin:1mm 0 0;font-size:12.2pt}
 .grade2,.grade3{display:block}
-table.t{width:100%;border-collapse:collapse;font-size:10.8pt;line-height:1.38;margin:1mm 0 4mm}
-table.t th{text-align:left;font-size:8.4pt;letter-spacing:.2em;text-transform:uppercase;color:var(--v);font-weight:800;padding:2mm 2.4mm 2mm 0;border-bottom:.6mm solid var(--ink);background:none}
+table.t{width:100%;border-collapse:collapse;font-size:11.8pt;line-height:1.38;margin:1mm 0 4mm}
+table.t th{text-align:left;font-size:9pt;letter-spacing:.2em;text-transform:uppercase;color:var(--v);font-weight:800;padding:2mm 2.4mm 2mm 0;border-bottom:.6mm solid var(--ink);background:none}
 table.t td{padding:1.9mm 2.4mm 1.9mm 0;border-bottom:.25mm solid var(--linha);vertical-align:top;background:none}
 table.t tr{break-inside:avoid}table.t td:first-child{font-weight:800}
 table.t tr:nth-child(even) td{background:none}
 .dica{background:var(--v);color:#f6efe0;padding:3.8mm 5.4mm;margin:4.4mm 0 3mm;break-inside:avoid}
-.dica b{display:block;font-size:8.6pt;letter-spacing:.28em;text-transform:uppercase;color:var(--ouro);margin-bottom:1.6mm;font-weight:800}
-.dica span{font-family:'Bodoni';font-style:italic;font-weight:600;font-size:13pt;line-height:1.35}
-.cit-p{font-family:'Bodoni';font-style:italic;font-weight:700;font-size:18pt;line-height:1.2;color:var(--v);margin:5mm 0 4mm;padding-left:8mm;border-left:2mm solid var(--ouro);break-inside:avoid}
+.dica b{display:block;font-size:9.2pt;letter-spacing:.28em;text-transform:uppercase;color:var(--ouro);margin-bottom:1.6mm;font-weight:800}
+.dica span{font-family:'Hanken';font-style:normal;font-weight:700;font-size:13.6pt;line-height:1.4}
+.cit-p{font-family:'Hanken';font-style:normal;font-weight:800;font-size:18.5pt;line-height:1.25;color:var(--v);margin:5mm 0 4mm;padding-left:8mm;border-left:2mm solid var(--ouro);break-inside:avoid}
 .lista{list-style:none;margin:0 0 4mm;padding:0}.lista li{padding:1.9mm 0 1.9mm 8mm;border-bottom:.25mm solid var(--linha);position:relative;break-inside:avoid}
 .lista li::before{content:'';position:absolute;left:0;top:4.2mm;width:3.4mm;height:1.3mm;background:var(--v)}
-.passos{counter-reset:p;list-style:none;margin:0 0 4mm;padding:0}.passos li{counter-increment:p;padding:1.9mm 0 1.9mm 13mm;position:relative;border-bottom:.25mm solid var(--linha);break-inside:avoid}
-.passos li::before{content:counter(p);position:absolute;left:0;top:.8mm;font-family:'Anton';font-size:19pt;color:var(--v);line-height:1.2}
+.passos{counter-reset:p;list-style:none;margin:0 0 4mm;padding:0}.passos li{counter-increment:p;padding:1.9mm 0 1.9mm 14mm;position:relative;border-bottom:.25mm solid var(--linha);break-inside:avoid}
+.passos li::before{content:counter(p);position:absolute;left:0;top:.6mm;font-family:'Anton';font-size:21pt;color:var(--v);line-height:1.2}
 .trilha{margin:0;padding:0}.trilha li{list-style:none;position:relative;padding:2.2mm 0 2.2mm 11mm;border-bottom:.25mm solid var(--linha);break-inside:avoid}
 .trilha li::before{content:'';position:absolute;left:0;top:3.2mm;width:5mm;height:5mm;border:.5mm solid var(--v)}
-.cad{margin-top:6mm;border-top:.45mm solid var(--ink);padding-top:3mm;font-size:10.4pt;color:var(--cinza);font-weight:600;break-inside:avoid}.cad b{letter-spacing:.2em;text-transform:uppercase;font-size:8.6pt;color:var(--v);margin-right:4mm}
-.dedos{display:flex;gap:3mm;justify-content:center}.dedos div{flex:1;padding:2.4mm 0;border:.5mm solid var(--ink);text-align:center;font-size:10pt;font-weight:700}.dedos b{display:block;font-family:'Anton';font-weight:400;font-size:22pt;color:var(--v)}
-.kbd{display:inline-block;margin:0 3mm 3mm 0;text-align:center;font-size:10pt;font-weight:800;color:var(--ink);vertical-align:top}.kbd svg{display:block;width:40mm;height:auto}.kbd.g svg{width:56mm}
+.cad{margin-top:6mm;border-top:.45mm solid var(--ink);padding-top:3mm;font-size:11.6pt;color:var(--cinza);font-weight:600;break-inside:avoid}.cad b{letter-spacing:.14em;text-transform:uppercase;font-size:8.6pt;color:var(--v);margin-right:3mm}
+.dedos{display:flex;gap:3mm;justify-content:center}.dedos div{flex:1;padding:2.4mm 0;border:.5mm solid var(--ink);text-align:center;font-size:11.8pt;font-weight:700}.dedos b{display:block;font-family:'Anton';font-weight:400;font-size:22pt;color:var(--v)}
+.kbd{display:inline-block;margin:0 3mm 3mm 0;text-align:center;font-size:11.6pt;font-weight:800;color:var(--ink);vertical-align:top}.kbd svg{display:block;width:40mm;height:auto}.kbd.g svg{width:56mm}
 .gde{font-family:'Anton';font-size:34pt;color:var(--v);line-height:1.1;text-transform:uppercase}
 /* ---- página cheia ---- */
 .cheia{page:cheia;break-before:page;width:210mm;height:297mm;position:relative;overflow:hidden}
 .cheia:first-child{break-before:auto}
 .capa{background:var(--papel)}
 .capa .vert{position:absolute;left:9mm;top:16mm;writing-mode:vertical-rl;transform:rotate(180deg);font-family:'Anton';line-height:.8;color:var(--v);white-space:nowrap;text-transform:uppercase}
-.capa .topo{position:absolute;right:16mm;top:16mm;text-align:right}.capa .topo small{display:block;font-size:9pt;letter-spacing:.32em;text-transform:uppercase;font-weight:800;margin-bottom:2mm}.capa .topo em{font-family:'Bodoni';font-size:36pt;font-style:italic;font-weight:600;line-height:1}
+.capa .topo{position:absolute;right:16mm;top:16mm;text-align:right}.capa .topo small{display:block;font-size:9pt;letter-spacing:.32em;text-transform:uppercase;font-weight:800;margin-bottom:2mm}.capa .topo em{font-family:'Anton';font-size:30pt;font-style:normal;font-weight:400;line-height:1;text-transform:uppercase;letter-spacing:.05em}
 .capa .arte{position:absolute}
 .capa .rod{position:absolute;right:16mm;bottom:16mm;width:100mm;border-top:.6mm solid var(--ink);padding-top:3.4mm;font-size:12pt;line-height:1.4;font-weight:700}.capa .rod b{color:var(--v);display:block;font-size:8.8pt;letter-spacing:.3em;text-transform:uppercase;margin-bottom:1.6mm}
 .div{background:var(--v);color:#f6efe0}
-.div .gr{position:absolute;left:12mm;top:20mm;font-family:'Anton';font-size:380pt;line-height:.8;color:transparent;-webkit-text-stroke:.6mm var(--ouro);letter-spacing:-.02em}
+.div .gr{position:absolute;left:12mm;top:34mm;font-family:'Anton';font-size:380pt;line-height:.8;color:transparent;-webkit-text-stroke:.6mm var(--ouro);letter-spacing:-.02em}
 .div h2{position:absolute;left:16mm;right:16mm;bottom:122mm;margin:0;font-family:'Anton';font-weight:400;text-transform:uppercase;font-size:70pt;line-height:.95;color:#f6efe0}
-.div .cita{position:absolute;left:16mm;width:150mm;bottom:78mm;font-family:'Bodoni';font-style:italic;font-weight:600;font-size:19pt;line-height:1.26;color:var(--ouro)}
-.div ol{position:absolute;left:16mm;right:16mm;bottom:20mm;margin:0;padding:0;list-style:none;border-top:.45mm solid #f6efe0;columns:2;column-gap:10mm;font-size:11pt;font-weight:600}
+.div .cita{position:absolute;left:16mm;width:160mm;bottom:78mm;font-family:'Hanken';font-style:normal;font-weight:800;font-size:20pt;line-height:1.25;color:var(--ouro)}
+.div ol{position:absolute;left:16mm;right:16mm;bottom:20mm;margin:0;padding:0;list-style:none;border-top:.45mm solid #f6efe0;columns:2;column-gap:10mm;font-size:12.6pt;font-weight:700}
 .div ol li{padding:2.2mm 0;border-bottom:.25mm solid rgba(246,239,224,.35);break-inside:avoid}.div ol b{font-family:'Anton';font-weight:400;color:var(--ouro);margin-right:3mm;font-size:13pt}
 .div .topo{position:absolute;left:16mm;right:16mm;top:11mm;font-size:8.6pt;letter-spacing:.24em;font-weight:800;text-transform:uppercase;border-bottom:.45mm solid #f6efe0;padding-bottom:3mm;display:flex;justify-content:space-between}.div .topo b{color:var(--ouro)}
 /* ---- sumário ---- */
 .mod{display:grid;grid-template-columns:30mm 1fr;margin-bottom:7mm;break-inside:avoid}
 .mod .k{font-family:'Anton';font-size:44pt;line-height:.9;color:var(--v)}
 .mod h3{margin:0 0 2mm;font-size:9pt;letter-spacing:.22em;text-transform:uppercase;font-weight:800;border-bottom:.6mm solid var(--ink);padding-bottom:1.6mm}
-.mod .it{display:flex;gap:3mm;padding:1.6mm 0;border-bottom:.25mm solid var(--linha);font-size:11pt;font-weight:600}.mod .it span:first-child{font-weight:800;color:var(--v);width:8mm}.mod .it span:nth-child(2){flex:1}.mod .it span:last-child{font-family:'Anton';font-size:11.5pt}
+.mod .it{display:flex;gap:3mm;padding:1.6mm 0;border-bottom:.25mm solid var(--linha);font-size:12.4pt;font-weight:700}.mod .it span:first-child{font-weight:800;color:var(--v);width:8mm}.mod .it span:nth-child(2){flex:1}.mod .it span:last-child{font-family:'Anton';font-size:11.5pt}
 `; };
 export const dica = (t, x) => `<div class="dica"><b>${t}</b><span>${x}</span></div>`;
-export const caderno = () => `<div class="cad"><b>Caderno de treino</b>data ____/____ &nbsp; bpm ______ &nbsp; ☐ difícil &nbsp; ☐ ok &nbsp; ☐ fácil</div>`;
+export const caderno = () => `<div class="cad"><b>Caderno de treino</b>data ___/___ &nbsp; bpm ____ &nbsp; ☐ difícil ☐ ok ☐ fácil</div>`;
 export const card = (titulo, meta, svg, texto = '') => `<div class="card"><h4><span>${titulo}</span></h4>${meta ? `<div class="meta">${meta}</div>` : ''}${svg}${texto ? `<p>${texto}</p>` : ''}</div>`;
 /** Seção em fluxo. `tag` "6 · GROOVE" vira o número na lateral; qualquer outra coisa vira página larga (sem lateral). */
 export function pagina({ tag, titulo, sub = '', corpo, modulo = 0, id = '' }) {
@@ -101,12 +101,12 @@ export function divisor({ modulo, titulo, citacao, itens, nome }) { return `<sec
 export function sumario(modulos, nome, nota = '') { return `<section class="sec larga" style="page:conteudo"><div class="col"><div class="barra"></div><h1 class="t" style="font-size:54pt;margin-bottom:10mm">Índice</h1>${modulos.map(([t, itens], i) => `<div class="mod"><div class="k">${String(i + 1).padStart(2, '0')}</div><div><h3>${t.replace(/^Módulo \d+ · /, '')}</h3>${itens.map(([n, x, pg]) => `<div class="it"><span>${n === '·' ? '' : String(n).padStart(2, '0')}</span><span>${x}</span><span>${pg || ''}</span></div>`).join('')}</div></div>`).join('')}${nota ? `<p class="mut" style="font-size:10pt">${nota}</p>` : ''}</div></section>`; }
 export const doc = (paginas, titulo, tema, modulos) => `<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>${esc(titulo)}</title><style>${css(tema, modulos)}</style><body>${paginas.join('')}</body></html>`;
 /** Contagem "1 e & a" embaixo da pauta (letras grandes e grossas, na cor do livro). */
-export function comContagem(svg, evs, rotulo = null) {
+export function comContagem(svg, evs, rotulo = null, tam = 20) {
   const nomes = ['1', 'e', '&', 'a', '2', 'e', '&', 'a', '3', 'e', '&', 'a', '4', 'e', '&', 'a']; const col = new Map();
   for (const m of svg.matchAll(/<g class="pm-n[^"]*" data-ev="(\d+)"><rect x="([\d.]+)" y="[\d.]+" width="([\d.]+)"/g)) { const e = evs[+m[1]]; if (!e) continue; const x = +m[2] + (+m[3]) / 2; col.set(Math.round(x), { x, t: e.ini, e }); }
   const vb = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); if (!vb || !col.size) return svg; const W = +vb[1]; const H = +vb[2];
   if ((svg.match(/<line x1="4"/g) || []).length > 5) return svg;
-  const lbl = [...col.values()].map((c) => `<text x="${c.x}" y="${H + 17}" text-anchor="middle" font-size="17" font-weight="900" style="fill:var(--v)" font-family="Hanken, sans-serif">${rotulo ? rotulo(c.e) : nomes[c.t % 16]}</text>`).join('');
-  return svg.replace(/viewBox="0 0 [\d.]+ [\d.]+"/, `viewBox="0 0 ${W} ${H + 24}"`).replace('</svg>', `${lbl}</svg>`);
+  const lbl = [...col.values()].map((c) => `<text x="${c.x}" y="${H + 20}" text-anchor="middle" font-size="${tam}" font-weight="900" style="fill:var(--v)" font-family="Hanken, sans-serif">${rotulo ? rotulo(c.e) : nomes[c.t % 16]}</text>`).join('');
+  return svg.replace(/viewBox="0 0 [\d.]+ [\d.]+"/, `viewBox="0 0 ${W} ${H + 28}"`).replace('</svg>', `${lbl}</svg>`);
 }
 export const semB = (svg) => svg.replace(/<text[^>]*fill="#6b6558">B<\/text>/g, '');
