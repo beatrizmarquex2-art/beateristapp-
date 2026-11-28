@@ -1256,3 +1256,10 @@ No ar em jogos.beaterista.com.br: aba Estudos, Tocar com 4 instrumentos, figuras
 - Troca de foto no passe do Início: Pauls, **Billie** (`assets/paul/perfil/billie-1.webp`), escolher foto, tirar selfie, Paul na bateria.
 - Artes originais (PNG grandes) ficam no Drive "Paul sazonal - personagens"; sempre recortar o fundo antes de usar.
 - `tests/sazonal.test.mjs` (datas móveis e fixas).
+
+## Genius infinito + Treino livre + som do caça/cruzadinha (28/nov/2026)
+- **Publicado (v788, nos dois sites)**: som de acerto no caça-palavras e na cruzadinha (`js/views/dicas.js` só tocava som ao ERRAR; agora `FB.sound('win')`, e `'great'` na última). Vale também pro duelo e pra aba Estudos.
+- **Só na branch `claude/modest-maxwell-r337vx`, ESPERANDO O OK DA BEA pra publicar (subir `sw.js` pra v789; na área dos alunos aplicar só o diff de css/js + assets e conferir `index.html`)**:
+  - **Genius infinito** (`#/jogos/genius`, livre pra todos, só recorde, sem estrela/figurinha): `js/jogos/genius.js` (tela fluida, reaproveita `.cm-fluido` e `qz-*`) + `genius-logic.js` (puro: +1 nota por rodada, nunca 3 iguais, velocidade 620→250 ms, 3 "ouvir de novo" por partida, recorde por instrumento em `getGame('genius').recs`). 4 instrumentos: xilofone (mallet), piano (epiano), **bateria = a arte original `arte('acustica')` do app com as 8 peças `data-p` e `kitSom('acustica')`**, violão (pluck). Cores sem verde. Ícone `assets/jogos/icones/genius.svg`.
+  - **Treino livre** (`#/jogos/treino`, só com código de aluno, como Figurix/Toca): `treino-livre.js` + `treino-livre-logic.js`. Os 10 jogos da Fuga soltos (genius, caminho, memória, queda, queda4, montar, compasso, intruso, caça, cruzadinha), nível fácil/médio/difícil, "outra rodada" sem parar, atalhos pro Genius infinito, Figurix, Toca Aqui e Detetive. Não grava trilha/estrela/progresso. O teste garante lista = `TIPOS` da Fuga: **jogo novo na Fuga precisa entrar em `JOGOS`**.
+  - Testes: `tests/genius-logic.test.mjs`, `tests/treino-livre.test.mjs`, e2e `tests/e2e/genius-treino.mjs` (joga 3 rodadas do xilofone lendo a ordem que acende, erra, confere recorde, abre os 10 jogos).
