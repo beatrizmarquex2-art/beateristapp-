@@ -12,7 +12,7 @@ await page.goto(`${url}/aluno.html#/ranking`); await sleep(2500);
 const SH = (n) => (process.env.SHOTS ? `${process.env.SHOTS}/${n}.png` : `/tmp/${n}.png`);
 const tit = async () => (await page.textContent('.rk-tit b')).trim();
 check('abre no 1º quadro (Mundos terminados) com setinhas e 5 pontinhos', (await tit()) === 'Mundos terminados' && (await page.locator('.rk-seta').count()) === 2 && (await page.locator('.rk-pts button').count()) === 5);
-check('pódio mostra 1º, 2º e 3º com medalha e nome', (await page.locator('.rk-lugar').count()) === 3 && /Ana C\./.test(await page.textContent('.rk-lugar.l1')) && /Beto S\./.test(await page.textContent('.rk-lugar.l2')) && /Caio M\./.test(await page.textContent('.rk-lugar.l3')) && /🥇/.test(await page.textContent('.rk-lugar.l1')));
+check('pódio mostra 1º, 2º e 3º com medalha e nome', (await page.locator('.rk-lugar').count()) === 3 && /Ana C\./.test(await page.textContent('.rk-lugar.l1')) && /Beto S\./.test(await page.textContent('.rk-lugar.l2')) && /Caio M\./.test(await page.textContent('.rk-lugar.l3')) && (await page.locator('.rk-lugar.l1 svg.rk-i-med').count()) === 1 && (await page.locator('.rk-lugar svg.rk-i-med').count()) === 3);
 check('mundos só tem "de sempre"', (await page.locator('.rk-abas button').count()) === 1);
 await page.screenshot({ path: SH('rank-mundos') });
 await page.click('.rk-seta[aria-label="próximo quadro"]'); await sleep(300); check('seta › vai pra "Chegou mais longe"', (await tit()) === 'Chegou mais longe');
