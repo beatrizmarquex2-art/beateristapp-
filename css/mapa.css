@@ -159,3 +159,25 @@ html[data-estilo="serio"] .mp-reg small { font-size: 13px; }
 .mp-head .mp-gradebtn, .mp-head .av-tema, .mp-head .mp-snd { min-width: 42px; min-height: 42px; padding: 0 8px; } .mp-head { gap: 6px; }
 .mp-head { flex-wrap: wrap; } .mp-head .mp-reg { flex: 1 1 100%; }
 html[data-estilo="serio"] .mp-sign { width: 92%; max-width: 92%; } html[data-estilo="serio"] .mp-sign b { white-space: normal; text-transform: none; letter-spacing: .02em; font-size: 4.4cqw; line-height: 1.2; }
+
+/* sério com TEXTURA (pedido da Bea): granulado fino + linhas de pauta quase invisíveis + brilho dourado no topo; discos de vinil com sulcos finos; regiões com filete */
+html[data-estilo="serio"] .mp-world, html[data-estilo="serio"] .mp-world.beat-mapa[data-beat-mundo]:has([data-beat-regiao]) {
+  background-color: var(--avp-bg) !important;
+  background-image:
+    radial-gradient(120% 40% at 50% 0, color-mix(in srgb, var(--avp-gold) 16%, transparent), transparent 70%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='.10'/></svg>"),
+    repeating-linear-gradient(180deg, transparent 0 17px, color-mix(in srgb, var(--avp-text) 5%, transparent) 17px 18px) !important;
+}
+html[data-estilo="serio"] .mp-band { background: transparent !important; border-top: 1px solid color-mix(in srgb, var(--avp-gold) 45%, transparent) !important; }
+html[data-estilo="serio"] .mp-band[data-i="1"], html[data-estilo="serio"] .mp-band[data-i="3"] { background: color-mix(in srgb, var(--avp-text) 3.5%, transparent) !important; }
+html[data-estilo="serio"] .mp-sign { display: flex; align-items: center; gap: 3cqw; } html[data-estilo="serio"] .mp-sign::before, html[data-estilo="serio"] .mp-sign::after { content: ""; flex: 1; height: 1px; min-width: 6cqw; background: color-mix(in srgb, var(--avp-gold) 60%, transparent); }
+html[data-estilo="serio"] .mp-sign b { color: var(--avp-gold); flex: none; max-width: 66%; }
+html[data-estilo="serio"] .mp-road { stroke: color-mix(in srgb, var(--avp-text) 28%, transparent); stroke-width: 2.4; stroke-dasharray: 2 7; stroke-linecap: round; opacity: 1; }
+html[data-estilo="serio"] .mp-disc { background: repeating-radial-gradient(circle, var(--avp-vinyl-a) 0 .5cqw, var(--avp-vinyl-b) .5cqw 1cqw); border: 2px solid color-mix(in srgb, var(--avp-gold) 55%, var(--avp-line)); box-shadow: 0 1.4cqw 3cqw -1cqw #0009; }
+html[data-estilo="serio"] .mp-disc::before { display: block; inset: 27%; background: var(--avp-card); border: 1px solid var(--avp-line); } html[data-estilo="serio"] .mp-disc::after { display: block; inset: 0; background: conic-gradient(from 30deg, transparent 0 18%, rgba(255,255,255,.12) 24%, transparent 32% 68%, rgba(255,255,255,.08) 74%, transparent 82%); }
+html[data-estilo="serio"] .mp-lab { position: relative; z-index: 1; font-size: 6cqw; }
+html[data-estilo="serio"] .mp-node.st-done .mp-disc::before { background: color-mix(in srgb, var(--avp-gold) 78%, var(--avp-card)); } html[data-estilo="serio"] .mp-node.st-done .mp-lab { color: var(--avp-accent-ink); }
+html[data-estilo="serio"] .mp-node.st-current .mp-disc { background: repeating-radial-gradient(circle, var(--avp-vinyl-a) 0 .5cqw, var(--avp-vinyl-b) .5cqw 1cqw); border: 3px solid var(--avp-gold); box-shadow: 0 0 0 1.2cqw color-mix(in srgb, var(--avp-gold) 22%, transparent), 0 1.4cqw 3cqw -1cqw #000a; }
+html[data-estilo="serio"] .mp-node.st-current .mp-disc::before { background: var(--avp-accent); border-color: var(--avp-gold); }
+html[data-estilo="serio"] .mp-node.st-locked .mp-disc { opacity: .55; border-style: solid; }
+html[data-estilo="serio"] .mp-stars i.on { color: var(--avp-gold); }
