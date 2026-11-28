@@ -1198,3 +1198,13 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .atualiza-bar .btn{min-height:30px;padding:4px 12px;font-size:12px;border-radius:999px}
 .atualiza-x{border:0;background:transparent;color:#fffaf0;font:700 14px/1 system-ui;width:26px;height:26px;border-radius:50%;cursor:pointer;opacity:.8}
 .ti-fc.trav { opacity: .4; filter: grayscale(.6); position: relative; } .ti-fc.trav::after { content: "🔒"; position: absolute; top: 1px; right: 2px; font-size: 9px; }
+
+/* ---------- Aviso do plano grátis (faixa em todas as páginas do Palco e dos jogos): azul-marinho com selo dourado, compacto ---------- */
+.tp-faixa, .jg-p.am-resta { position: relative; margin: 10px 0; padding: 10px 12px 10px 54px; border: 0; border-radius: 16px; background: linear-gradient(135deg, #142036, #24406b); color: #fff7e6; font: 600 13px/1.35 var(--body); display: grid; gap: 8px; box-shadow: 0 5px 0 rgb(20 32 54 / .28); text-align: left; opacity: 1; }
+.tp-faixa::before, .jg-p.am-resta::before { content: "🔒"; position: absolute; left: 10px; top: 10px; width: 34px; height: 34px; display: grid; place-items: center; font-size: 17px; border-radius: 50%; background: linear-gradient(180deg, #ffe58a, #f7b733); box-shadow: 0 3px 0 #b27a12; }
+.tp-faixa p { margin: 0; } .tp-faixa p b { color: #ffe08a; font-weight: 800; display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+.tp-faixa .tp-btns { display: flex; gap: 8px; flex-wrap: wrap; } .tp-faixa .kd-chip { min-height: 34px; padding: 0 14px; border-radius: 999px !important; border: 2px solid rgb(255 255 255 / .5); background: rgb(255 255 255 / .1); color: #fff; font: 800 12.5px/1 var(--body); box-shadow: none; }
+.tp-faixa .kd-chip.on { background: linear-gradient(180deg, #ffe58a, #f7b733); border-color: #fff4c2; color: #142036; }
+.jg-p.am-resta { padding-top: 12px; padding-bottom: 12px; min-height: 54px; align-content: center; }
+.am-lock.card, .am-lock { background: linear-gradient(135deg, #142036, #24406b) !important; color: #fff7e6; border: 0; border-radius: 16px !important; } .am-lock p { color: #fff7e6; } .am-lock .btn { background: linear-gradient(180deg, #ffe58a, #f7b733); color: #142036; border: 2px solid #fff4c2; }
+.tp-faixa a.kd-chip { color: #fff; text-decoration: none; display: inline-flex; align-items: center; } .tp-faixa .kd-chip.on { color: #142036; }
