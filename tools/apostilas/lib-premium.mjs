@@ -35,7 +35,7 @@ h1.t{font-family:'Anton';font-weight:400;text-transform:uppercase;font-size:32pt
 .sub{font-family:'Hanken';font-style:normal;font-weight:700;font-size:14.5pt;line-height:1.32;color:var(--ink);margin:0 0 5mm;break-after:avoid;break-inside:avoid}.sub+*{break-before:avoid}p{orphans:3;widows:3}
 h2.s{font-size:9pt;letter-spacing:.24em;text-transform:uppercase;font-weight:800;color:var(--v);margin:6mm 0 2.4mm;display:flex;align-items:center;gap:3mm;break-after:avoid}
 h2.s::after{content:'';flex:1;height:.4mm;background:var(--ink);opacity:.4}
-p{margin:0 0 2.8mm}.cit-p,.dica,.cad{break-before:avoid}.mut{color:var(--cinza)}
+p{margin:0 0 2.8mm}.cit-p,.cad{break-before:avoid}.mut{color:var(--cinza)}
 .card{border-top:.45mm solid var(--ink);padding:2.4mm 0 3mm;margin:0 0 1mm;break-inside:avoid}
 .card h4{margin:0;display:flex;justify-content:space-between;align-items:baseline;font:800 9pt Hanken;letter-spacing:.2em;text-transform:uppercase;color:var(--v)}
 .card .meta{font-size:11.4pt;color:var(--cinza);font-weight:700;margin:.6mm 0 1mm}
@@ -61,7 +61,7 @@ table.t tr:nth-child(even) td{background:none}
 .cad{margin-top:6mm;border-top:.45mm solid var(--ink);padding-top:3mm;font-size:11.6pt;color:var(--cinza);font-weight:600;break-inside:avoid}.cad b{letter-spacing:.14em;text-transform:uppercase;font-size:8.6pt;color:var(--v);margin-right:3mm}
 .dedos{display:flex;gap:3mm;justify-content:center}.dedos div{flex:1;padding:2.4mm 0;border:.5mm solid var(--ink);text-align:center;font-size:11.8pt;font-weight:700}.dedos b{display:block;font-family:'Anton';font-weight:400;font-size:22pt;color:var(--v)}
 .kbd{display:inline-block;margin:0 3mm 3mm 0;text-align:center;font-size:11.6pt;font-weight:800;color:var(--ink);vertical-align:top}.kbd svg{display:block;width:40mm;height:auto}.kbd.g svg{width:56mm}
-.gde{font-family:'Anton';font-size:34pt;color:var(--v);line-height:1.1;text-transform:uppercase}
+.linhas div{height:9.5mm;border-bottom:.3mm solid var(--ink);opacity:.55}.gde{font-family:'Anton';font-size:34pt;color:var(--v);line-height:1.1;text-transform:uppercase}
 /* ---- página cheia ---- */
 .cheia{page:cheia;break-before:page;width:210mm;height:297mm;position:relative;overflow:hidden}
 .cheia:first-child{break-before:auto}
@@ -78,10 +78,11 @@ table.t tr:nth-child(even) td{background:none}
 .div ol li{padding:2.2mm 0;border-bottom:.25mm solid rgba(246,239,224,.35);break-inside:avoid}.div ol b{font-family:'Anton';font-weight:400;color:var(--ouro);margin-right:3mm;font-size:13pt}
 .div .topo{position:absolute;left:16mm;right:16mm;top:11mm;font-size:8.6pt;letter-spacing:.24em;font-weight:800;text-transform:uppercase;border-bottom:.45mm solid #f6efe0;padding-bottom:3mm;display:flex;justify-content:space-between}.div .topo b{color:var(--ouro)}
 /* ---- sumário ---- */
-.mod{display:grid;grid-template-columns:30mm 1fr;margin-bottom:7mm;break-inside:avoid}
-.mod .k{font-family:'Anton';font-size:44pt;line-height:.9;color:var(--v)}
+.mods{columns:2;column-gap:12mm}
+.mod{display:grid;grid-template-columns:13mm 1fr;margin-bottom:6mm;break-inside:avoid}
+.mod .k{font-family:'Anton';font-size:26pt;line-height:.95;color:var(--v)}
 .mod h3{margin:0 0 2mm;font-size:9pt;letter-spacing:.22em;text-transform:uppercase;font-weight:800;border-bottom:.6mm solid var(--ink);padding-bottom:1.6mm}
-.mod .it{display:flex;gap:3mm;padding:1.6mm 0;border-bottom:.25mm solid var(--linha);font-size:12.4pt;font-weight:700}.mod .it span:first-child{font-weight:800;color:var(--v);width:8mm}.mod .it span:nth-child(2){flex:1}.mod .it span:last-child{font-family:'Anton';font-size:11.5pt}
+.mod .it{display:flex;gap:3mm;padding:1.6mm 0;border-bottom:.25mm solid var(--linha);font-size:12.4pt;font-weight:700}.mod .it span:first-child{font-weight:800;color:var(--v);width:7mm}.mod .it span:nth-child(2){flex:1}.mod .it span:last-child{font-family:'Anton';font-size:11.5pt}
 `; };
 export const dica = (t, x) => `<div class="dica"><b>${t}</b><span>${x}</span></div>`;
 export const caderno = () => `<div class="cad"><b>Caderno de treino</b>data ___/___ &nbsp; bpm ____ &nbsp; ☐ difícil ☐ ok ☐ fácil</div>`;
@@ -98,7 +99,9 @@ const MEIOTOM_TAMBOR = (V) => { const R = 78, passo = 3.4; let o = ''; for (let 
 const MEIOTOM_TECLAS = (V) => { const W = 112, H = 100; let o = ''; const kw = W / 8; for (let i = 0; i <= 8; i++) o += `<line x1="${i * kw}" y1="0" x2="${i * kw}" y2="${H}" stroke="${INK}" stroke-width=".5"/>`; o += `<line x1="0" y1="${H}" x2="${W}" y2="${H}" stroke="${INK}" stroke-width=".5"/><line x1="0" y1="0" x2="${W}" y2="0" stroke="${INK}" stroke-width=".5"/>`; [0, 1, 3, 4, 5].forEach((i) => { const x0 = i * kw + kw * .66, w = kw * .68, h = H * .62; for (let y = 1.2; y < h; y += 3.2) for (let x = x0 + 1.2; x < x0 + w; x += 3.2) { const t = y / h; o += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(1.5 - t * 1.2).toFixed(2)}" fill="${V}"/>`; } o += `<rect x="${x0}" y="0" width="${w}" height="${h}" fill="none" stroke="${INK}" stroke-width=".4"/>`; }); return `<svg class="arte" style="right:16mm;top:104mm" width="${W}mm" height="${H}mm" viewBox="0 0 ${W} ${H}">${o}</svg>`; };
 export function capa({ tipo, t1, t2, lema }) { const V = TEMAS[tipo === 'bateria' ? 'vinho' : 'azul'].v; return `<section class="cheia capa"><div class="vert" style="font-size:${tipo === 'bateria' ? 196 : 168}pt">${t1}</div><div class="topo"><small>Beaterista · método</small><em>${t2}</em></div>${tipo === 'bateria' ? MEIOTOM_TAMBOR(V) : MEIOTOM_TECLAS(V)}<div class="rod"><b>Apostila</b>${lema}</div></section>`; }
 export function divisor({ modulo, titulo, citacao, itens, nome }) { return `<section class="cheia div"><div class="topo"><span>${nome}</span><span><b>Módulo ${String(modulo).padStart(2, '0')}</b></span></div><div class="gr">${String(modulo).padStart(2, '0')}</div><h2>${titulo.replace(/ e /, '<br>e ')}</h2><div class="cita">${citacao}</div><ol>${itens.map(([n, t]) => `<li><b>${String(n).padStart(2, '0')}</b>${t}</li>`).join('')}</ol></section>`; }
-export function sumario(modulos, nome, nota = '') { return `<section class="sec larga" style="page:conteudo"><div class="col"><div class="barra"></div><h1 class="t" style="font-size:54pt;margin-bottom:10mm">Índice</h1>${modulos.map(([t, itens], i) => `<div class="mod"><div class="k">${String(i + 1).padStart(2, '0')}</div><div><h3>${t.replace(/^Módulo \d+ · /, '')}</h3>${itens.map(([n, x, pg]) => `<div class="it"><span>${n === '·' ? '' : String(n).padStart(2, '0')}</span><span>${x}</span><span>${pg || ''}</span></div>`).join('')}</div></div>`).join('')}${nota ? `<p class="mut" style="font-size:10pt">${nota}</p>` : ''}</div></section>`; }
+export function sumario(modulos, nome, nota = '') { return `<section class="sec larga" style="page:conteudo"><div class="col"><div class="barra"></div><h1 class="t" style="font-size:54pt;margin-bottom:10mm">Índice</h1><div class="mods">${modulos.map(([t, itens], i) => `<div class="mod"><div class="k">${String(i + 1).padStart(2, '0')}</div><div><h3>${t.replace(/^Módulo \d+ · /, '')}</h3>${itens.map(([n, x, pg]) => `<div class="it"><span>${n === '·' ? '' : String(n).padStart(2, '0')}</span><span>${x}</span><span>${pg || ''}</span></div>`).join('')}</div></div>`).join('')}</div>${nota ? `<p class="mut" style="font-size:10pt">${nota}</p>` : ''}</div></section>`; }
+/** Revisão no fim de cada módulo: lista pra marcar + linhas de anotação. `linhas` é calculado pra fechar a página (montar.mjs). */
+export function revisao({ modulo, titulos, linhas = 0 }) { return `<section class="sec larga" style="page:m${modulo}"><div class="col"><h2 class="s" style="margin-top:0">Revisão do módulo · marque o que você já faz</h2><ul class="trilha">${titulos.map((t) => `<li><b>${t}</b></li>`).join('')}</ul>${linhas > 0 ? `<h2 class="s">Minhas anotações · o que travou, o que melhorou</h2><div class="linhas">${'<div></div>'.repeat(linhas)}</div>` : ''}</div></section>`; }
 export const doc = (paginas, titulo, tema, modulos) => `<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>${esc(titulo)}</title><style>${css(tema, modulos)}</style><body>${paginas.join('')}</body></html>`;
 /** Contagem "1 e & a" embaixo da pauta (letras grandes e grossas, na cor do livro). */
 export function comContagem(svg, evs, rotulo = null, tam = 20) {

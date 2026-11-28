@@ -25,13 +25,13 @@ const seq = (midis, d = Q) => midis.map((m) => [m, d]);
 const sis = (evs, clave = 'sol') => svgTeclado(evs, 640, { clave }).replace('<svg ', '<svg class="alto" ');
 const MODS = [
   ['Módulo 1 · Primeiros passos', 'Primeiros passos', 'O primeiro acorde é o mais difícil. Todos os outros ficam mais fáceis depois dele.', 'Conhecer o teclado, posicionar as mãos e ler a pauta: o mapa que leva você da tecla ao som.', ['como', 'notas', 'postura', 'pauta', 'equip']],
-  ['Módulo 2 · As duas mãos', 'As duas mãos', 'Dedo doendo é calo nascendo. É o teclado te dando um crachá.', 'Primeiro as notas da mão direita, depois a esquerda, e por fim as duas juntas.', ['aquec', 'primeiras', 'ritmo', 'melodias', 'melodias2', 'fa', 'esquerda', 'intervalos', 'duas']],
-  ['Módulo 3 · Acordes e ritmo', 'Acordes e ritmo', 'Cada repetição fortalece a conexão entre os seus neurônios. Literalmente.', 'Acordes são três notas tocadas juntas. Com poucos você acompanha centenas de músicas.', ['maiores', 'menores', 'trocas', 'inversoes', 'acomp', 'express', 'treino', 'dicas']],
+  ['Módulo 2 · As duas mãos', 'As duas mãos', 'Dedo doendo é calo nascendo. É o teclado te dando um crachá.', 'Primeiro as notas da mão direita, depois a esquerda, e por fim as duas juntas.', ['aquec', 'contar', 'primeiras', 'ritmo', 'maosep', 'dedos', 'melodias', 'melodias2', 'fa', 'esquerda', 'intervalos', 'duas']],
+  ['Módulo 3 · Acordes e ritmo', 'Acordes e ritmo', 'Cada repetição fortalece a conexão entre os seus neurônios. Literalmente.', 'Acordes são três notas tocadas juntas. Com poucos você acompanha centenas de músicas.', ['maiores', 'menores', 'trocas', 'inversoes', 'acomp', 'variar', 'express', 'treino', 'dicas']],
   ['Módulo 4 · Mais avançado', 'Mais avançado', 'Entender a música por dentro transforma quem só repete em quem cria.', 'Escalas, tom e semitom, teclas pretas e o campo harmônico: o que organiza toda a música.', ['escala', 'tom', 'campo']],
   ['Hora de brincar', null, null, null, ['desafios', 'respostas']],
   ['Para levar', null, null, null, ['plano4', 'plano8', 'registro', 'glossario', 'proximo', 'folha1', 'folha2']],
 ];
-const TITULOS = { como: 'Como usar esta apostila', notas: 'O teclado e o nome das notas', postura: 'Postura e posição das mãos', pauta: 'Como ler a pauta', equip: 'Escolhendo seu teclado', aquec: 'Aquecimento das mãos', primeiras: 'As primeiras notas', ritmo: 'Figuras e pausas', melodias: 'Melodias populares', melodias2: 'Mais melodias e improviso', fa: 'Lendo a clave de fá', esquerda: 'Mão esquerda', intervalos: 'Intervalos', duas: 'Duas mãos juntas', maiores: 'Acordes maiores', menores: 'Acordes menores', trocas: 'Trocas e arpejos', inversoes: 'Inversões de acordes', acomp: 'Padrões da mão esquerda', express: 'Expressão: forte, fraco e ligado', treino: 'Treino progressivo', dicas: 'Dicas práticas', escala: 'Escala de Dó maior', tom: 'Tom, semitom, sustenido e bemol', campo: 'Campo harmônico de Dó', desafios: 'Desafios no papel', respostas: 'Respostas dos desafios', plano4: 'Plano das 4 primeiras semanas', plano8: 'Plano de 8 semanas', registro: 'Registro dos 30 dias', glossario: 'Glossário', proximo: 'E agora? Continue tocando', folha1: 'Pauta em branco', folha2: 'Seu teclado em branco' };
+const TITULOS = { contar: 'Contar é o que segura a música', maosep: 'Treinando uma mão de cada vez', dedos: 'Padrões de dedos: variações', variar: 'Não toque sempre do mesmo jeito', como: 'Como usar esta apostila', notas: 'O teclado e o nome das notas', postura: 'Postura e posição das mãos', pauta: 'Como ler a pauta', equip: 'Escolhendo seu teclado', aquec: 'Aquecimento das mãos', primeiras: 'As primeiras notas', ritmo: 'Figuras e pausas', melodias: 'Melodias populares', melodias2: 'Mais melodias e improviso', fa: 'Lendo a clave de fá', esquerda: 'Mão esquerda', intervalos: 'Intervalos', duas: 'Duas mãos juntas', maiores: 'Acordes maiores', menores: 'Acordes menores', trocas: 'Trocas e arpejos', inversoes: 'Inversões de acordes', acomp: 'Padrões da mão esquerda', express: 'Expressão: forte, fraco e ligado', treino: 'Treino progressivo', dicas: 'Dicas práticas', escala: 'Escala de Dó maior', tom: 'Tom, semitom, sustenido e bemol', campo: 'Campo harmônico de Dó', desafios: 'Desafios no papel', respostas: 'Respostas dos desafios', plano4: 'Plano das 4 primeiras semanas', plano8: 'Plano de 8 semanas', registro: 'Registro dos 30 dias', glossario: 'Glossário', proximo: 'E agora? Continue tocando', folha1: 'Pauta em branco', folha2: 'Seu teclado em branco' };
 const SEMNUM = ['respostas', 'folha2', 'plano4', 'plano8', 'registro', 'glossario', 'proximo', 'folha1'];
 const N = (id) => MODS.flatMap((m) => m[4]).filter((x) => !SEMNUM.includes(x)).indexOf(id) + 1;
 const T = (id, area) => `${N(id)} · ${area}`;
@@ -267,7 +267,48 @@ B.folha1 = () => pg({ tag: 'FOLHA PARA IMPRIMIR', titulo: 'Pauta em branco', sub
 const tec = () => `<div style="margin:4mm 0">${teclas({ de: 48, ate: 84, largura: 700 }).replace('width="700"', 'width="100%"')}</div>`;
 B.folha2 = () => pg({ tag: 'FOLHA PARA IMPRIMIR', titulo: 'Seu teclado em branco', sub: 'Pinte as teclas e escreva o nome das notas.', corpo: `${tec()}${tec()}<p class="mut">Pinte as teclas de cada acorde e escreva o nome dele ao lado:</p>${[1, 2, 3, 4].map(() => `<div style="display:flex;align-items:center;gap:6mm;margin:2mm 0">${teclas({ de: 60, ate: 76, largura: 220 })}<span style="border-bottom:.3mm solid #b8913f;flex:1;height:7mm"></span></div>`).join('')}` });
 
+
+B.contar = () => pg({ tag: T('contar', 'RITMO'), titulo: 'Contar é o que segura a música', sub: 'Quem conta em voz alta toca no tempo. Quem “sente” sem contar, acelera sem perceber.', corpo: `
+<p>Contar não é coisa de iniciante: <b>todo pianista profissional conta</b>, por dentro ou em voz alta. A contagem dá o endereço de cada nota.</p>
+<h2 class="s">Os três níveis da contagem</h2>
+<table class="t"><tr><th>Nível</th><th>Como contar</th><th>Quando usar</th></tr><tr><td>1 · Tempos</td><td>1 – 2 – 3 – 4</td><td>melodias lentas, notas longas</td></tr><tr><td>2 · Colcheias</td><td>1 & 2 & 3 & 4 &</td><td>acompanhamentos, a maior parte do pop</td></tr><tr><td>3 · Semicolcheias</td><td>1 e & a 2 e & a…</td><td>peças rápidas e leitura difícil</td></tr></table>
+<h2 class="s">Treino: fale tudo, toque só o que está escrito</h2>
+<p>Em cada compasso, <b>conte todos os tempos em voz alta</b> e toque a nota Dó <b>só onde há nota</b>. Nas pausas, a boca continua contando.</p>
+<div class="card"><h4><span>Compasso A</span></h4><div class="meta">conte “1 – 2 – 3 – 4”</div>${pauta([[60, Q], [60, Q], [null, Q], [60, Q]], { nomes: false })}</div>
+<div class="card"><h4><span>Compasso B</span></h4><div class="meta">conte “1 & 2 & 3 & 4 &”</div>${pauta([[60, 2], [60, 2], [60, Q], [null, 2], [60, 2], [60, Q]], { nomes: false })}</div>
+<div class="card"><h4><span>Compasso C</span></h4><div class="meta">o silêncio também tem número</div>${pauta([[60, M], [null, Q], [60, Q], [60, Q], [60, Q], [null, M]], { nomes: false })}</div>
+<h2 class="s">Quatro jeitos de treinar a contagem</h2>
+<ul class="lista"><li><b>Pé no chão.</b> Bata o pé em todo tempo enquanto toca. O pé é o relógio.</li><li><b>Cante a conta.</b> Se a boca para, a mão perde o endereço.</li><li><b>Grave e escute.</b> Grave um minuto tocando com o metrônomo e confira onde o tempo escapa.</li><li><b>Toque sem olhar.</b> Com a contagem clara, feche os olhos por 8 compassos.</li></ul>
+${L.dica('Regra de ouro', 'se você não consegue contar uma frase em voz alta, ainda não está pronto pra tocar ela rápido. volte duas casas no metrônomo.')}${L.caderno()}` });
+
+B.maosep = () => pg({ tag: T('maosep', 'MÃOS'), titulo: 'Treinando uma mão de cada vez', sub: 'Treinar cada mão sozinha deixa a mão fraca igual à forte.', corpo: `
+<p>Quando as duas mãos tocam juntas, o cérebro divide a atenção, e a mão mais fraca é a que paga a conta. Por isso, <b>cada mão precisa de tempo sozinha</b>.</p>
+<div class="card"><h4><span>Só mão direita</span></h4><div class="meta">dedos 1 – 2 – 3 – 4 – 5 – 4 – 3 – 2 · 60 bpm</div>${pauta(seq([60, 62, 64, 65, 67, 65, 64, 62]))}<p>Oito notas iguais em volume. Escute se nenhuma “salta” mais forte.</p></div>
+<div class="card"><h4><span>Só mão esquerda</span></h4><div class="meta">dedos 5 – 4 – 3 – 2 – 1 – 2 – 3 – 4 · 60 bpm</div>${pauta(seq([48, 50, 52, 53, 55, 53, 52, 50]), { clave: 'fa' })}<p>Faça o mesmo número de repetições da direita. A esquerda precisa de tanto tempo quanto a outra.</p></div>
+<h2 class="s">Escada de treino (15 minutos)</h2>
+<table class="t"><tr><th>Tempo</th><th>O que fazer</th></tr><tr><td>3 min</td><td>Mão fraca sozinha, devagar, 60 bpm.</td></tr><tr><td>3 min</td><td>Mão forte sozinha, no mesmo andamento.</td></tr><tr><td>4 min</td><td>As duas mãos juntas, bem devagar, 50 bpm.</td></tr><tr><td>3 min</td><td>Uma melodia que você está aprendendo.</td></tr><tr><td>2 min</td><td>Dinâmica: baixinho, médio e forte.</td></tr></table>
+<h2 class="s">Dicas que fazem diferença</h2>
+<ul class="lista"><li><b>Mão fraca primeiro.</b> Comece sempre por ela, quando você está mais descansado.</li><li><b>Olhos fechados.</b> Depois de decorar, toque sem olhar: a mão aprende a achar as teclas.</li><li><b>Sem tensão.</b> Se o ombro sobe, pare: você está forçando.</li><li><b>Sessões curtas.</b> Quinze minutos bem feitos valem mais do que uma hora cansada.</li></ul>` });
+
+B.dedos = () => { const pad = [['A · subindo e descendo', 'dedos 1 – 2 – 3 – 4 – 5 – 4 – 3 – 2', [60, 62, 64, 65, 67, 65, 64, 62]], ['B · zig-zag', 'dedos 1 – 3 – 2 – 4 – 3 – 5 – 4 – 2', [60, 64, 62, 65, 64, 67, 65, 62]], ['C · polegar pivô', 'dedos 1 – 2 – 1 – 3 – 1 – 4 – 1 – 5', [60, 62, 60, 64, 60, 65, 60, 67]], ['D · descendo', 'dedos 5 – 4 – 3 – 2 – 1 – 2 – 3 – 4', [67, 65, 64, 62, 60, 62, 64, 65]], ['E · arpejo', 'dedos 1 – 3 – 5 – 3 – 1 – 3 – 5 – 3', [60, 64, 67, 64, 60, 64, 67, 64]], ['F · de três em três', 'dedos 1 – 2 – 3 – 1 – 2 – 3 – 4 – 5', [60, 62, 64, 60, 62, 64, 65, 67]]];
+  return pg({ tag: T('dedos', 'MÃOS'), titulo: 'Padrões de dedos: variações', sub: 'As mesmas cinco notas viram dezenas de exercícios quando você muda a ordem dos dedos.', corpo: `
+<p>Em vez de subir e descer sempre igual, <b>mude a ordem dos dedos</b>. É o equivalente, no teclado, das variações de mão que o baterista faz: o mesmo material, arrumado de formas diferentes.</p>
+${pad.map(([t, m, l]) => `<div class="card"><h4><span>${t}</span></h4><div class="meta">${m}</div>${pauta(seq(l))}</div>`).join('')}
+<h2 class="s">Como juntar</h2><ol class="passos"><li>Toque cada padrão quatro vezes, a 60 bpm.</li><li>Junte dois padrões (A + B) sem parar.</li><li>Troque a ordem (B + A) e depois misture três.</li><li>Leve para a mão esquerda, com os mesmos números de dedos.</li><li>Mude só uma coisa por vez: a ordem, o ritmo ou o andamento.</li></ol>
+${L.dica('Ideia', 'escreva um padrão seu, trocando só dois dedos de lugar. toque quatro vezes e use-o no aquecimento da semana.')}` }); };
+
+B.variar = () => { const cel = (lista) => pauta(lista, { clave: 'fa', nomes: false }); return pg({ tag: T('variar', 'ACORDES'), titulo: 'Não toque sempre do mesmo jeito', sub: 'O mesmo acorde ganha cara nova só mudando o ritmo da mão esquerda.', corpo: `
+<p>Aprender o acorde é metade do caminho. A outra metade é <b>não tocá-lo sempre igual</b>. Veja cinco ritmos para o mesmo acorde de <b>Dó</b>, na mão esquerda, um compasso cada:</p>
+<div class="card"><h4><span>1 · inteira</span></h4><div class="meta">uma nota por compasso · calmo</div>${cel([[48, SB]])}</div>
+<div class="card"><h4><span>2 · duas mínimas</span></h4><div class="meta">dois toques por compasso</div>${cel([[48, M], [48, M]])}</div>
+<div class="card"><h4><span>3 · quatro semínimas</span></h4><div class="meta">pulsando em todo tempo</div>${cel([[48, Q], [48, Q], [48, Q], [48, Q]])}</div>
+<div class="card"><h4><span>4 · colcheias</span></h4><div class="meta">um motor contínuo · animado</div>${cel([[48, 2], [48, 2], [48, 2], [48, 2], [48, 2], [48, 2], [48, 2], [48, 2]])}</div>
+<div class="card"><h4><span>5 · 3 + 3 + 2</span></h4><div class="meta">uma pequena síncope · balanço</div>${cel([[48, 6], [48, 6], [48, 4]])}</div>
+<h2 class="s">Regras para variar</h2><ul class="lista"><li><b>Troque de ritmo a cada 4 compassos.</b> A música respira e você treina a mudança.</li><li><b>Combine com a melodia.</b> Se a direita está agitada, deixe a esquerda mais calma.</li><li><b>Um ritmo novo por semana.</b> Domine um antes de passar ao próximo.</li></ul>
+${L.dica('Exercício', 'toque C – G – Am – F usando um ritmo diferente em cada acorde. depois repita a sequência trocando a ordem dos ritmos.')}` }); };
+
 /* montagem */
+const EXTRAS = process.env.EXTRAS && existsSync(process.env.EXTRAS) ? JSON.parse(readFileSync(process.env.EXTRAS, 'utf8')) : {};
 const NUMS = process.env.NUMS && existsSync(process.env.NUMS) ? JSON.parse(readFileSync(process.env.NUMS, 'utf8')) : {};
 const modulos = MODS.map((m, i) => ({ livro: NOME, nome: m[1] ? `MÓDULO ${String(i + 1).padStart(2, '0')} · ${m[1].toUpperCase()}` : (m[0] === 'Hora de brincar' ? 'HORA DE BRINCAR' : 'PARA LEVAR') }));
 const P = []; P.push(L.capa({ tipo: 'teclado', t1: 'teclado', t2: 'do zero', lema: 'da primeira tecla à primeira música, em 15 minutos por dia.' }));
@@ -276,8 +317,10 @@ for (const [i, m] of MODS.entries()) {
   MODI = i;
   if (m[1]) P.push(L.divisor({ modulo: i + 1, titulo: m[1], citacao: m[2], itens: m[4].map((id) => [N(id), TITULOS[id]]), nome: NOME }));
   for (const id of m[4]) { if (id === 'folha2') continue; IDATUAL = id; P.push(B[id]()); if (id === 'folha1') { IDATUAL = 'folha2'; P.push(B.folha2()); } }
+  if (m[1] && EXTRAS[i] !== undefined) P.push(L.revisao({ modulo: i, titulos: m[4].filter((id) => id !== 'respostas').map((id) => TITULOS[id]), linhas: EXTRAS[i] }));
 }
 P[sumPos] = L.sumario(MODS.map((m) => [m[0], m[4].filter((id) => !['folha2', 'respostas'].includes(id)).map((id) => [SEMNUM.includes(id) ? '·' : N(id), TITULOS[id], NUMS[id] || ''])]), NOME, '');
 writeFileSync('/tmp/apo/teclado.html', L.doc(P, 'Teclado do zero · Beaterista', 'azul', modulos));
 console.log('seções:', P.length);
+console.log('MODS:' + JSON.stringify(MODS.map((m) => ({ primeira: m[4][0], divisor: !!m[1] }))));
 console.log(JSON.stringify(MODS.flatMap((m) => m[4])));
