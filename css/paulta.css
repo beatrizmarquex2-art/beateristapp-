@@ -117,3 +117,4 @@
 .pl-run .kd-q { display: none; } /* o balão do Paul já diz a pergunta (não repetir) */
 .pl-run .pl-redo { padding: 8px 12px; font-size: 16px; line-height: 1; }
 @media (min-height: 780px) { .pl-run .pl-opts.img .pl-optimg { aspect-ratio: 1 / 1; } .pl-run .pl-prompt svg { max-height: 175px; } }
+.pl-run .pl-opts.img.n4 .pl-optimg { aspect-ratio: 5 / 3; } .pl-run .pl-opts.img .pl-optimg svg[aria-label^="Teclado"] { padding: 4px; }

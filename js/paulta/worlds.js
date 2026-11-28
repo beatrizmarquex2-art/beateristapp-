@@ -1,6 +1,6 @@
 // pauLta: mundos, fases e perguntas (puro, sem tela, testado em tests/paulta.test.mjs).
 // Cada pergunta: { kind, key, ans, options:[{id,label,img}], promptSvg, say, sound, tags, explain(idEscolhido) }.
-import { DRUM, drumStaff, clefStaff, keyboard, kitImage, dotsImage } from './draw.js';
+import { DRUM, KB, drumStaff, clefStaff, keyboard, kitImage, dotsImage } from './draw.js';
 import { mk, noteName, CLEFS, OTHER, posOf, placeText, sameSpotOther, range, inStaff, letterOf, octOf, shuffle, pick, sylOf } from './music.js';
 
 export const MODES = [['nomes', '🔤 nomes'], ['imagens', '🖼 desenhos']];
@@ -283,7 +283,8 @@ function noteQuestion(world, n, mode, rnd, i, forced) {
   while (notes.length < len && guard++ < 50) { const x = pick(pool, rnd); if (!notes.length || x !== notes[notes.length - 1]) notes.push(x); }
   const nOpts = forced.opts || (n <= 3 ? 3 : 4);
   const ids = noteOptions(clef, notes, pool, rnd, nOpts, forced.oct || sp.oct);
-  const options = ids.map((id) => { const arr = String(id).split(',').map(Number); return { id: String(id), label: seqName(arr), img: keyboard(clef, arr) }; });
+  const options = ids.map((id) => { const arr = String(id).split(',').map(Number); const [kl, kh] = KB[clef]; let lo = Math.max(kl, Math.min(...arr) - 4); let hi = Math.min(kh, Math.max(...arr) + 4); while (hi - lo < 9) { if (lo > kl) lo--; if (hi - lo < 9 && hi < kh) hi++; } // zoom: só as teclas em volta da(s) nota(s)
+    return { id: String(id), label: seqName(arr), img: keyboard(clef, arr, [lo, hi]) }; });
   const q = { clef, notes };
   return { kind: 'note', clef, notes, key: `nota:${notes.join(',')}@${clef}`, ans: notes.join(','), options, promptSvg: clefStaff(clef, notes), say: len > 1 ? 'que notas são essas, na ordem?' : `que nota é essa? (${CLEFS[clef].name})`, sound: { type: 'note', ns: notes }, tags: len === 1 ? [`nota:${noteName(notes[0])}`, ...(forced.oct || sp.oct ? ['oitava'] : [])] : ['sequencia'], explain: (c) => explainNote(q, c), clefName: CLEFS[clef].name };
 }
