@@ -47,7 +47,7 @@ export function mountProgressionMap(host, cfg) {
     h('div', { class: 'mp-reg', 'aria-live': 'polite' }, regionName, regionSub),
     h('span', { class: 'mp-prog', title: 'discos concluídos' }, h('span', { class: 'mp-vinyl-ico', 'aria-hidden': 'true' }), `${doneN}/${nodes.length}`),
     cfg.stars ? h('span', { class: 'mp-prog star', title: 'estrelas' }, `★ ${cfg.stars.have}/${cfg.stars.max}`) : null,
-    h('button', { type: 'button', class: 'mp-gradebtn', 'aria-haspopup': 'dialog', 'aria-label': `Ver as ${nodes.length} fases de uma vez`, title: `as ${nodes.length} fases`, onclick: () => abreGrade() }, '▦'), temaButton(), estiloButton(), snd);
+    h('button', { type: 'button', class: 'mp-gradebtn', 'aria-haspopup': 'dialog', 'aria-label': `Ver as ${nodes.length} fases de uma vez`, title: `as ${nodes.length} fases`, onclick: () => abreGrade() }, '≡'), temaButton(), estiloButton(), snd);
 
   /* ---- mundo ---- */
   const world = h('div', { class: `mp-world${motion ? ' mp-anim' : ''}`, style: `aspect-ratio:${L.W} / ${L.H}` });

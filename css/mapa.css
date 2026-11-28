@@ -194,3 +194,19 @@ html[data-estilo="serio"] .mp-sign b { font-size: 4cqw; font-weight: 800; letter
 /* minimalista: o Paul sério (assets/paul/serio.png) fica pequeno ao lado do disco atual, sem balão */
 html[data-estilo="serio"] .mp-paul .mp-cor { filter: drop-shadow(0 3px 5px #0008); }
 .av-estilo { white-space: nowrap; }
+
+/* controles discretos (pedido da Bea): grade ≡, claro/escuro e minimalista ◐ viram botões PEQUENOS e REDONDOS num canto do cabeçalho, em todos os mapas e na Aventura; nada de quadrado grande no meio da tela */
+html .mp-head .mp-gradebtn, html .mp-head .av-tema, html .mp-head .av-estilo, html .mp-head .mp-snd, html .av-tema, html .av-estilo, html .av-snd {
+  width: 32px; height: 32px; min-width: 32px; min-height: 32px; padding: 0; border-radius: 50%; display: inline-grid; place-items: center; flex: none; margin: 0;
+  background: color-mix(in srgb, var(--avp-bg) 72%, transparent); color: var(--avp-text); border: 1px solid var(--avp-line); box-shadow: none; font: 700 15px/1 system-ui; text-shadow: none; }
+html .mp-head .mp-gradebtn:active, html .mp-head .av-tema:active, html .mp-head .av-estilo:active, html .mp-head .mp-snd:active { transform: scale(.94); box-shadow: none; }
+html .mp-head, html .mp-head.mp-longo { flex-wrap: nowrap; gap: 5px; padding-top: calc(4px + env(safe-area-inset-top)); padding-bottom: 4px; }
+html .mp-head .mp-reg, html .mp-head.mp-longo .mp-reg { flex: 1 1 0; min-width: 0; }
+html .mp-head .mp-reg b { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; } html .mp-head .mp-reg small { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+html .mp-head .mp-prog { padding: 2px 6px; font-size: 10.5px; min-height: 0; gap: 3px; } html .mp-head .mp-prog.star { padding: 2px 6px; }
+html .mp-head .mp-back { min-width: 0; min-height: 32px; padding: 0 10px; font-size: 12px; border-width: 1px; box-shadow: none; }
+/* cabeçalho em 2 linhas finas: 1) nome da região + botões redondos · 2) progresso (a ordem visual não muda o que cada botão faz) */
+html .mp-head, html .mp-head.mp-longo { flex-wrap: wrap; row-gap: 3px; }
+html .mp-head .mp-back { order: 0; } html .mp-head .mp-reg, html .mp-head.mp-longo .mp-reg { order: 1; flex: 1 1 170px; }
+html .mp-head .mp-gradebtn, html .mp-head .av-tema, html .mp-head .av-estilo, html .mp-head .mp-snd { order: 2; }
+html .mp-head .mp-prog { order: 3; }

@@ -20,7 +20,7 @@ export const getEstilo = () => { try { return localStorage.getItem(KEY_EST) === 
 export const applyEstilo = (e = getEstilo()) => { if (e === 'serio') document.documentElement.dataset.estilo = 'serio'; else delete document.documentElement.dataset.estilo; };
 export function estiloButton() {
   const b = h('button', { type: 'button', class: 'av-tema av-estilo' });
-  const paint = () => { const s = getEstilo() === 'serio'; b.textContent = s ? '◐ normal' : '◐ minimal'; b.setAttribute('aria-pressed', String(s)); b.setAttribute('aria-label', s ? 'Trocar para o visual divertido' : 'Trocar para o visual minimalista'); b.title = b.getAttribute('aria-label'); };
+  const paint = () => { const s = getEstilo() === 'serio'; b.textContent = '◐'; b.setAttribute('aria-pressed', String(s)); b.setAttribute('aria-label', s ? 'Trocar para o visual divertido' : 'Trocar para o visual minimalista'); b.title = b.getAttribute('aria-label'); };
   b.addEventListener('click', () => { const n = getEstilo() === 'serio' ? 'divertido' : 'serio'; try { localStorage.setItem(KEY_EST, n); } catch { /* vale só nesta sessão */ } applyEstilo(n); paint(); try { window.dispatchEvent(new Event('estilo-mudou')); } catch { /* ok */ } });
   paint(); return b;
 }
