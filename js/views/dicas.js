@@ -105,7 +105,7 @@ function caca(box, D) { // D (duelo): { pick, mk(): sorteio com semente igual no
   const attempt = (line, el) => {
     const str = line.map((c) => ws.grid[c.y][c.x]).join(''); const rev = [...str].reverse().join('');
     const w = words.find((k) => !found.has(k) && (k === str || k === rev));
-    if (w) { found.set(w, line); line.forEach((c) => cellColor.set(key(c.x, c.y), colorOf[w])); { const e = line[line.length - 1]; cellEnd.add(key(e.x, e.y)); } last = byWord[w]; draw(); const els = box.querySelectorAll('.dc-c.found'); const done = found.size === words.length; if (D && done) D.fim(); if (done && !pagou && !free && !D) { pagou = true; MESA.vitoria('caca', estrelasCaca()); } (done ? FB.great : FB.win)(els[els.length - 1] || box, { msg: done ? 'achou todas! 🏆' : `achou: ${byWord[w].shown}!` }); }
+    if (w) { try { FB.sound(found.size + 1 === words.length ? 'great' : 'win'); } catch { /* sem áudio */ } found.set(w, line); line.forEach((c) => cellColor.set(key(c.x, c.y), colorOf[w])); { const e = line[line.length - 1]; cellEnd.add(key(e.x, e.y)); } last = byWord[w]; draw(); const els = box.querySelectorAll('.dc-c.found'); const done = found.size === words.length; if (D && done) D.fim(); if (done && !pagou && !free && !D) { pagou = true; MESA.vitoria('caca', estrelasCaca()); } (done ? FB.great : FB.win)(els[els.length - 1] || box, { msg: done ? 'achou todas! 🏆' : `achou: ${byWord[w].shown}!` }); }
     else { erros++; draw(); FB.lose(box.querySelector('.dc-grid') || el, { paul: false }); }
   };
   const up = () => {
@@ -171,7 +171,7 @@ function cruzadinha(box, D) {
       inp.addEventListener('input', () => {
         if (free && !counted) { counted = true; cruzUsar(); }
         const v = T.norm(inp.value).replace(/[^A-Z]/g, ''); if (v.length < e.w.length) return;
-        if (v === e.w) { solved.add(e.idx); cellsOf(e).forEach((c) => shown.set(`${c.x},${c.y}`, { ch: c.ch, k: e.idx % COLORS })); last = it; draw(); const all = solved.size === cw.entries.length; if (D && all) D.fim(); if (all && !pagou && !free && !D) { pagou = true; MESA.vitoria('cruzadinha', MESA.erros(erros)); } (all ? FB.great : FB.win)(box.querySelector('.dc-explain') || box, { msg: all ? 'cruzadinha completa! 🏆' : `isso: ${it.shown}!` }); }
+        if (v === e.w) { try { FB.sound(solved.size + 1 === cw.entries.length ? 'great' : 'win'); } catch { /* sem áudio */ } solved.add(e.idx); cellsOf(e).forEach((c) => shown.set(`${c.x},${c.y}`, { ch: c.ch, k: e.idx % COLORS })); last = it; draw(); const all = solved.size === cw.entries.length; if (D && all) D.fim(); if (all && !pagou && !free && !D) { pagou = true; MESA.vitoria('cruzadinha', MESA.erros(erros)); } (all ? FB.great : FB.win)(box.querySelector('.dc-explain') || box, { msg: all ? 'cruzadinha completa! 🏆' : `isso: ${it.shown}!` }); }
         else { erros++; FB.lose(inp, { paul: false }); inp.select(); }
       });
       return h('li', { class: `${ok ? 'ok ' : ''}dc-k${e.idx % COLORS}`, value: e.n }, h('span', { class: 'dc-dir' }, `${e.dir === 'h' ? '→' : '↓'} ${e.w.length} letras · começa com ${e.w[0]}`), h('p', {}, T.clueOf(it)), inp); }));
