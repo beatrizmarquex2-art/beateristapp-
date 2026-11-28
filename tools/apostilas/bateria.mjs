@@ -1,14 +1,14 @@
 // Apostila "Bateria para adultos" (vinho). Toda partitura sai do motor de escrita do Beaterista PRO.
 import { groove, svgBateria } from './notas.mjs';
-import * as L from './lib.mjs';
+import * as L from './lib-premium.mjs';
+import { readFileSync, existsSync } from 'node:fs';
 import { writeFileSync } from 'node:fs';
-const NOME = 'Bateria para adultos · Beaterista';
-const PROMO = ['quer aula? <i>beaterista.com.br</i> · escola em Araçatuba', 'dúvida? chame a escola no WhatsApp <i>18 991804150</i>', 'material feito por quem ensina bateria todos os dias'];
-let pr = 0; const promo = () => PROMO[pr++ % PROMO.length];
-const pg = (o) => L.pagina({ ...o, nome: NOME, promo: promo() });
+const NOME = 'BATERIA PARA ADULTOS';
+let MODI = 0; let IDATUAL = '';
+const pg = (o) => L.pagina({ ...o, modulo: MODI, id: IDATUAL });
 const nota = (linhas, o = {}, larg = 640) => { const evs = groove(linhas, o); return { evs, svg: L.comContagem(L.semB(svgBateria(evs, larg)), evs) }; };
 const HH8 = 'x.x.x.x.x.x.x.x.'; const SN = '....x.......x...'; const BD = 'x.......x.......'; const HH16 = 'xxxxxxxxxxxxxxxx';
-const g = (titulo, meta, linhas, texto, o) => L.card(titulo, meta, nota(linhas, o, 430).svg, texto);
+const g = (titulo, meta, linhas, texto, o) => L.card(titulo, meta, nota(linhas, o).svg, texto);
 const ev = (p, ini, d = 2, extra = {}) => ({ p, ini, d, mao: '', acc: false, fan: false, ...extra });
 const comp = (evs, i) => evs.map((e) => ({ ...e, ini: e.ini + i * 16 }));
 const sem = (evs, larg = 640) => L.semB(svgBateria(evs, larg));
@@ -138,8 +138,7 @@ const EST = [
   ['Rock com prato', 'refrão · 100 a 130 bpm', { cr: 'x.x.x.x.x.x.x.x.', sn: SN, bd: 'x.....x.x.......' }, 'Troque o chimbal pelo prato quando a música “abrir”. O refrão ganha tamanho.'],
 ];
 const cardEst = ([n, m, l, t], i) => L.card(`${i + 1} · ${n}`, m, nota(l, { passo: n.startsWith('Funk') ? 1 : 2 }).svg, t);
-B.estilos = () => pg({ tag: T('estilos', 'GROOVE'), titulo: 'Grooves por estilo', sub: 'Seis levadas para você tocar junto com muita música.', corpo: `${EST.slice(0, 3).map(cardEst).join('')}${L.dica('Como usar', 'escolha uma música que você gosta, descubra o andamento dela com o metrônomo do celular e toque a levada por cima, no seu ritmo.')}` });
-B.estilos_b = () => pg({ tag: T('estilos', 'GROOVE'), titulo: 'Grooves por estilo', sub: 'Continuação.', corpo: `${EST.slice(3).map((e, i) => cardEst(e, i + 3)).join('')}${L.dica('Pense assim', 'cada estilo é só uma combinação diferente de quem toca onde. o resto é o mesmo: pulso, braço solto e atenção.')}${L.caderno()}` });
+B.estilos = () => pg({ tag: T('estilos', 'GROOVE'), titulo: 'Grooves por estilo', sub: 'Seis levadas para você tocar junto com muita música.', corpo: `${EST.map(cardEst).join('')}${L.dica('Como usar', 'escolha uma música que você gosta, descubra o andamento dela com o metrônomo do celular e toque a levada por cima, no seu ritmo.')}${L.caderno()}` });
 
 B.chimbal = () => { const aberto = (() => { const evs = groove({ hh: 'x.x.x.x.x.x.x...', sn: SN, bd: BD }); evs.push(ev('ho', 14, 2)); return L.comContagem(sem(evs), evs); })(); const disco = (() => { const evs = [...groove({ hh: 'x...x...x...x...', sn: SN, bd: 'x...x...x...x...' }, { passo: 4 })]; [2, 6, 10, 14].forEach((i) => evs.push(ev('ho', i, 2))); return L.comContagem(sem(evs), evs); })(); return pg({ tag: T('chimbal', 'GROOVE'), titulo: 'Chimbal aberto e fechado', sub: 'O mesmo instrumento com dois sons: curto e longo.', corpo: `
 <table class="t"><tr><th>Chimbal</th><th>Como fazer</th><th>Som</th><th>Na partitura</th></tr><tr><td><b>Fechado</b></td><td>pedal pressionado, pratos juntos</td><td>curto e seco</td><td>“x”</td></tr><tr><td><b>Aberto</b></td><td>pedal solto, pratos afastados</td><td>longo, chiado</td><td>“x” com círculo (o)</td></tr></table>
@@ -147,7 +146,7 @@ ${L.card('Rock com chimbal aberto no “&” do 4', 'o último “&” do compas
 ${L.card('Disco: aberto em todos os “&”', 'chimbal fechado nos tempos e aberto no “&”, bumbo em todos os tempos', disco, 'A mão direita sobe e desce a cada colcheia: bate o fechado no tempo e o aberto no “&”.')}
 ${L.dica('Dica de estudo', 'treine o movimento do pé sozinho: pise (fechado) e solte (aberto) no tempo do metrônomo antes de juntar com a mão.')}` }); };
 
-B.estilos2 = () => { const disco = (() => { const evs = groove({ hh: 'x...x...x...x...', sn: SN, bd: 'x...x...x...x...' }, { passo: 4 }); [2, 6, 10, 14].forEach((i) => evs.push(ev('ho', i, 2))); return L.comContagem(sem(evs, 430), evs); })(); const funk = nota({ hh: HH16, sn: '....X..o.o..X...', bd: 'x.....x...x.....' }, { passo: 1 }); const slow = nota({ hh: 'x...x...x...x...', sn: SN, bd: 'x.....x.x.......' }, { passo: 4 }); return pg({ tag: T('estilos2', 'GROOVE'), titulo: 'Mais três grooves', sub: 'Para quando os seis primeiros já estiverem confortáveis.', corpo: `
+B.estilos2 = () => { const disco = (() => { const evs = groove({ hh: 'x...x...x...x...', sn: SN, bd: 'x...x...x...x...' }, { passo: 4 }); [2, 6, 10, 14].forEach((i) => evs.push(ev('ho', i, 2))); return L.comContagem(sem(evs), evs); })(); const funk = nota({ hh: HH16, sn: '....X..o.o..X...', bd: 'x.....x...x.....' }, { passo: 1 }); const slow = nota({ hh: 'x...x...x...x...', sn: SN, bd: 'x.....x.x.......' }, { passo: 4 }); return pg({ tag: T('estilos2', 'GROOVE'), titulo: 'Mais três grooves', sub: 'Para quando os seis primeiros já estiverem confortáveis.', corpo: `
 ${L.card('7 · Disco', 'dance · 110 a 120 bpm', disco, 'Bumbo em todos os tempos, caixa no 2 e no 4 e chimbal aberto no “&”.')}
 ${L.card('8 · Funk com notas fantasma', 'funk e soul · 85 a 95 bpm', funk.svg, 'As notas fantasma na caixa (entre parênteses) dão o balanço. Toque-as bem baixinho.')}
 ${L.card('9 · Rock lento', 'baladas e rock · 65 a 80 bpm', slow.svg, 'Chimbal só nos tempos, bumbo sincopado. Dá espaço para a voz.')}
@@ -200,12 +199,12 @@ ${L.dica('Dica de estudo', 'grave 30 segundos tocando o groove com e sem dinâmi
 
 B.indep = () => pg({ tag: T('indep', 'EXPRESSÃO'), titulo: 'Independência: o ostinato', sub: 'Quando as mãos repetem e o pé aprende coisas novas.', corpo: `
 <p><b>Ostinato</b> é uma parte que se repete sem parar. No groove, o chimbal é o ostinato: ele não pode mudar enquanto o pé faz coisas diferentes. Treine em 4 degraus:</p>
-<div class="grade2">${[['Degrau 1 · bumbo nos tempos', 'x · · · x · · · x · · · x · · ·', 'x...x...x...x...', 'Bumbo em todos os tempos.'], ['Degrau 2 · bumbo sincopado', 'bumbo no “&” do 2 e no “&” do 4', 'x.....x.x.....x.', 'Conte só o bumbo em voz alta antes.'], ['Degrau 3 · bumbo na frente', 'bumbo no 1, no “&” do 1 e no 3', 'x.x.....x.......', 'O pé toca duas vezes seguidas.'], ['Degrau 4 · mistura', 'bumbo no 1, “&” do 2, “&” do 3 e 4', 'x.....x...x.x...', 'Vá a 55 bpm e não tenha pressa.']].map(([t, m, bd, tx]) => L.card(t, m, nota({ hh: HH8, sn: SN, bd }, {}, 430).svg, tx)).join('')}</div>
+<div class="grade2">${[['Degrau 1 · bumbo nos tempos', 'x · · · x · · · x · · · x · · ·', 'x...x...x...x...', 'Bumbo em todos os tempos.'], ['Degrau 2 · bumbo sincopado', 'bumbo no “&” do 2 e no “&” do 4', 'x.....x.x.....x.', 'Conte só o bumbo em voz alta antes.'], ['Degrau 3 · bumbo na frente', 'bumbo no 1, no “&” do 1 e no 3', 'x.x.....x.......', 'O pé toca duas vezes seguidas.'], ['Degrau 4 · mistura', 'bumbo no 1, “&” do 2, “&” do 3 e 4', 'x.....x...x.x...', 'Vá a 55 bpm e não tenha pressa.']].map(([t, m, bd, tx]) => L.card(t, m, nota({ hh: HH8, sn: SN, bd }).svg, tx)).join('')}</div>
 ${L.dica('Dica de estudo', 'se o chimbal começar a acompanhar o bumbo, pare, respire e recomece só com o chimbal por 8 compassos. é normal: o cérebro está se reorganizando.')}` });
 
 B.leitura = () => { const pads = ['x...x...x...x...', 'x.x.x.x.x.x.x.x.', 'x...x.x.x...x.x.', 'x.x...x.x.x...x.', 'x...x.......x...', 'xxxxx.x.x...x.x.']; return pg({ tag: T('leitura', 'EXPRESSÃO'), titulo: 'Leitura rítmica na caixa', sub: 'Seis compassos para ler à primeira vista. Só a caixa, 60 bpm.', corpo: `
 <p>Ler ritmo é uma habilidade que se treina como qualquer outra. Para cada compasso: <b>1)</b> conte em voz alta, <b>2)</b> bata com as mãos na coxa, <b>3)</b> toque na caixa.</p>
-<div class="grade2">${pads.map((l, i) => L.card(`Compasso ${i + 1}`, i === 5 ? 'misturando semicolcheias e colcheias' : 'só caixa, uma peça', nota({ sn: l }, { passo: i === 5 ? 1 : i === 0 || i === 4 ? 4 : 2 }, 430).svg, '')).join('')}</div>
+<div class="grade2">${pads.map((l, i) => L.card(`Compasso ${i + 1}`, i === 5 ? 'misturando semicolcheias e colcheias' : 'só caixa, uma peça', nota({ sn: l }, { passo: i === 5 ? 1 : i === 0 || i === 4 ? 4 : 2 }).svg, '')).join('')}</div>
 <ol class="passos"><li>Leia cada compasso <b>sem tocar</b>, só contando.</li><li>Toque devagar, sem parar entre os compassos.</li><li>Junte os seis em sequência, sem pausa, como uma música.</li></ol>
 ${L.dica('Dica de estudo', 'escolha um novo compasso por dia e invente mais, mudando só uma nota. criar o seu próprio exercício também ensina a ler.')}` }); };
 
@@ -243,7 +242,7 @@ ${L.dica('Lembre-se', `dor forte no ombro, punho ou costas é sinal de parar. de
 
 const DES = [['rock', { hh: HH8, sn: SN, bd: BD }], ['meio-tempo', { hh: HH8, sn: '........x.......', bd: 'x...............' }], ['quatro no chão', { hh: HH8, sn: SN, bd: 'x...x...x...x...' }], ['one drop', { hh: HH8, sn: '........x.......', bd: '........x.......' }]];
 B.desafios = () => pg({ tag: T('desafios', 'JOGOS'), titulo: 'Desafios no papel', sub: 'Pegue um lápis. As respostas estão na página seguinte.', corpo: `
-<div class="grade2">${DES.map(([, l], i) => L.card(`${i + 1} · Que groove é este?`, 'escolha: rock · meio-tempo · quatro no chão · one drop', nota(l, {}, 430).svg)).join('')}</div>
+<div class="grade2">${DES.map(([, l], i) => L.card(`${i + 1} · Que groove é este?`, 'escolha: rock · meio-tempo · quatro no chão · one drop', nota(l).svg)).join('')}</div>
 <h2 class="s">Perguntas rápidas</h2>
 <ol class="passos"><li>Em 4/4, quantos tempos tem um compasso?</li><li>A caixa fica em qual espaço da pauta?</li><li>O que significa o símbolo “>” sobre uma nota?</li><li>Quantas colcheias cabem em um compasso 4/4?</li><li>Em que tempo a caixa toca no groove de rock?</li><li>O que é um ostinato?</li><li>O que é uma pausa?</li><li>Qual chimbal soa mais longo: o aberto ou o fechado?</li></ol>
 ${L.dica('Dica de estudo', 'depois de responder, toque cada groove e confira se a mão sabe o que o olho leu.')}` });
@@ -276,7 +275,7 @@ B.plano8 = () => pg({ tag: 'PLANO · 8 semanas', titulo: 'Do groove à música c
 <h2 class="s">Como foi cada semana</h2><table class="t"><tr><th>Semana</th><th>O que consegui?</th><th>O que vou melhorar?</th></tr>${[5, 6, 7, 8].map((n) => `<tr><td><b>${n}</b></td><td style="height:14mm"></td><td></td></tr>`).join('')}</table>
 ${L.dica('Lembre-se', 'o progresso entre as semanas 5 e 8 é mais lento do que no começo. isso é normal: você já aprendeu o básico e agora está refinando.')}` });
 
-B.registro = () => { const col = (a, b) => `<table class="t" style="table-layout:fixed"><tr><th style="width:9mm">Dia</th><th style="width:13mm">Min.</th><th>O que toquei</th></tr>${Array.from({ length: b - a + 1 }, (_, i) => `<tr><td style="height:8.6mm"><b>${a + i}</b></td><td></td><td></td></tr>`).join('')}</table>`; return pg({ tag: 'REGISTRO', titulo: 'Os seus 30 dias', sub: 'Anote o tempo e o que tocou. Ver o caderno cheio é o melhor motivador.', corpo: `<div class="grade2">${col(1, 15)}${col(16, 30)}</div>${L.dica('Como preencher', 'escreva só o essencial: “groove 1, 60 bpm, 3 acertos”. se um dia você não tocou, deixe em branco e volte no dia seguinte, sem culpa.')}` }); };
+B.registro = () => { const col = (a, b) => `<table class="t" style="table-layout:fixed"><tr><th style="width:9mm">Dia</th><th style="width:13mm">Min.</th><th>O que toquei</th></tr>${Array.from({ length: b - a + 1 }, (_, i) => `<tr><td style="height:8.6mm"><b>${a + i}</b></td><td></td><td></td></tr>`).join('')}</table>`; return pg({ tag: 'REGISTRO', titulo: 'Os seus 30 dias', sub: 'Anote o tempo e o que tocou. Ver o caderno cheio é o melhor motivador.', corpo: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8mm">${col(1, 15)}${col(16, 30)}</div>${L.dica('Como preencher', 'escreva só o essencial: “groove 1, 60 bpm, 3 acertos”. se um dia você não tocou, deixe em branco e volte no dia seguinte, sem culpa.')}` }); };
 
 B.glossario = () => pg({ tag: 'GLOSSÁRIO', titulo: 'Palavras que você vai ouvir', sub: 'Para conversar com outros músicos sem dúvida.', corpo: `
 <table class="t"><tr><th>Termo</th><th>O que é</th></tr>
@@ -295,14 +294,16 @@ B.folha1 = () => pg({ tag: 'FOLHA PARA IMPRIMIR', titulo: 'Pauta de bateria em b
 B.folha2 = () => { const rows = ['prato', 'chimbal', 'caixa', 'tom 1', 'tom 2', 'surdo', 'bumbo']; const cab = ['1', 'e', '&', 'a', '2', 'e', '&', 'a', '3', 'e', '&', 'a', '4', 'e', '&', 'a']; const tabela = (t) => `<p class="tag" style="margin-top:3mm">${t}</p><table class="t" style="table-layout:fixed"><tr><th style="width:16mm"></th>${cab.map((c) => `<th style="text-align:center;padding:1mm 0">${c}</th>`).join('')}</tr>${rows.map((r) => `<tr><td style="padding:.8mm 2mm;font-size:8pt"><b>${r}</b></td>${cab.map((_, i) => `<td style="height:5mm;border-left:${i % 4 === 0 ? '.45mm solid #b8913f' : '.15mm solid #e3dac4'}"></td>`).join('')}</tr>`).join('')}</table>`; return pg({ tag: 'FOLHA PARA IMPRIMIR', titulo: 'Monte seus grooves', sub: 'Marque com um “x” onde cada peça toca. A linha dourada separa os tempos.', corpo: tabela('Groove 1') + tabela('Groove 2') + tabela('Groove 3') }); };
 
 /* ================= montagem ================= */
-const tambor = `<svg viewBox="0 0 200 200" width="200" height="200" fill="none" stroke="#e7c987" stroke-width="1.1"><circle cx="100" cy="100" r="92"/><circle cx="100" cy="100" r="84" stroke-opacity=".6"/><circle cx="100" cy="100" r="62" stroke-width="1.6"/><circle cx="100" cy="100" r="54" stroke-opacity=".5"/><circle cx="100" cy="100" r="8" fill="#e7c987" stroke="none"/>${Array.from({ length: 12 }, (_, i) => { const a = (i * 30) * Math.PI / 180; return `<line x1="${100 + 62 * Math.cos(a)}" y1="${100 + 62 * Math.sin(a)}" x2="${100 + 84 * Math.cos(a)}" y2="${100 + 84 * Math.sin(a)}" stroke-opacity=".55"/><circle cx="${100 + 88 * Math.cos(a)}" cy="${100 + 88 * Math.sin(a)}" r="2.2" fill="#e7c987" stroke="none"/>`; }).join('')}<path d="M52 150 L96 104 M148 150 L104 104" stroke-width="2.4" stroke-linecap="round"/></svg>`;
-const P = []; P.push(L.capa({ t1: 'bateria', t2: 'para adultos', lema: 'da primeira baqueta ao primeiro groove, em 15 minutos por dia', arte: tambor, faixa: 'apostila de bateria · método Beaterista', adesivo: 'toque no seu ritmo ✦' }));
-P.push('@@SUMARIO@@'); L.pular();
+const NUMS = process.env.NUMS && existsSync(process.env.NUMS) ? JSON.parse(readFileSync(process.env.NUMS, 'utf8')) : {};
+const modulos = MODS.map((m, i) => ({ livro: NOME, nome: m[1] ? `MÓDULO ${String(i + 1).padStart(2, '0')} · ${m[1].toUpperCase()}` : 'PARA LEVAR' }));
+const P = []; P.push(L.capa({ tipo: 'bateria', t1: 'bateria', t2: 'para adultos', lema: 'da primeira baqueta ao primeiro groove, em 15 minutos por dia.' }));
+const sumPos = P.length; P.push('');
 for (const [i, m] of MODS.entries()) {
-  if (m[1]) P.push(L.divisor({ modulo: i + 1, titulo: m[1], citacao: m[2], texto: m[3], itens: m[4].filter((id) => id !== 'respostas').map((id) => [N(id), TITULOS[id]]), nome: NOME }));
-  for (const id of m[4]) { if (id === 'estilos') { reg[id] = L.paginaAtual() + 1; P.push(B.estilos(), B.estilos_b()); continue; } if (id === 'folha1') { reg[id] = L.paginaAtual() + 1; P.push(B.folha1(), B.folha2()); continue; } if (id === 'folha2') continue; reg[id] = L.paginaAtual() + 1; P.push(B[id]()); }
+  MODI = i;
+  if (m[1]) P.push(L.divisor({ modulo: i + 1, titulo: m[1], citacao: m[2], itens: m[4].filter((id) => id !== 'respostas').map((id) => [N(id), TITULOS[id]]), nome: NOME }));
+  for (const id of m[4]) { if (id === 'folha2') continue; IDATUAL = id; P.push(B[id]()); if (id === 'folha1') { IDATUAL = 'folha2'; P.push(B.folha2()); } }
 }
-const sum = L.sumario(MODS.map((m, i) => [m[0], m[4].filter((id) => !['folha2', 'respostas'].includes(id)).map((id) => [['plano4', 'plano8', 'registro', 'glossario', 'proximo', 'folha1'].includes(id) ? '·' : N(id), TITULOS[id], reg[id]])]), NOME, 'cada groove desta apostila foi escrito no Beaterista PRO: o mesmo desenho que você vê aqui abre no editor, toca e dá para imprimir.', 2);
-P[1] = sum;
-writeFileSync('/tmp/apo/bateria.html', L.doc(P, 'Bateria para adultos · Beaterista', 'vinho'));
-console.log('páginas:', P.length);
+P[sumPos] = L.sumario(MODS.map((m) => [m[0], m[4].filter((id) => !['folha2', 'respostas'].includes(id)).map((id) => [['plano4', 'plano8', 'registro', 'glossario', 'proximo', 'folha1'].includes(id) ? '·' : N(id), TITULOS[id], NUMS[id] || ''])]), NOME, 'cada groove desta apostila foi escrito no Beaterista PRO: o mesmo desenho que você vê aqui abre no editor, toca e dá para imprimir.');
+writeFileSync('/tmp/apo/bateria.html', L.doc(P, 'Bateria para adultos · Beaterista', 'vinho', modulos));
+console.log('seções:', P.length);
+console.log(JSON.stringify(MODS.flatMap((m) => m[4])));

@@ -1,31 +1,31 @@
 // Apostila "Teclado do zero" — mesmo livro da apostila de violão (azul e dourado). Pautas feitas pelo motor do Beaterista PRO; teclados desenhados aqui.
 import { melodia, svgTeclado } from './notas.mjs';
-import * as L from './lib.mjs';
+import * as L from './lib-premium.mjs';
+import { readFileSync, existsSync } from 'node:fs';
 import { writeFileSync } from 'node:fs';
-const NOME = 'Teclado do zero · Beaterista';
-const PROMO = ['quer aula? <i>beaterista.com.br</i> · escola em Araçatuba', 'dúvida? chame a escola no WhatsApp <i>18 991804150</i>', 'quer a bateria também? conheça os guias no <i>beaterista.com.br</i>'];
-let pr = 0; const promo = () => PROMO[pr++ % PROMO.length];
-const pg = (o) => L.pagina({ ...o, nome: NOME, promo: promo() });
+const NOME = 'TECLADO DO ZERO';
+let MODI = 0; let IDATUAL = '';
+const pg = (o) => L.pagina({ ...o, modulo: MODI, id: IDATUAL });
 const NOTAS = ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si']; const nm = (m) => NOTAS[((m % 12) + 12) % 12];
 const BR = [0, 2, 4, 5, 7, 9, 11]; const PRETA_APOS = { 0: 1, 2: 3, 5: 6, 7: 8, 9: 10 }; // pc da branca → pc da preta logo à direita
 /** Teclado desenhado: de `de` (um Dó) a `ate` (inclusive). `lit` = { midi: 'rótulo' } teclas em destaque; `todos` = escreve o nome em todas as brancas. */
 export function teclas({ de = 60, ate = 72, lit = {}, todos = false, largura = 330, nomesPretas = false } = {}) {
   const brancas = []; for (let m = de; m <= ate; m++) if (BR.includes(m % 12)) brancas.push(m); const kw = 22; const W = brancas.length * kw; const H = 92; let o = '';
-  brancas.forEach((m, i) => { const on = lit[m] !== undefined; o += `<rect x="${i * kw}" y="0" width="${kw - 1}" height="${H}" rx="2" fill="${on ? '#e8c46a' : '#fff'}" stroke="#1d2236" stroke-width="1"/>`; const r = on ? lit[m] : (todos ? nm(m) : (m % 12 === 0 ? 'Dó' : '')); if (r) o += `<text x="${i * kw + kw / 2 - .5}" y="${H - 7}" text-anchor="middle" font-size="${on ? 8.6 : 8}" font-weight="700" fill="#0e1a3a" font-family="Hanken, sans-serif">${r}</text>`; });
-  brancas.forEach((m, i) => { const p = PRETA_APOS[m % 12]; if (p === undefined || m + 1 > ate) return; const mm = m + 1; const on = lit[mm] !== undefined; o += `<rect x="${i * kw + kw * .66}" y="0" width="${kw * .66}" height="${H * .58}" rx="1.6" fill="${on ? '#c9962b' : '#1d2236'}"/>`; if (on) o += `<text x="${i * kw + kw}" y="${H * .5}" text-anchor="middle" font-size="7.4" font-weight="700" fill="#fff" font-family="Hanken, sans-serif">${lit[mm]}</text>`; else if (nomesPretas) o += `<text x="${i * kw + kw}" y="${H * .5}" text-anchor="middle" font-size="6.4" font-weight="700" fill="#e8c46a" font-family="Hanken, sans-serif">${nm(mm)}</text>`; });
+  brancas.forEach((m, i) => { const on = lit[m] !== undefined; o += `<rect x="${i * kw}" y="0" width="${kw - 1}" height="${H}" rx="2" fill="${on ? '#e8c46a' : '#fff'}" stroke="#1d2236" stroke-width="1"/>`; const r = on ? lit[m] : (todos ? nm(m) : (m % 12 === 0 ? 'Dó' : '')); if (r) o += `<text x="${i * kw + kw / 2 - .5}" y="${H - 7}" text-anchor="middle" font-size="${on ? 11.5 : 11}" font-weight="700" fill="#0e1a3a" font-family="Hanken, sans-serif">${r}</text>`; });
+  brancas.forEach((m, i) => { const p = PRETA_APOS[m % 12]; if (p === undefined || m + 1 > ate) return; const mm = m + 1; const on = lit[mm] !== undefined; o += `<rect x="${i * kw + kw * .66}" y="0" width="${kw * .66}" height="${H * .58}" rx="1.6" fill="${on ? '#c9962b' : '#1d2236'}"/>`; if (on) o += `<text x="${i * kw + kw}" y="${H * .5}" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="Hanken, sans-serif">${lit[mm]}</text>`; else if (nomesPretas) o += `<text x="${i * kw + kw}" y="${H * .5}" text-anchor="middle" font-size="9" font-weight="800" fill="#e8c46a" font-family="Hanken, sans-serif">${nm(mm)}</text>`; });
   return `<svg viewBox="-1 -1 ${W + 2} ${H + 2}" width="${largura}" xmlns="http://www.w3.org/2000/svg">${o}</svg>`;
 }
 const acordeKbd = (nome, notas, tipo, g = false) => `<div class="kbd${g ? ' g' : ''}">${teclas({ de: 60, ate: 76, lit: Object.fromEntries(notas.map((m) => [m, nm(m)])), largura: 150 })}${nome}<br><span style="font-weight:400;color:#6b6a78">${tipo}</span></div>`;
 /** Nomes embaixo das notas de uma pauta de 1 sistema. */
-const comNomes = (svg, evs) => { const col = new Map(); for (const m of svg.matchAll(/<g class="pm-n[^"]*" data-ev="(\d+)"><rect x="([\d.]+)" y="[\d.]+" width="([\d.]+)"/g)) { const e = evs[+m[1]]; if (e) col.set(Math.round(+m[2] + (+m[3]) / 2), { x: +m[2] + (+m[3]) / 2, e }); } const vb = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); if (!vb || !col.size) return svg; const W = +vb[1]; const H = +vb[2]; const lbl = [...col.values()].map((c) => `<text x="${c.x}" y="${H + 12}" text-anchor="middle" font-size="11" font-weight="700" fill="#b8913f" font-family="Hanken, sans-serif">${nm(c.e.m)}</text>`).join(''); return svg.replace(/viewBox="0 0 [\d.]+ [\d.]+"/, `viewBox="0 0 ${W} ${H + 18}"`).replace('</svg>', `${lbl}</svg>`); };
-const pauta = (lista, { clave = 'sol', larg = 640, nomes = true } = {}) => { const evs = melodia(lista); const svg = svgTeclado(evs, larg, { clave }); return nomes ? comNomes(svg, evs) : svg; };
+const comNomes = (svg, evs) => { const col = new Map(); for (const m of svg.matchAll(/<g class="pm-n[^"]*" data-ev="(\d+)"><rect x="([\d.]+)" y="[\d.]+" width="([\d.]+)"/g)) { const e = evs[+m[1]]; if (e) col.set(Math.round(+m[2] + (+m[3]) / 2), { x: +m[2] + (+m[3]) / 2, e }); } const vb = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/); if (!vb || !col.size) return svg; const W = +vb[1]; const H = +vb[2]; const lbl = [...col.values()].map((c) => `<text x="${c.x}" y="${H + 17}" text-anchor="middle" font-size="17" font-weight="900" style="fill:var(--v)" font-family="Hanken, sans-serif">${nm(c.e.m)}</text>`).join(''); return svg.replace(/viewBox="0 0 [\d.]+ [\d.]+"/, `viewBox="0 0 ${W} ${H + 24}"`).replace('</svg>', `${lbl}</svg>`); };
+const pauta = (lista, { clave = 'sol', larg = 580, nomes = true } = {}) => { const evs = melodia(lista); const svg = svgTeclado(evs, larg, { clave }); return nomes ? comNomes(svg, evs) : svg; };
 const Q = 4, M = 8, SB = 16; // semínima, mínima, semibreve (em semicolcheias)
 const seq = (midis, d = Q) => midis.map((m) => [m, d]);
 
-const sis = (evs, clave = 'sol') => svgTeclado(evs, 800, { clave });
+const sis = (evs, clave = 'sol') => svgTeclado(evs, 640, { clave }).replace('<svg ', '<svg class="alto" ');
 const MODS = [
   ['Módulo 1 · Primeiros passos', 'Primeiros passos', 'O primeiro acorde é o mais difícil. Todos os outros ficam mais fáceis depois dele.', 'Conhecer o teclado, posicionar as mãos e ler a pauta: o mapa que leva você da tecla ao som.', ['como', 'notas', 'postura', 'pauta', 'equip']],
-  ['Módulo 2 · Mão direita e mão esquerda', 'Mão direita e mão esquerda', 'Dedo doendo é calo nascendo. É o teclado te dando um crachá.', 'Primeiro as notas da mão direita, depois a esquerda, e por fim as duas juntas.', ['aquec', 'primeiras', 'ritmo', 'melodias', 'melodias2', 'fa', 'esquerda', 'intervalos', 'duas']],
+  ['Módulo 2 · As duas mãos', 'As duas mãos', 'Dedo doendo é calo nascendo. É o teclado te dando um crachá.', 'Primeiro as notas da mão direita, depois a esquerda, e por fim as duas juntas.', ['aquec', 'primeiras', 'ritmo', 'melodias', 'melodias2', 'fa', 'esquerda', 'intervalos', 'duas']],
   ['Módulo 3 · Acordes e ritmo', 'Acordes e ritmo', 'Cada repetição fortalece a conexão entre os seus neurônios. Literalmente.', 'Acordes são três notas tocadas juntas. Com poucos você acompanha centenas de músicas.', ['maiores', 'menores', 'trocas', 'inversoes', 'acomp', 'express', 'treino', 'dicas']],
   ['Módulo 4 · Mais avançado', 'Mais avançado', 'Entender a música por dentro transforma quem só repete em quem cria.', 'Escalas, tom e semitom, teclas pretas e o campo harmônico: o que organiza toda a música.', ['escala', 'tom', 'campo']],
   ['Hora de brincar', null, null, null, ['desafios', 'respostas']],
@@ -252,7 +252,7 @@ B.plano8 = () => pg({ tag: 'PLANO · 8 semanas', titulo: 'Da melodia à música 
 <h2 class="s">Metas de andamento</h2><table class="t"><tr><th>Exercício</th><th>Sem. 5</th><th>Sem. 6</th><th>Sem. 7</th><th>Sem. 8</th></tr><tr><td>Escala de Dó (direita)</td><td>70 bpm</td><td>75 bpm</td><td>80 bpm</td><td>85 bpm</td></tr><tr><td>Troca C → G → Am → F</td><td>60 bpm</td><td>65 bpm</td><td>70 bpm</td><td>75 bpm</td></tr><tr><td>Duas mãos</td><td>55 bpm</td><td>60 bpm</td><td>65 bpm</td><td>70 bpm</td></tr></table>
 <h2 class="s">Como foi cada semana</h2><table class="t"><tr><th>Semana</th><th>O que consegui?</th><th>O que vou melhorar?</th></tr>${[5, 6, 7, 8].map((n) => `<tr><td><b>${n}</b></td><td style="height:14mm"></td><td></td></tr>`).join('')}</table>
 ${L.dica('Lembre-se', 'o progresso entre as semanas 5 e 8 é mais lento do que no começo. isso é normal: você já aprendeu o básico e agora está refinando.')}` });
-B.registro = () => { const col = (a, b) => `<table class="t" style="table-layout:fixed"><tr><th style="width:9mm">Dia</th><th style="width:13mm">Min.</th><th>O que toquei</th></tr>${Array.from({ length: b - a + 1 }, (_, i) => `<tr><td style="height:8.6mm"><b>${a + i}</b></td><td></td><td></td></tr>`).join('')}</table>`; return pg({ tag: 'REGISTRO', titulo: 'Os seus 30 dias', sub: 'Anote o tempo e o que tocou. Ver o caderno cheio é o melhor motivador.', corpo: `<div class="grade2">${col(1, 15)}${col(16, 30)}</div>${L.dica('Como preencher', 'escreva só o essencial: “escala de Dó, 60 bpm, 3 acertos”. se um dia você não tocou, deixe em branco e volte no dia seguinte, sem culpa.')}` }); };
+B.registro = () => { const col = (a, b) => `<table class="t" style="table-layout:fixed"><tr><th style="width:9mm">Dia</th><th style="width:13mm">Min.</th><th>O que toquei</th></tr>${Array.from({ length: b - a + 1 }, (_, i) => `<tr><td style="height:8.6mm"><b>${a + i}</b></td><td></td><td></td></tr>`).join('')}</table>`; return pg({ tag: 'REGISTRO', titulo: 'Os seus 30 dias', sub: 'Anote o tempo e o que tocou. Ver o caderno cheio é o melhor motivador.', corpo: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8mm">${col(1, 15)}${col(16, 30)}</div>${L.dica('Como preencher', 'escreva só o essencial: “escala de Dó, 60 bpm, 3 acertos”. se um dia você não tocou, deixe em branco e volte no dia seguinte, sem culpa.')}` }); };
 B.glossario = () => pg({ tag: 'GLOSSÁRIO', titulo: 'Palavras que você vai ouvir', sub: 'Para conversar com outros músicos sem dúvida.', corpo: `
 <table class="t"><tr><th>Termo</th><th>O que é</th></tr>
 ${[['Acorde', 'Três ou mais notas tocadas ao mesmo tempo.'], ['Arpejo', 'As notas de um acorde tocadas uma de cada vez.'], ['Cifra', 'A letra que representa um acorde: C, Dm, G7…'], ['Clave', 'O símbolo no começo da pauta que diz quais são as notas.'], ['Compasso', 'Um bloco de tempos. Em 4/4, quatro tempos por compasso.'], ['Dinâmica', 'A variação de volume: forte, fraco, crescendo…'], ['Escala', 'Sequência de notas em ordem, como a escala de Dó maior.'], ['Intervalo', 'A distância entre duas notas.'], ['Inversão', 'O mesmo acorde com outra nota embaixo.'], ['Legato', 'Tocar ligado, sem separar as notas.'], ['Oitava', 'A distância entre uma nota e a próxima com o mesmo nome.'], ['Pedal', 'O pedal de sustentação, que prolonga o som.'], ['Pentatônica', 'Escala de cinco notas, boa para improvisar.'], ['Semitom', 'A menor distância entre duas teclas vizinhas.'], ['Staccato', 'Tocar curto, destacando cada nota.'], ['Tom', 'Dois semitons. Também significa o “tom” da música: a nota base.']].map(([t, x]) => `<tr><td><b>${t}</b></td><td>${x}</td></tr>`).join('')}</table>` });
@@ -268,14 +268,16 @@ const tec = () => `<div style="margin:4mm 0">${teclas({ de: 48, ate: 84, largura
 B.folha2 = () => pg({ tag: 'FOLHA PARA IMPRIMIR', titulo: 'Seu teclado em branco', sub: 'Pinte as teclas e escreva o nome das notas.', corpo: `${tec()}${tec()}<p class="mut">Pinte as teclas de cada acorde e escreva o nome dele ao lado:</p>${[1, 2, 3, 4].map(() => `<div style="display:flex;align-items:center;gap:6mm;margin:2mm 0">${teclas({ de: 60, ate: 76, largura: 220 })}<span style="border-bottom:.3mm solid #b8913f;flex:1;height:7mm"></span></div>`).join('')}` });
 
 /* montagem */
-const arte = (() => { const w = 22; let o = ''; for (let i = 0; i < 14; i++) o += `<rect x="${i * w}" y="0" width="${w - 1.5}" height="78" rx="2" fill="none" stroke="#d9b866" stroke-width="1.1"/>`; [0, 1, 3, 4, 5, 7, 8, 10, 11, 12].forEach((i) => { o += `<rect x="${i * w + 15}" y="0" width="14" height="46" rx="1.5" fill="#d9b866"/>`; }); return `<svg viewBox="0 0 ${14 * w} 80" width="${14 * w * .95}" height="76" xmlns="http://www.w3.org/2000/svg">${o}</svg>`; })();
-const P = []; P.push(L.capa({ t1: 'teclado', t2: 'do zero', lema: 'da primeira tecla à primeira música', arte, faixa: 'apostila de teclado · método Beaterista', adesivo: 'toque no seu ritmo ✦' }));
-P.push('@@SUMARIO@@'); L.pular();
+const NUMS = process.env.NUMS && existsSync(process.env.NUMS) ? JSON.parse(readFileSync(process.env.NUMS, 'utf8')) : {};
+const modulos = MODS.map((m, i) => ({ livro: NOME, nome: m[1] ? `MÓDULO ${String(i + 1).padStart(2, '0')} · ${m[1].toUpperCase()}` : (m[0] === 'Hora de brincar' ? 'HORA DE BRINCAR' : 'PARA LEVAR') }));
+const P = []; P.push(L.capa({ tipo: 'teclado', t1: 'teclado', t2: 'do zero', lema: 'da primeira tecla à primeira música, em 15 minutos por dia.' }));
+const sumPos = P.length; P.push('');
 for (const [i, m] of MODS.entries()) {
-  if (m[1]) P.push(L.divisor({ modulo: i + 1, titulo: m[1], citacao: m[2], texto: m[3], itens: m[4].map((id) => [N(id), TITULOS[id]]), nome: NOME }));
-  for (const id of m[4]) { if (id === 'folha1') { reg[id] = L.paginaAtual() + 1; P.push(B.folha1(), B.folha2()); continue; } if (id === 'folha2') continue; reg[id] = L.paginaAtual() + 1; P.push(B[id]()); }
+  MODI = i;
+  if (m[1]) P.push(L.divisor({ modulo: i + 1, titulo: m[1], citacao: m[2], itens: m[4].map((id) => [N(id), TITULOS[id]]), nome: NOME }));
+  for (const id of m[4]) { if (id === 'folha2') continue; IDATUAL = id; P.push(B[id]()); if (id === 'folha1') { IDATUAL = 'folha2'; P.push(B.folha2()); } }
 }
-const sum = L.sumario(MODS.map((m) => [m[0], m[4].filter((id) => !['folha2', 'respostas'].includes(id)).map((id) => [SEMNUM.includes(id) ? '·' : N(id), TITULOS[id], reg[id]])]), NOME, '', 2);
-P[1] = sum;
-writeFileSync('/tmp/apo/teclado.html', L.doc(P, 'Teclado do zero · Beaterista', 'azul'));
-console.log('páginas:', P.length);
+P[sumPos] = L.sumario(MODS.map((m) => [m[0], m[4].filter((id) => !['folha2', 'respostas'].includes(id)).map((id) => [SEMNUM.includes(id) ? '·' : N(id), TITULOS[id], NUMS[id] || ''])]), NOME, '');
+writeFileSync('/tmp/apo/teclado.html', L.doc(P, 'Teclado do zero · Beaterista', 'azul', modulos));
+console.log('seções:', P.length);
+console.log(JSON.stringify(MODS.flatMap((m) => m[4])));
