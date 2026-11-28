@@ -211,7 +211,7 @@ function lendarias() {
 /** Barra fixa de compra: aparece quando o botão do topo sai da tela. */
 function barra(alvo) {
   const pr = precoPasse();
-  const b = h("div", { class: "ljv-barra", hidden: true }, h('div', {}, h('b', {}, pr.atual), h('small', {}, `passe anual · Pix${pr.oferta ? ` · até ${pr.ate}` : ''}`)), h('button', { type: 'button', class: 'ljv-cta', 'data-id': 'barra-pix', onclick: comprarPix }, 'Pagar no Pix'));
+  const b = h("div", { class: "ljv-barra bmr", hidden: true }, h('div', {}, h('b', {}, pr.atual), h('small', {}, `passe anual · Pix${pr.oferta ? ` · até ${pr.ate}` : ''}`)), h('button', { type: 'button', class: 'ljv-cta', 'data-id': 'barra-pix', onclick: comprarPix }, 'Pagar no Pix'));
   if (alvo && 'IntersectionObserver' in window) { const io = new IntersectionObserver(([e]) => { b.hidden = e.isIntersecting; }, { threshold: 0 }); io.observe(alvo); b.dataset.obs = '1'; }
   return b;
 }
@@ -237,7 +237,7 @@ export function vitrine(secao_ = '', { abrirCodigo, inicio = '#/inicio' } = {}) 
     h('div', { class: 'ljv-topo-l' }, h('a', { class: 'ljv-link', href: inicio }, '‹ voltar ao início'), h('button', { type: 'button', class: 'ljv-link', onclick: () => (abrirCodigo ? abrirCodigo() : toast('digite o código no fim da página')) }, 'já tenho um código')),
     h('nav', { class: 'ljv-nav', 'aria-label': 'seções da lojinha' }, ...nav.map(([id, t]) => h('button', { type: 'button', onclick: () => rolar(document.getElementById(`lj-${id}`)) }, t))));
   const heroEl = prem ? null : hero(); // quem já tem o passe vê os prêmios; quem não tem vê o topo que vende
-  const raiz = h('div', { class: 'ljv ljv-azul' }, topo, heroEl, prem || passe(), lendarias(), banners(), combos, banca(), universo, musicos, adultos, gratis(), resp);
+  const raiz = h('div', { class: 'ljv ljv-azul bmr' }, topo, heroEl, prem || passe(), lendarias(), banners(), combos, banca(), universo, musicos, adultos, gratis(), resp);
   // a barra de compra mora no <body> (um pai com efeito de tela quebrava o "fixo") e some quando a vitrine sai da tela
   document.querySelectorAll('.ljv-barra').forEach((x) => x.remove());
   if (heroEl) { const bar = barra(heroEl.querySelector('.ljv-cta')); document.body.append(bar); const solta = () => setTimeout(() => { if (!raiz.isConnected) { bar.remove(); window.removeEventListener('hashchange', solta); } }, 120); window.addEventListener('hashchange', solta); }
