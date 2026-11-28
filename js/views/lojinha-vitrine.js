@@ -100,6 +100,7 @@ function produtos(ids, { classe = '' } = {}) {
     painel.replaceChildren(
       h('div', { class: 'ljv-p-top' }, h('h3', {}, p.nome), p.tag ? h('span', { class: 'lj-selo' }, p.tag) : null),
       p.selo ? h('span', { class: 'ljv-selo' }, p.selo) : null,
+      fotos.length ? h('button', { type: 'button', class: 'ljv-dentro-link', 'aria-expanded': 'false', onclick: (e) => { const ab = painel.classList.toggle('aberto'); e.currentTarget.setAttribute('aria-expanded', String(ab)); e.currentTarget.textContent = ab ? 'esconder o por dentro ▴' : 'ver por dentro ▾'; } }, 'ver por dentro ▾') : null,
       fotos.length ? carrossel(fotos.slice(0, 3).map((f, i) => h('button', { type: 'button', class: `ljv-pag${i > 0 ? ' marca' : ''}`, 'aria-label': `ver a página ${i + 1} de ${p.nome}`, onclick: () => ampliar(p, i), oncontextmenu: (e) => e.preventDefault() },
         h('img', { src: f, alt: `${p.nome}, página ${i + 1}`, loading: 'lazy', draggable: 'false', onerror: (e) => { const b = e.target.closest('.ljv-pag'); if (b) b.remove(); } }))), { rotulo: `páginas de ${p.nome}`, cls: 'ljv-paginas' }) : null,
       h('div', { class: 'ljv-compra' }, precoEl(p), botao('Adquirir', p, 'amarelo')));
@@ -142,7 +143,7 @@ function banners() {
 function passe() {
   const pr = precoPasse();
   const telas = TELAS_PASSE.map((t) => h('figure', { class: `ljv-tela k-${t.k}` }, h('img', { src: t.img, alt: `Tela real do app: ${t.legenda}`, width: t.w, height: t.h, loading: 'lazy', draggable: 'false' }), h('figcaption', {}, t.legenda)));
-  return secao('passe', 'Passe Anual Beaterista PLAY', 'jogos, instrumentos virtuais, desafios e figurinhas', { src: 'assets/paul/animacoes/web/paul-comemoracao.webp', alt: 'Paul comemorando' },
+  return secao('passe', 'Dentro do passe', 'jogos, instrumentos virtuais, desafios e figurinhas', { src: 'assets/paul/animacoes/web/paul-comemoracao.webp', alt: 'Paul comemorando' },
     carrossel(telas, { rotulo: 'telas reais do app', cls: 'ljv-telas', pontos: false }),
     h('div', { class: 'ljv-chips' }, ...PILARES_PASSE.map(([k, t]) => h('span', { class: `ljv-chip k-${k}` }, t))),
     h('div', { class: 'ljv-passe' },
@@ -179,23 +180,67 @@ function gratis() {
     h('div', { class: 'ljv-gratis-grade' }, ...GRATIS_ITENS.map((it) => h('a', { class: 'ljv-gratis', href: it.href, onclick: it.href.startsWith('#lj-') ? (e) => { e.preventDefault(); rolar(document.getElementById(it.href.slice(1))); } : null }, h('img', { src: it.img, alt: '', loading: 'lazy', draggable: 'false' }), h('span', {}, h('b', {}, it.titulo), h('small', {}, it.frase))))));
 }
 
+
+// ---------- visual azul (pedido da Bea, 28/nov/2026): topo que vende, lendárias e barra de compra ----------
+const irPara = (url) => { const w = window.open(url, '_blank', 'noopener'); if (!w) location.href = url; };
+const comprarPix = () => irPara(PASSE.link);
+const comprarCartao = () => irPara(URL_CARTAO);
+const LENDARIAS_IMG = ['L01', 'L02', 'L03', 'L04', 'L05', 'L06'].map((c) => `assets/figurinhas/lendarias/${c}.webp`);
+
+/** Topo da vitrine: materiais do Paul (PDF pra imprimir). Os combos e o colorir vêm logo abaixo; o passe fica mais pra baixo. */
+function heroMateriais() {
+  return h('section', { class: 'ljv-hero ljv-hero-mat', id: 'lj-topo', 'aria-label': 'materiais do Paul' },
+    h('div', { class: 'ljv-hero-top' },
+      h('div', {}, h('small', { class: 'ljv-kick' }, 'lojinha do paul'), h('h1', {}, 'Música pra ', h('br'), 'imprimir, colorir ', h('br'), 'e brincar.')),
+      h('img', { class: 'ljv-hero-paul', src: 'assets/paul/animacoes/web/paul-comemoracao.webp', alt: 'Paul comemorando', width: 140, height: 140 })),
+    h('div', { class: 'ljv-hero-chips' }, h('span', {}, 'PDF na hora'), h('span', {}, 'pagamento único'), h('span', {}, 'pouca tinta')));
+}
+
+/** Passe anual (acesso aos jogos): título, preço, botão do Pix e do cartão. Fica depois dos combos e da banca. */
+function hero() {
+  const pr = precoPasse();
+  return h('section', { class: 'ljv-hero ljv-hero-passe', id: 'lj-acesso', 'aria-label': 'passe anual' },
+    h('div', { class: 'ljv-hero-top' },
+      h('div', {}, h('small', { class: 'ljv-kick' }, 'robôterista paul ensina'), h('h1', {}, 'Aprenda música ', h('br'), 'brincando com o Paul.')),
+      h('img', { class: 'ljv-hero-paul', src: 'assets/paul/animacoes/web/paul-presente.webp', alt: 'Paul segurando um presente', width: 140, height: 140 })),
+    h('div', { class: 'ljv-hero-preco' },
+      h('div', { class: 'ljv-hero-p' }, h('b', {}, pr.atual), h('small', {}, pr.oferta ? `no Pix · até ${pr.ate}` : 'no Pix')),
+      h('div', { class: 'ljv-hero-chips' }, h('span', {}, '12 meses'), h('span', {}, 'até 2 aparelhos'), h('span', {}, 'código no e-mail'))),
+    h('button', { type: 'button', class: 'ljv-cta', 'data-id': 'passe-pix', onclick: comprarPix }, 'Quero o passe · pagar no Pix'),
+    h('button', { type: 'button', class: 'ljv-cta2', 'data-id': 'passe-cartao', onclick: comprarCartao }, `ou no cartão · ${pr.cartao}`));
+}
+
+/** As 6 figurinhas lendárias (preto e dourado): só quem compra o combo ganha. */
+function lendarias() {
+  return h('section', { class: 'ljv-lend', id: 'lj-lendarias', 'aria-labelledby': 'lj-lendarias-t' },
+    h('small', { class: 'ljv-kick' }, 'exclusivas · lendárias'), h('h2', { id: 'lj-lendarias-t' }, '6 figurinhas que só quem compra o combo ganha'),
+    h('div', { class: 'ljv-fan', 'aria-hidden': 'true' }, ...LENDARIAS_IMG.map((src, i) => h('img', { src, alt: '', loading: 'lazy', draggable: 'false', style: `--i:${i}` }))),
+    h('p', {}, 'preto e dourado, fora da roleta. aparecem no seu álbum depois da compra.'));
+}
+
+
 const ALVO = { cards: 'banca', ensina: 'universo', evoluir: 'musicos' }; // rotas antigas #/lojinha/<seção>
 
 /** `secao` = rota antiga (cards | ensina | evoluir) ou id de seção: abre a vitrine já rolada até lá. `opts.abrirCodigo` = folha "já tenho meu código". */
 export function vitrine(secao_ = '', { abrirCodigo, inicio = '#/inicio' } = {}) {
   const universo = secao('universo', 'Universo Robôterista', 'as apostilas do Paul: toque na capa e folheie por dentro', { src: 'assets/entrada/paul-professor.webp', alt: 'Paul professor' }, produtos(UNIVERSO));
   const musicos = secao('musicos', 'Para músicos', 'estudo de bateria, violão e os exercícios que a Bea leva pro palco', { src: 'assets/entrada/paul-guitarra.webp', alt: 'Paul com a guitarra' }, produtos(MUSICOS));
+  // aba nova (adolescentes e adultos): enquanto os materiais não chegam, aparece "em breve" (a Bea manda os produtos e aqui entram os cartões)
+  const adultos = secao('adultos', 'Adolescentes e adultos', 'materiais novos pra quem quer tocar de verdade', { src: 'assets/paul/animacoes/web/paul-pensativo.webp', alt: 'Paul pensando' },
+    h('div', { class: 'ljv-breve' }, h('span', { class: 'ljv-breve-tag' }, 'em breve'), h('b', {}, 'novidades a caminho'), h('p', {}, 'estamos preparando materiais novos pra adolescentes e adultos. quando chegarem, aparecem aqui.'),
+      h('button', { type: 'button', class: 'lj-btn breve', onclick: () => abrirPagamento({}) }, 'em breve')));
   const combos = secao('combos', 'Combos completos', 'tudo que vem dentro e quanto você economiza', { src: 'assets/paul/animacoes/web/paul-bau.webp', alt: 'Paul com o baú' }, ...COMBOS.map(combo));
   const resp = h('details', { class: 'ljv-resp' },
     h('summary', {}, 'para os responsáveis: pagamento e informações'),
     h('ul', {}, h('li', {}, AVISO_DIGITAL), h('li', {}, 'o passe: 12 meses de acesso, pagamento único (pix) pelo WhatsApp. os materiais: pagamento na página da Hotmart.'), h('li', {}, CONTATO)),
     h('a', { class: 'ljv-link', href: '#/jogos/relatorio' }, 'ver o que cada jogo desenvolve ›'));
   const prem = premios(); // só quem tem o passe (código válido) vê os prêmios; quem não tem vê o Passe à venda
-  const nav = [prem ? ['premios', 'Prêmios'] : ['passe', 'Passe'], ['universo', 'Apostilas'], ['banca', 'Banca do Paul'], ['combos', 'Combos'], ['musicos', 'Músicos'], ['gratis', 'Grátis']];
+  const nav = [...(prem ? [['premios', 'Prêmios']] : []), ['combos', 'Combos'], ['banca', 'Colorir e jogos'], ['lendarias', 'Lendárias'], ...(prem ? [] : [['acesso', 'Passe']]), ['universo', 'Apostilas'], ['musicos', 'Músicos'], ['adultos', 'Teens e adultos'], ['gratis', 'Grátis']];
   const topo = h('div', { class: 'ljv-topo' },
     h('div', { class: 'ljv-topo-l' }, h('a', { class: 'ljv-link', href: inicio }, '‹ voltar ao início'), h('button', { type: 'button', class: 'ljv-link', onclick: () => (abrirCodigo ? abrirCodigo() : toast('digite o código no fim da página')) }, 'já tenho um código')),
     h('nav', { class: 'ljv-nav', 'aria-label': 'seções da lojinha' }, ...nav.map(([id, t]) => h('button', { type: 'button', onclick: () => rolar(document.getElementById(`lj-${id}`)) }, t))));
-  const raiz = h('div', { class: 'ljv' }, topo, banners(), prem || passe(), universo, banca(), combos, musicos, gratis(), resp);
+  const heroEl = prem ? null : hero(); // quem já tem o passe vê os prêmios no topo; quem não tem vê o passe depois dos combos
+  const raiz = h('div', { class: 'ljv ljv-azul bmr' }, topo, prem || heroMateriais(), prem ? null : combos, prem ? null : banca(), prem ? combos : null, prem ? banca() : null, lendarias(), heroEl, heroEl ? passe() : null, banners(), universo, musicos, adultos, gratis(), resp);
   const alvo = ALVO[secao_] || (secao_ && document.getElementById ? secao_ : '');
   if (alvo) setTimeout(() => rolar(raiz.querySelector(`#lj-${alvo}`)), 350);
   return raiz;

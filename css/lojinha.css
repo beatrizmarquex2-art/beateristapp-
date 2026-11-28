@@ -235,3 +235,177 @@ body:has(#view.lj-escura) { background: #070b19; }
 .rs-ic { width: 30px !important; height: 30px !important; background: #f6c93b !important; border: 2px solid #fbf3e0 !important; margin-left: 5px; }
 .rs-ic .ic-loja { width: 19px !important; height: 19px !important; }
 .rs-ic:active { background: #fbf3e0 !important; }
+
+/* aba "Adolescentes e adultos" enquanto os materiais não chegam */
+.ljv-breve { display: grid; gap: 8px; justify-items: start; padding: 16px; border-radius: 20px; background: linear-gradient(135deg, #ffffff14, #ffffff08); border: 1px dashed #ffffff55; }
+.ljv-breve b { font: 900 18px/1.1 var(--body); } .ljv-breve p { margin: 0; font: 14px/1.4 var(--body); opacity: .85; }
+.ljv-breve-tag { font: 900 10px var(--body); letter-spacing: .12em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: #ffd23f; color: #10265a; }
+
+/* ===== Lojinha AZUL (pedido da Bea, 28/nov/2026): azul-noite com amarelo, cartões arredondados, Paul animado, lendárias e barra de compra ===== */
+.ljv.ljv-azul { --navy: #10265a; --ink: #0a1330; --gold: #ffd23f; --glass: rgb(255 255 255 / .08); --line: rgb(255 255 255 / .18); --mut: #c3cdee;
+  background: linear-gradient(180deg, #25479a 0, #10265a 420px, #0a1330 421px); padding-bottom: 96px; }
+.ljv-azul .ljv-nav button { background: rgb(255 255 255 / .12); border-color: transparent; font-weight: 800; }
+.ljv-azul .ljv-nav button:active { background: var(--gold); color: #10265a; }
+.ljv-azul .ljv-s-top h2, .ljv-azul .ljv-lend h2 { font: 900 clamp(20px, 6vw, 24px)/1.08 var(--body); letter-spacing: -.01em; text-transform: none; }
+.ljv-azul .ljv-combo-nome b, .ljv-azul .ljv-p-top h3, .ljv-azul .ljv-adulto-i h3 { font: 900 16px/1.1 var(--body); text-transform: none; }
+.ljv-azul .ljv-host { animation: none; }
+.ljv-kick { display: block; font: 800 11px var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+
+/* topo que vende */
+.ljv-hero { display: grid; gap: 14px; padding: 4px 2px 6px; }
+.ljv-hero-top { display: grid; grid-template-columns: 1fr 132px; align-items: end; gap: 4px; }
+.ljv-hero h1 { margin: 0; font: 900 clamp(28px, 8.4vw, 34px)/1.02 var(--body); letter-spacing: -.015em; }
+.ljv-hero-paul { width: 140px; height: 140px; margin: 0 -10px -4px 0; justify-self: end; object-fit: contain; }
+.ljv-hero-preco { display: grid; gap: 10px; padding: 14px 16px; border-radius: 20px; background: rgb(255 255 255 / .09); border: 1px solid rgb(255 255 255 / .22); backdrop-filter: blur(6px); }
+.ljv-hero-p { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; } .ljv-hero-p b { font: 900 38px/1 var(--body); } .ljv-hero-p small { font: 700 12.5px var(--body); color: var(--mut); }
+.ljv-hero-chips { display: flex; flex-wrap: wrap; gap: 6px; } .ljv-hero-chips span { font: 700 11px var(--body); padding: 6px 10px; border-radius: 999px; background: rgb(255 255 255 / .13); }
+.ljv-cta, .ljv-cta2 { width: 100%; border: 0; cursor: pointer; border-radius: 16px; font: 900 16px var(--body); display: flex; justify-content: center; align-items: center; min-height: 52px; padding: 14px; -webkit-tap-highlight-color: transparent; }
+.ljv-cta { background: var(--gold); color: #10265a; box-shadow: 0 8px 22px rgb(255 210 63 / .28); } .ljv-cta:active { transform: translateY(1px) scale(.99); }
+.ljv-cta2 { background: transparent; color: #fff; border: 1.5px solid rgb(255 255 255 / .5); font-size: 14px; min-height: 46px; margin-top: -4px; }
+
+/* cartões e botões mais redondos e com cor */
+.ljv-azul .ljv-painel, .ljv-azul .ljv-combo { border-radius: 20px; background: rgb(255 255 255 / .09); border-color: rgb(255 255 255 / .2); }
+.ljv-azul .ljv-combo { padding: 12px 14px; } .ljv-azul .ljv-mini { width: 52px; } .ljv-azul .ljv-mini img { border-radius: 8px; }
+.ljv-azul .lj-btn.amarelo, .ljv-azul .ljv-compra .lj-btn { border-radius: 14px; background: var(--gold); color: #10265a; font-weight: 900; box-shadow: 0 6px 16px rgb(255 210 63 / .22); }
+.ljv-azul .ljv-s-musicos .lj-btn.amarelo { background: var(--gold); }
+.ljv-azul .ljv-cap img { border-radius: 14px; } .ljv-azul .ljv-cap.on img { box-shadow: 0 10px 18px rgb(0 0 0 / .5), 0 0 0 2px var(--gold); }
+.ljv-azul .ljv-banca-prods .ljv-capas::after { display: none; }
+.ljv-azul .ljv-eco { background: #3ddc84; color: #06301a; border-radius: 999px; padding: 3px 9px; }
+.ljv-azul .ljv-cat.on { background: #fff; color: #10265a; border-color: #fff; }
+.ljv-azul .ljv-gratis, .ljv-azul .ljv-resp { border-radius: 16px; }
+.ljv-azul .ljv-passe { display: none; } /* o preço e o botão agora ficam no topo (e na barra de baixo) */
+.ljv-azul .ljv-banner { border-radius: 18px; }
+
+/* lendárias: leque preto e dourado */
+.ljv-lend { display: grid; gap: 6px; padding: 16px 14px 14px; border-radius: 22px; background: linear-gradient(180deg, #1b1508, #050506); border: 1px solid rgb(255 210 63 / .45); box-shadow: 0 0 34px rgb(255 210 63 / .12); overflow: hidden; }
+.ljv-lend h2 { margin: 0; color: #fff; } .ljv-lend p { margin: 0; font: 600 12.5px/1.4 var(--body); color: #d8cfae; }
+.ljv-fan { position: relative; height: clamp(170px, 52vw, 210px); margin: 8px 0 0; }
+.ljv-fan img { position: absolute; top: 12px; left: calc(2% + var(--i) * 15.2%); width: 29%; border-radius: 8px; filter: drop-shadow(0 10px 14px #000a); transform: rotate(calc((var(--i) - 2.5) * 6.5deg)) translateY(calc(abs(var(--i) - 2.5) * 0px)); }
+.ljv-fan img:nth-child(3) { z-index: 3; top: 2px; } .ljv-fan img:nth-child(4) { z-index: 2; top: 4px; } .ljv-fan img:nth-child(2) { top: 8px; } .ljv-fan img:nth-child(5), .ljv-fan img:nth-child(1) { top: 16px; } .ljv-fan img:nth-child(6) { top: 22px; }
+
+/* barra de compra fixa (aparece quando o botão do topo sai da tela) */
+.ljv-barra { position: fixed; left: 0; right: 0; bottom: calc(70px + env(safe-area-inset-bottom, 0px)); z-index: 30; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; max-width: 760px; margin: 0 auto; padding: 10px 14px; background: linear-gradient(180deg, rgb(10 19 48 / .0), #0a1330 35%); }
+.ljv-barra[hidden] { display: none; } .ljv-barra b { display: block; font: 900 20px/1 var(--body); } .ljv-barra small { display: block; font: 600 11px var(--body); color: var(--mut); }
+.ljv-barra .ljv-cta { width: auto; min-height: 46px; padding: 10px 20px; white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .ljv-hero-paul { animation: none; } }
+
+/* abas "lojinha | depoimentos": pílulas finas (antes eram caixas quadradas grandes) */
+.al-subnav.lj-abas { display: flex; justify-content: center; gap: 8px; padding: 6px 12px 4px; }
+.al-subnav.lj-abas .chip-btn { display: inline-flex; min-height: 38px; padding: 6px 18px; border: 0; border-radius: 999px; background: rgb(255 255 255 / .16); color: #fff; font: 800 14px var(--body); box-shadow: none; }
+.al-subnav.lj-abas .chip-btn.on, .al-subnav.lj-abas .chip-btn[aria-selected="true"] { background: #fff; color: #10265a; }
+.ljv-barra { color: #fff; font-family: var(--body); } .ljv-barra b { color: #fff; } .ljv-barra small { color: #c3cdee; }
+.ljv-barra .ljv-cta { background: #ffd23f; color: #10265a; box-shadow: 0 6px 18px rgb(255 210 63 / .3); border: 0; border-radius: 16px; }
+.ljv-fan { height: clamp(136px, 43vw, 168px); }
+
+/* ===== acabamento PREMIUM (pedido da Bea): cantos bem arredondados, filete dourado, brilho suave, degradê nos botões ===== */
+.ljv.ljv-azul { --r-card: 28px; --r-btn: 20px; --r-img: 16px; border-radius: 30px; padding: 14px 14px 100px;
+  background: radial-gradient(90% 38% at 78% 4%, rgb(255 210 63 / .16), transparent 62%), radial-gradient(80% 30% at 8% 0%, rgb(120 160 255 / .22), transparent 60%), linear-gradient(180deg, #274c9f 0, #10265a 430px, #0a1330 431px); }
+/* cartões: vidro fosco, filete dourado fininho, luz no topo e sombra funda e suave */
+.ljv-azul .ljv-hero-preco, .ljv-azul .ljv-painel, .ljv-azul .ljv-combo, .ljv-azul .ljv-gratis, .ljv-azul .ljv-resp, .ljv-azul .ljv-breve {
+  border-radius: var(--r-card); border: 1px solid rgb(255 214 102 / .26);
+  background: linear-gradient(155deg, rgb(255 255 255 / .16), rgb(255 255 255 / .05) 55%, rgb(255 255 255 / .09));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .28), 0 22px 40px -22px rgb(0 0 0 / .8); backdrop-filter: blur(8px); }
+.ljv-azul .ljv-gratis { border-radius: 22px; } .ljv-azul .ljv-resp { border-style: solid; }
+/* botões: degradê dourado com brilho, cantos grandes */
+.ljv-azul .ljv-cta, .ljv-azul .lj-btn.amarelo, .ljv-azul .ljv-compra .lj-btn, .ljv-barra .ljv-cta { border-radius: var(--r-btn, 20px); border: 0;
+  background: linear-gradient(180deg, #ffe58a 0%, #ffd23f 46%, #f2b51c 100%); color: #14235a; text-shadow: 0 1px 0 rgb(255 255 255 / .45);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .7), inset 0 -2px 0 rgb(176 118 0 / .35), 0 12px 24px -10px rgb(255 190 30 / .65); }
+.ljv-azul .ljv-cta2 { border-radius: var(--r-btn); border: 1.5px solid rgb(255 214 102 / .55); background: rgb(255 255 255 / .06); box-shadow: inset 0 1px 0 rgb(255 255 255 / .18); }
+.ljv-azul .lj-btn.breve { border-radius: var(--r-btn); background: rgb(255 255 255 / .16); color: #fff; box-shadow: inset 0 1px 0 rgb(255 255 255 / .25); }
+/* preço em ouro, chips e etiquetas em pílula */
+.ljv-hero-p b { background: linear-gradient(180deg, #fff 0%, #ffe9a6 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 8px rgb(0 0 0 / .35)); }
+.ljv-hero-chips span { border: 1px solid rgb(255 255 255 / .2); background: rgb(255 255 255 / .1); }
+.ljv-azul .ljv-nav button, .ljv-azul .ljv-cat { border-radius: 999px; border: 1px solid rgb(255 255 255 / .22); background: rgb(255 255 255 / .1); box-shadow: inset 0 1px 0 rgb(255 255 255 / .18); }
+.ljv-azul .ljv-cat.on { background: linear-gradient(180deg, #fff, #e6ecff); color: #10265a; }
+.ljv-azul .ljv-p-top .ljv-tag, .ljv-azul .ljv-p-top span { border-radius: 999px; }
+.ljv-azul .ljv-eco { box-shadow: inset 0 1px 0 rgb(255 255 255 / .5); }
+/* imagens: cantos grandes e sombra de produto */
+.ljv-azul .ljv-cap img, .ljv-azul .ljv-mini img { border-radius: var(--r-img); } .ljv-azul .ljv-mini img { border-radius: 10px; }
+.ljv-azul .ljv-pag { border-radius: 12px; border-color: rgb(255 255 255 / .35); } .ljv-azul .ljv-tela img { border-radius: 16px; }
+.ljv-azul .ljv-banner { border-radius: 24px; box-shadow: 0 16px 30px -16px rgb(0 0 0 / .8), 0 0 0 1px rgb(255 214 102 / .3); }
+.ljv-azul .ljv-seta { border-radius: 50%; }
+/* títulos de seção com um filete dourado curto */
+.ljv-azul .ljv-s-top h2::after { content: ""; display: block; width: 34px; height: 3px; margin-top: 7px; border-radius: 3px; background: linear-gradient(90deg, #ffd23f, rgb(255 210 63 / 0)); }
+/* lendárias: moldura dupla dourada e brilho */
+.ljv-azul .ljv-lend { border-radius: 30px; border: 1px solid rgb(255 214 102 / .6); background: radial-gradient(90% 60% at 50% 0%, rgb(255 210 63 / .22), transparent 70%), linear-gradient(180deg, #1c1608, #050506);
+  box-shadow: inset 0 0 0 5px #0a0a0c, inset 0 0 0 6px rgb(255 214 102 / .35), 0 0 44px rgb(255 210 63 / .16), 0 24px 44px -22px #000; padding: 22px 18px 18px; }
+.ljv-azul .ljv-fan img { border-radius: 10px; }
+/* topo da página e abas */
+.al-subnav.lj-abas .chip-btn { border: 1px solid rgb(255 255 255 / .25); box-shadow: inset 0 1px 0 rgb(255 255 255 / .22); }
+.al-subnav.lj-abas .chip-btn.on, .al-subnav.lj-abas .chip-btn[aria-selected="true"] { background: linear-gradient(180deg, #fff, #e6ecff); }
+/* barra de compra: vidro com cantos grandes */
+.ljv-barra { left: 10px; right: 10px; border-radius: 26px; padding: 10px 12px 10px 18px; background: linear-gradient(180deg, rgb(24 44 100 / .92), rgb(10 19 48 / .96)); border: 1px solid rgb(255 214 102 / .35); backdrop-filter: blur(12px); box-shadow: 0 18px 34px -12px #000; }
+
+/* ===== ILUMINAÇÃO e degradês (pedido da Bea): luz ambiente ao longo da página, holofote no Paul, brilho nos botões, raios nas lendárias ===== */
+.ljv.ljv-azul { position: relative; isolation: isolate;
+  background:
+    radial-gradient(440px 340px at 96% 700px, rgb(255 210 63 / .20), transparent 70%),
+    radial-gradient(520px 440px at -6% 1250px, rgb(90 140 255 / .38), transparent 70%),
+    radial-gradient(460px 380px at 104% 1900px, rgb(255 90 120 / .16), transparent 70%),
+    radial-gradient(560px 460px at -8% 2500px, rgb(255 210 63 / .15), transparent 70%),
+    radial-gradient(520px 440px at 104% 3150px, rgb(90 140 255 / .34), transparent 70%),
+    radial-gradient(520px 420px at -6% 3800px, rgb(255 210 63 / .14), transparent 70%),
+    radial-gradient(90% 38% at 78% 4%, rgb(255 210 63 / .22), transparent 62%), radial-gradient(80% 30% at 8% 0%, rgb(130 170 255 / .32), transparent 60%),
+    linear-gradient(180deg, #2a52ad 0, #12306c 380px, #0b1638 900px, #09112b 100%); }
+/* faixa de luz diagonal bem suave no topo */
+.ljv.ljv-azul::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 520px; z-index: -1; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(115deg, transparent 22%, rgb(255 255 255 / .045) 36%, transparent 48%), linear-gradient(115deg, transparent 54%, rgb(255 230 150 / .05) 64%, transparent 74%); }
+
+/* holofote atrás do Paul + brilho no chão */
+.ljv-hero-top { position: relative; isolation: isolate; }
+.ljv-hero-top::before { content: ""; position: absolute; right: -30px; top: -26px; width: 230px; height: 230px; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, rgb(255 244 200 / .55), rgb(255 210 63 / .22) 45%, transparent 72%); filter: blur(4px); animation: ljv-luz 5s ease-in-out infinite; }
+.ljv-hero-top::after { content: ""; position: absolute; right: -6px; bottom: -14px; width: 150px; height: 26px; z-index: -1; pointer-events: none; border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 210 63 / .55), transparent 75%); filter: blur(5px); }
+@keyframes ljv-luz { 0%, 100% { opacity: .75; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.05); } }
+.ljv-hero h1 { background: linear-gradient(180deg, #fff 30%, #cfe0ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 10px rgb(0 0 0 / .3)); }
+
+/* luz correndo nos botões amarelos (brilho que passa) */
+.ljv-azul .ljv-cta, .ljv-barra .ljv-cta { position: relative; overflow: hidden; }
+.ljv-azul .ljv-cta::after, .ljv-barra .ljv-cta::after { content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; transform: skewX(-20deg); pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .65), transparent); animation: ljv-brilho 4.2s ease-in-out infinite; }
+@keyframes ljv-brilho { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+.ljv-azul .ljv-cta { box-shadow: inset 0 1px 0 rgb(255 255 255 / .7), inset 0 -2px 0 rgb(176 118 0 / .35), 0 12px 26px -10px rgb(255 190 30 / .8), 0 0 34px rgb(255 210 63 / .22); }
+
+/* cartões com luz de cor embaixo (azul nos combos, dourado nos preços) */
+.ljv-azul .ljv-hero-preco { box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 24px 50px -24px rgb(255 190 30 / .55), 0 0 0 1px rgb(255 214 102 / .22); }
+.ljv-azul .ljv-combo, .ljv-azul .ljv-painel { box-shadow: inset 0 1px 0 rgb(255 255 255 / .28), 0 26px 46px -24px rgb(70 120 255 / .6), 0 0 0 1px rgb(255 214 102 / .14); }
+.ljv-azul .ljv-combo:nth-of-type(2) { box-shadow: inset 0 1px 0 rgb(255 255 255 / .28), 0 26px 46px -24px rgb(255 190 30 / .5), 0 0 0 1px rgb(255 214 102 / .2); }
+.ljv-azul .ljv-s-top h2 { background: linear-gradient(180deg, #fff 35%, #bcd2ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ljv-azul .ljv-cap.on img { box-shadow: 0 0 0 2px #ffd23f, 0 0 26px rgb(255 210 63 / .55), 0 14px 22px rgb(0 0 0 / .5); }
+.ljv-azul .ljv-nav button:active, .ljv-azul .ljv-cat:active { box-shadow: 0 0 18px rgb(255 210 63 / .6); }
+
+/* lendárias: raios dourados girando devagar e brilho */
+.ljv-azul .ljv-lend { position: relative; isolation: isolate; }
+.ljv-azul .ljv-lend::before { content: ""; position: absolute; left: 50%; top: 52%; width: 520px; height: 520px; margin: -260px 0 0 -260px; z-index: -1; pointer-events: none; opacity: .9;
+  background: conic-gradient(from 0deg, transparent 0 8deg, rgb(255 210 63 / .55) 10deg, transparent 14deg 40deg, rgb(255 210 63 / .4) 42deg, transparent 46deg 80deg, rgb(255 226 140 / .5) 82deg, transparent 86deg 120deg, rgb(255 210 63 / .45) 122deg, transparent 126deg 170deg, rgb(255 226 140 / .5) 172deg, transparent 176deg 220deg, rgb(255 210 63 / .45) 222deg, transparent 226deg 270deg, rgb(255 226 140 / .5) 272deg, transparent 276deg 320deg, rgb(255 210 63 / .4) 322deg, transparent 326deg 360deg);
+  -webkit-mask: radial-gradient(closest-side, #000 20%, transparent 75%); mask: radial-gradient(closest-side, #000 20%, transparent 75%); animation: ljv-gira 60s linear infinite; }
+.ljv-azul .ljv-lend::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit; background: radial-gradient(70% 45% at 50% 62%, rgb(255 210 63 / .28), transparent 70%); }
+@keyframes ljv-gira { to { transform: rotate(360deg); } }
+.ljv-azul .ljv-fan img { filter: drop-shadow(0 12px 16px #000b) drop-shadow(0 0 14px rgb(255 210 63 / .35)); }
+
+/* barra de compra com borda de luz */
+.ljv-barra { box-shadow: 0 18px 34px -12px #000, 0 0 30px rgb(255 210 63 / .18), inset 0 1px 0 rgb(255 255 255 / .22); }
+@media (prefers-reduced-motion: reduce) { .ljv-hero-top::before, .ljv-azul .ljv-cta::after, .ljv-barra .ljv-cta::after, .ljv-azul .ljv-lend::before { animation: none; } }
+
+/* luz do Paul em OUTRA cor (azul-violeta, combina com o boné vermelho e a jaqueta azul), sem o amarelo que ficou ruim */
+.ljv-hero-top::before { background: radial-gradient(closest-side, rgb(185 200 255 / .6), rgb(120 120 255 / .3) 45%, transparent 72%); }
+.ljv-hero-top::after { background: radial-gradient(closest-side, rgb(140 150 255 / .6), transparent 75%); }
+
+/* banca e apostilas COMPACTAS: capa pequena, painel enxuto (nome, preço e botão numa olhada) e o "por dentro" só se a pessoa quiser */
+.ljv-azul .ljv-prods { gap: 6px; }
+.ljv-azul .ljv-cap { flex: 0 0 clamp(70px, 20vw, 88px); }
+.ljv-azul .ljv-capas .ljv-trilho { gap: 8px; padding: 6px 2px 4px; }
+.ljv-azul .ljv-cap.on { transform: translateY(-3px) scale(1.04); }
+.ljv-azul .ljv-banca-prods .ljv-cap:nth-child(odd):not(.on), .ljv-azul .ljv-banca-prods .ljv-cap:nth-child(even):not(.on) { transform: none; }
+.ljv-azul .ljv-painel { gap: 6px; padding: 10px 14px 12px; border-radius: 22px; }
+.ljv-azul .ljv-p-top h3 { font-size: 15px; }
+.ljv-azul .ljv-paginas { display: none; }
+.ljv-azul .ljv-painel.aberto .ljv-paginas { display: block; }
+.ljv-dentro-link { justify-self: start; background: none; border: 0; padding: 2px 0; color: #ffd23f; font: 800 12.5px var(--body); cursor: pointer; min-height: 28px; }
+.ljv-azul .ljv-compra .lj-btn { min-width: 118px; padding: 10px 14px; font-size: 14px; }
+.ljv-azul .ljv-preco { font-size: 18px; }
+.ljv-azul .ljv-s { gap: 6px; } .ljv-azul .ljv-host { width: 44px; height: 44px; }
+.ljv-azul .ljv-s-top p { font-size: 12px; }
+.ljv-hero-mat { gap: 10px; } .ljv-hero-mat h1 { font-size: clamp(26px, 7.6vw, 31px); } .ljv-hero-mat .ljv-hero-paul { width: 124px; height: 124px; }
+.ljv-hero-mat .ljv-hero-top { grid-template-columns: 1fr 120px; } .ljv-hero-mat .ljv-hero-chips { margin-top: 2px; }
