@@ -1,4 +1,4 @@
-// Genius infinito: o Paul toca uma sequência, você repete; a cada rodada ela ganha 1 nota e fica mais rápida. Errou, acabou: "você decorou N notas".
+// Eco do Paul (Genius infinito): o Paul toca uma sequência, você repete; a cada rodada ela ganha 1 nota e fica mais rápida. Errou, acabou: "você decorou N notas".
 // 4 instrumentos (xilofone, piano, bateria com as peças do kit acústico do app, violão); recorde de cada um. Sem estrela e sem figurinha: é treino pra decorar.
 // Tela "fluida" (se redistribui sozinha pra caber em qualquer aparelho, como o quebra-cabeça e o cara a cara). Lógica em genius-logic.js.
 import { h } from '../util.js';

@@ -56,7 +56,7 @@ const GAMES = [
   ['detetive', 'Detetive Note', 'eco.svg', detetive, 'escute e monte o ritmo · comida, parque, corpo, animal'],
   ['figurix', 'Figurix', 'figuras.svg', figurix, 'figuras rítmicas em 12 fases'],
   ['rudimentos', 'Rudimentix', 'taiko.svg', rudimentos, 'toque os padrões das mãos: E e D · 11 fases'],
-  ['genius', 'Genius', 'genius.svg', genius, 'decore a sequência · xilofone, piano, bateria e violão · infinito'],
+  ['genius', 'Eco do Paul', 'genius.svg', genius, 'o Paul toca, você repete · cada rodada ganha 1 nota · xilofone, piano, bateria e violão'],
   ['treino', 'Treino livre', 'treino.svg', treino, 'jogue à vontade os jogos da Fuga e do Figurix · sem trilha e sem estrela'],
   ['copia', 'Copia Aí', 'copia.svg', copia, 'o Paul toca, você copia · a melodia cresce'],
   ['paultavivo', 'pauLta ao Vivo', 'pauta-vivo.svg', paultavivo, 'leia a nota e toque de verdade'],

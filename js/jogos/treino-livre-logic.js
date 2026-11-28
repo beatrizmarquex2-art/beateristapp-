@@ -18,7 +18,7 @@ export const jogoPorId = (id) => JOGOS.find((j) => j.id === id) || null;
 export const nivelValido = (n) => (NIVEIS.some(([k]) => k === n) ? n : 'medio');
 /** Outros jogos que já têm treino próprio (a Bea quer tudo à mão): abrem pela própria tela. */
 export const OUTROS = [
-  { href: '#/jogos/genius', nome: 'Genius infinito', desc: 'xilofone, piano, bateria e violão', emoji: '🥁' },
+  { href: '#/jogos/genius', nome: 'Eco do Paul', desc: 'xilofone, piano, bateria e violão', emoji: '🥁' },
   { href: '#/jogos/figurix', nome: 'Figurix', desc: 'modo treino com rodadas novas', emoji: '🎯' },
   { href: '#/jogos/toca', nome: 'Toca Aqui', desc: 'modo treino com rodadas novas', emoji: '👆' },
   { href: '#/jogos/detetive', nome: 'Detetive Note', desc: 'modo treino com rodadas novas', emoji: '🔍' },
