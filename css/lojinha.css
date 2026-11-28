@@ -407,3 +407,5 @@ body:has(#view.lj-escura) { background: #070b19; }
 .ljv-azul .ljv-preco { font-size: 18px; }
 .ljv-azul .ljv-s { gap: 6px; } .ljv-azul .ljv-host { width: 44px; height: 44px; }
 .ljv-azul .ljv-s-top p { font-size: 12px; }
+.ljv-hero-mat { gap: 10px; } .ljv-hero-mat h1 { font-size: clamp(26px, 7.6vw, 31px); } .ljv-hero-mat .ljv-hero-paul { width: 124px; height: 124px; }
+.ljv-hero-mat .ljv-hero-top { grid-template-columns: 1fr 120px; } .ljv-hero-mat .ljv-hero-chips { margin-top: 2px; }

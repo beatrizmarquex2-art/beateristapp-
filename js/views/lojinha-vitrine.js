@@ -187,10 +187,19 @@ const comprarPix = () => irPara(PASSE.link);
 const comprarCartao = () => irPara(URL_CARTAO);
 const LENDARIAS_IMG = ['L01', 'L02', 'L03', 'L04', 'L05', 'L06'].map((c) => `assets/figurinhas/lendarias/${c}.webp`);
 
-/** Topo da vitrine pra quem ainda não tem o passe: título, Paul animado, preço, botão do Pix e do cartão. */
+/** Topo da vitrine: materiais do Paul (PDF pra imprimir). Os combos e o colorir vêm logo abaixo; o passe fica mais pra baixo. */
+function heroMateriais() {
+  return h('section', { class: 'ljv-hero ljv-hero-mat', id: 'lj-topo', 'aria-label': 'materiais do Paul' },
+    h('div', { class: 'ljv-hero-top' },
+      h('div', {}, h('small', { class: 'ljv-kick' }, 'lojinha do paul'), h('h1', {}, 'Música pra ', h('br'), 'imprimir, colorir ', h('br'), 'e brincar.')),
+      h('img', { class: 'ljv-hero-paul', src: 'assets/paul/animacoes/web/paul-comemoracao.webp', alt: 'Paul comemorando', width: 140, height: 140 })),
+    h('div', { class: 'ljv-hero-chips' }, h('span', {}, 'PDF na hora'), h('span', {}, 'pagamento único'), h('span', {}, 'pouca tinta')));
+}
+
+/** Passe anual (acesso aos jogos): título, preço, botão do Pix e do cartão. Fica depois dos combos e da banca. */
 function hero() {
   const pr = precoPasse();
-  return h('section', { class: 'ljv-hero', id: 'lj-topo', 'aria-label': 'passe anual' },
+  return h('section', { class: 'ljv-hero ljv-hero-passe', id: 'lj-acesso', 'aria-label': 'passe anual' },
     h('div', { class: 'ljv-hero-top' },
       h('div', {}, h('small', { class: 'ljv-kick' }, 'robôterista paul ensina'), h('h1', {}, 'Aprenda música ', h('br'), 'brincando com o Paul.')),
       h('img', { class: 'ljv-hero-paul', src: 'assets/paul/animacoes/web/paul-presente.webp', alt: 'Paul segurando um presente', width: 140, height: 140 })),
@@ -209,13 +218,6 @@ function lendarias() {
     h('p', {}, 'preto e dourado, fora da roleta. aparecem no seu álbum depois da compra.'));
 }
 
-/** Barra fixa de compra: aparece quando o botão do topo sai da tela. */
-function barra(alvo) {
-  const pr = precoPasse();
-  const b = h("div", { class: "ljv-barra bmr", hidden: true }, h('div', {}, h('b', {}, pr.atual), h('small', {}, `passe anual · Pix${pr.oferta ? ` · até ${pr.ate}` : ''}`)), h('button', { type: 'button', class: 'ljv-cta', 'data-id': 'barra-pix', onclick: comprarPix }, 'Pagar no Pix'));
-  if (alvo && 'IntersectionObserver' in window) { const io = new IntersectionObserver(([e]) => { b.hidden = e.isIntersecting; }, { threshold: 0 }); io.observe(alvo); b.dataset.obs = '1'; }
-  return b;
-}
 
 const ALVO = { cards: 'banca', ensina: 'universo', evoluir: 'musicos' }; // rotas antigas #/lojinha/<seção>
 
@@ -233,15 +235,12 @@ export function vitrine(secao_ = '', { abrirCodigo, inicio = '#/inicio' } = {}) 
     h('ul', {}, h('li', {}, AVISO_DIGITAL), h('li', {}, 'o passe: 12 meses de acesso, pagamento único (pix) pelo WhatsApp. os materiais: pagamento na página da Hotmart.'), h('li', {}, CONTATO)),
     h('a', { class: 'ljv-link', href: '#/jogos/relatorio' }, 'ver o que cada jogo desenvolve ›'));
   const prem = premios(); // só quem tem o passe (código válido) vê os prêmios; quem não tem vê o Passe à venda
-  const nav = [prem ? ['premios', 'Prêmios'] : ['passe', 'Passe'], ['lendarias', 'Lendárias'], ['combos', 'Combos'], ['banca', 'Banca do Paul'], ['universo', 'Apostilas'], ['musicos', 'Músicos'], ['adultos', 'Teens e adultos'], ['gratis', 'Grátis']];
+  const nav = [...(prem ? [['premios', 'Prêmios']] : []), ['combos', 'Combos'], ['banca', 'Colorir e jogos'], ['lendarias', 'Lendárias'], ...(prem ? [] : [['acesso', 'Passe']]), ['universo', 'Apostilas'], ['musicos', 'Músicos'], ['adultos', 'Teens e adultos'], ['gratis', 'Grátis']];
   const topo = h('div', { class: 'ljv-topo' },
     h('div', { class: 'ljv-topo-l' }, h('a', { class: 'ljv-link', href: inicio }, '‹ voltar ao início'), h('button', { type: 'button', class: 'ljv-link', onclick: () => (abrirCodigo ? abrirCodigo() : toast('digite o código no fim da página')) }, 'já tenho um código')),
     h('nav', { class: 'ljv-nav', 'aria-label': 'seções da lojinha' }, ...nav.map(([id, t]) => h('button', { type: 'button', onclick: () => rolar(document.getElementById(`lj-${id}`)) }, t))));
-  const heroEl = prem ? null : hero(); // quem já tem o passe vê os prêmios; quem não tem vê o topo que vende
-  const raiz = h('div', { class: 'ljv ljv-azul bmr' }, topo, heroEl, prem || passe(), lendarias(), banners(), combos, banca(), universo, musicos, adultos, gratis(), resp);
-  // a barra de compra mora no <body> (um pai com efeito de tela quebrava o "fixo") e some quando a vitrine sai da tela
-  document.querySelectorAll('.ljv-barra').forEach((x) => x.remove());
-  if (heroEl) { const bar = barra(heroEl.querySelector('.ljv-cta')); document.body.append(bar); const solta = () => setTimeout(() => { if (!raiz.isConnected) { bar.remove(); window.removeEventListener('hashchange', solta); } }, 120); window.addEventListener('hashchange', solta); }
+  const heroEl = prem ? null : hero(); // quem já tem o passe vê os prêmios no topo; quem não tem vê o passe depois dos combos
+  const raiz = h('div', { class: 'ljv ljv-azul bmr' }, topo, prem || heroMateriais(), prem ? null : combos, prem ? null : banca(), prem ? combos : null, prem ? banca() : null, lendarias(), heroEl, heroEl ? passe() : null, banners(), universo, musicos, adultos, gratis(), resp);
   const alvo = ALVO[secao_] || (secao_ && document.getElementById ? secao_ : '');
   if (alvo) setTimeout(() => rolar(raiz.querySelector(`#lj-${alvo}`)), 350);
   return raiz;
