@@ -15,13 +15,13 @@ const sem = (evs, larg = 640) => L.semB(svgBateria(evs, larg));
 
 /* ---- ordem das seções (a numeração do livro sai daqui) ---- */
 const MODS = [
-  ['Módulo 1 · Primeiros passos', 'Primeiros passos', 'Nunca é tarde para tocar bateria. É tarde para esperar o momento perfeito.', 'Antes do primeiro groove: conhecer o instrumento, sentar direito, usar os pés e aprender a ler a partitura que você vai usar.', ['como', 'pecas', 'postura', 'pes', 'ler', 'equip']],
-  ['Módulo 2 · Pulso e groove', 'Pulso e groove', 'Quem toca no tempo é lembrado. Quem toca rápido é esquecido.', 'O pulso é a base de qualquer música. Com ele firme, você monta o primeiro groove e ganha variações.', ['aquec', 'pulso', 'contar', 'figuras', 'pausas', 'primeiro', 'bumbo', 'bumbo2', 'estilos', 'chimbal', 'estilos2']],
-  ['Módulo 3 · Técnica e expressão', 'Técnica e expressão', 'Devagar e certo vira rápido e certo. Rápido e errado vira hábito errado.', 'Viradas, rudimentos, leitura, dinâmica e independência: o que transforma uma levada em música.', ['viradas', 'viradas2', 'variar', 'rudimentos', 'mao', 'paradiddles', 'rud2', 'pad', 'dinamica', 'indep', 'linear', 'leitura']],
-  ['Módulo 4 · Tocando de verdade', 'Tocando de verdade', 'Você não precisa de talento para começar. Precisa começar para ganhar talento.', 'Rotina de estudo, forma de música e o que evitar. É aqui que você passa de exercício para música.', ['estudo', 'musica', 'exemplo', 'erros', 'desafios', 'respostas']],
-  ['Para levar', null, null, null, ['plano4', 'plano8', 'registro', 'glossario', 'proximo', 'folha1', 'folha2']],
+  ['Módulo 1 · Primeiros passos', 'Primeiros passos', 'Nunca é tarde para tocar bateria. É tarde para esperar o momento perfeito.', 'Antes do primeiro groove: conhecer o instrumento, sentar direito, usar os pés e aprender a ler a partitura que você vai usar.', ['como', 'pecas', 'postura', 'empunhadura', 'rebote', 'pes', 'ler', 'duasvozes', 'equip']],
+  ['Módulo 2 · Pulso e groove', 'Pulso e groove', 'Quem toca no tempo é lembrado. Quem toca rápido é esquecido.', 'O pulso é a base de qualquer música. Com ele firme, você monta o primeiro groove e ganha variações.', ['aquec', 'pulso', 'contar', 'figuras', 'ponto', 'pausas', 'sincope', 'tercinas', 'compasso', 'primeiro', 'bumbo', 'bumbo2', 'bumbo8', 'estilos', 'chimbal', 'estilos2']],
+  ['Módulo 3 · Técnica e expressão', 'Técnica e expressão', 'Devagar e certo vira rápido e certo. Rápido e errado vira hábito errado.', 'Viradas, rudimentos, leitura, dinâmica e independência: o que transforma uma levada em música.', ['viradas', 'viradas2', 'variar', 'rudimentos', 'mao', 'paradiddles', 'moeller', 'flam', 'rud2', 'pad', 'dinamica', 'indep', 'linear', 'leitura']],
+  ['Módulo 4 · Tocando de verdade', 'Tocando de verdade', 'Você não precisa de talento para começar. Precisa começar para ganhar talento.', 'Rotina de estudo, forma de música e o que evitar. É aqui que você passa de exercício para música.', ['estudo', 'musica', 'exemplo', 'ritornelo', 'erros', 'desafios', 'respostas']],
+  ['Para levar', null, null, null, ['plano4', 'plano8', 'plano12', 'registro', 'glossario', 'proximo', 'folha1', 'folha2']],
 ];
-const TITULOS = { contar: 'Contar é o que segura o groove', bumbo2: 'Rock com dois bumbos', variar: 'Não fique sempre na mesma variação', mao: 'A mão alternada: D E e suas variações', paradiddles: 'Paradiddle: simples, duplo e triplo', pad: 'Treinando no pad: uma mão de cada vez', linear: 'Ritmos lineares', como: 'Como usar esta apostila', pecas: 'Conheça as peças da bateria', postura: 'Postura, banco e pegada', pes: 'Os pés: bumbo e chimbal', ler: 'Como ler a partitura de bateria', equip: 'Equipamento básico', aquec: 'Aquecimento de 5 minutos', pulso: 'Pulso e metrônomo', figuras: 'Colcheias e semicolcheias', pausas: 'Pausas e silêncios', primeiro: 'O primeiro groove', bumbo: 'Variações do bumbo', estilos: 'Grooves por estilo', chimbal: 'Chimbal aberto e fechado', estilos2: 'Mais três grooves', viradas: 'Viradas', viradas2: 'Mais viradas', rudimentos: 'Rudimentos essenciais', rud2: 'Rudimentos nos tambores', dinamica: 'Acentos e notas fantasma', indep: 'Independência: o ostinato', leitura: 'Leitura rítmica na caixa', estudo: 'Estude em 15 minutos', musica: 'Montando sua primeira música', exemplo: 'Uma música de 8 compassos', erros: 'Erros comuns de quem começa adulto', desafios: 'Desafios no papel', respostas: 'Respostas dos desafios', plano4: 'Plano das 4 primeiras semanas', plano8: 'Plano de 8 semanas', registro: 'Registro dos 30 dias', glossario: 'Glossário', proximo: 'E agora? Continue tocando', folha1: 'Pauta em branco', folha2: 'Grade de grooves' };
+const TITULOS = { empunhadura: 'Empunhadura: o fulcro', rebote: 'Rebote: deixar a baqueta voltar', duasvozes: 'Duas vozes: mãos e pés', ponto: 'Ponto de aumento e ligadura', sincope: 'Síncope e contratempo', tercinas: 'Tercinas e o shuffle', compasso: 'Compasso: simples e composto', bumbo8: 'Bumbo independente: 8 padrões', moeller: 'Técnica Moeller: o chicote', flam: 'Flam, rimshot e cross-stick', ritornelo: 'Sinais de repetição', plano12: 'Plano de 12 semanas', contar: 'Contar é o que segura o groove', bumbo2: 'Rock com dois bumbos', variar: 'Não fique sempre na mesma variação', mao: 'A mão alternada: D E e suas variações', paradiddles: 'Paradiddle: simples, duplo e triplo', pad: 'Treinando no pad: uma mão de cada vez', linear: 'Ritmos lineares', como: 'Como usar esta apostila', pecas: 'Conheça as peças da bateria', postura: 'Postura, banco e pegada', pes: 'Os pés: bumbo e chimbal', ler: 'Como ler a partitura de bateria', equip: 'Equipamento básico', aquec: 'Aquecimento de 5 minutos', pulso: 'Pulso e metrônomo', figuras: 'Colcheias e semicolcheias', pausas: 'Pausas e silêncios', primeiro: 'O primeiro groove', bumbo: 'Variações do bumbo', estilos: 'Grooves por estilo', chimbal: 'Chimbal aberto e fechado', estilos2: 'Mais três grooves', viradas: 'Viradas', viradas2: 'Mais viradas', rudimentos: 'Rudimentos essenciais', rud2: 'Rudimentos nos tambores', dinamica: 'Acentos e notas fantasma', indep: 'Independência: o ostinato', leitura: 'Leitura rítmica na caixa', estudo: 'Estude em 15 minutos', musica: 'Montando sua primeira música', exemplo: 'Uma música de 8 compassos', erros: 'Erros comuns de quem começa adulto', desafios: 'Desafios no papel', respostas: 'Respostas dos desafios', plano4: 'Plano das 4 primeiras semanas', plano8: 'Plano de 8 semanas', registro: 'Registro dos 30 dias', glossario: 'Glossário', proximo: 'E agora? Continue tocando', folha1: 'Pauta em branco', folha2: 'Grade de grooves' };
 const ORDEM = MODS.flatMap((m) => m[4]).filter((id) => !['folha2'].includes(id)); // folha2 conta como outra página da mesma seção
 const N = (id) => { const l = MODS.flatMap((m) => m[4]).filter((x) => !['respostas', 'folha2'].includes(x)); return l.indexOf(id) + 1; };
 const T = (id, area) => `${N(id)} · ${area}`;
@@ -286,7 +286,7 @@ B.registro = () => { const col = (a, b) => `<table class="t" style="table-layout
 
 B.glossario = () => pg({ tag: 'GLOSSÁRIO', titulo: 'Palavras que você vai ouvir', sub: 'Para conversar com outros músicos sem dúvida.', corpo: `
 <table class="t"><tr><th>Termo</th><th>O que é</th></tr>
-${[['Andamento', 'A velocidade da música, medida em bpm.'], ['bpm', 'Batidas por minuto. 60 bpm = uma batida por segundo.'], ['Compasso', 'Um “bloco” de tempos. Em 4/4, cada compasso tem quatro tempos.'], ['Pulso', 'A batida constante, como o coração da música.'], ['Groove', 'A levada: o padrão de bateria que se repete e dá a base da música.'], ['Virada (fill)', 'Um trecho curto que preenche o fim de uma frase e leva à próxima.'], ['Ostinato', 'Uma parte que se repete sem parar, enquanto o resto muda.'], ['Rudimento', 'Um padrão de mãos que treina técnica, como as escalas do pianista.'], ['Acento', 'Uma nota tocada mais forte do que as outras.'], ['Nota fantasma', 'Uma nota tocada muito baixinho, só para dar balanço.'], ['Mão líder', 'A mão que passeia pelos tambores (a direita, para destros) enquanto a outra fica na caixa, sem cruzar os braços.'], ['Síncope', 'Um acento fora do tempo forte, que cria balanço.'], ['Rim shot / cross-stick', 'Tocar a madeira do aro da caixa. Som seco, usado em baladas.'], ['Pad de estudo', 'Uma superfície de borracha para treinar sem barulho.'], ['Clique', 'O som do metrônomo.'], ['Prato de ataque (crash)', 'O prato que “explode”: marca o início de uma parte.'], ['Condução (ride)', 'O prato usado como pulso, no lugar do chimbal.']].map(([t, x]) => `<tr><td><b>${t}</b></td><td>${x}</td></tr>`).join('')}</table>` });
+${[['Andamento', 'A velocidade da música, medida em bpm.'], ['bpm', 'Batidas por minuto. 60 bpm = uma batida por segundo.'], ['Compasso', 'Um “bloco” de tempos. Em 4/4, cada compasso tem quatro tempos.'], ['Pulso', 'A batida constante, como o coração da música.'], ['Groove', 'A levada: o padrão de bateria que se repete e dá a base da música.'], ['Virada (fill)', 'Um trecho curto que preenche o fim de uma frase e leva à próxima.'], ['Ostinato', 'Uma parte que se repete sem parar, enquanto o resto muda.'], ['Rudimento', 'Um padrão de mãos que treina técnica, como as escalas do pianista.'], ['Acento', 'Uma nota tocada mais forte do que as outras.'], ['Nota fantasma', 'Uma nota tocada muito baixinho, só para dar balanço.'], ['Fulcro', 'O ponto entre o polegar e o indicador em que a baqueta gira, a ≈ 1/3 do comprimento.'], ['Rebote', 'A volta da baqueta depois do golpe. Com a mão solta, ela quica sozinha.'], ['Síncope', 'Uma nota que começa no “&” e atravessa o tempo seguinte.'], ['Tercina', 'Três notas no lugar de duas: cada nota vale ⅓ de tempo.'], ['Mão líder', 'A mão que passeia pelos tambores (a direita, para destros) enquanto a outra fica na caixa, sem cruzar os braços.'], ['Síncope', 'Um acento fora do tempo forte, que cria balanço.'], ['Rim shot / cross-stick', 'Tocar a madeira do aro da caixa. Som seco, usado em baladas.'], ['Pad de estudo', 'Uma superfície de borracha para treinar sem barulho.'], ['Clique', 'O som do metrônomo.'], ['Prato de ataque (crash)', 'O prato que “explode”: marca o início de uma parte.'], ['Condução (ride)', 'O prato usado como pulso, no lugar do chimbal.']].map(([t, x]) => `<tr><td><b>${t}</b></td><td>${x}</td></tr>`).join('')}</table>` });
 
 B.proximo = () => pg({ tag: 'PRÓXIMO PASSO', titulo: 'E agora? Continue tocando.', corpo: `
 <p>Quem chegou até aqui já fez o mais difícil: <b>começar</b>. Agora é repetir um pouco todo dia e deixar o corpo aprender.</p>
@@ -380,6 +380,158 @@ ${L.card('Linear 2 · semicolcheias', 'bumbo, chimbal, chimbal, caixa…', l2, '
 ${L.card('Linear 3 · com tons', 'o groove sobe para os tambores', l3, 'O fim do compasso leva o groove ao tom 2 e ao surdo. É assim que o linear vira virada.')}
 <h2 class="s">Como estudar</h2><ol class="passos"><li>Leia como uma frase: “bumbo, chimbal, caixa, chimbal”.</li><li>Toque devagar, a 55 bpm, contando alto.</li><li>Procure a “mão que descansa”: no linear, uma mão espera enquanto a outra toca.</li><li>Troque uma nota por vez: um chimbal por um tom, um bumbo por silêncio.</li></ol>
 ${L.dica('Ideia', 'pegue um groove que você já sabe e “abra” as notas que caem juntas: toque o chimbal logo antes do bumbo. você acabou de criar um linear.')}` }); };
+
+
+/* ---------- conteúdo vindo do caderno "Robôterista Explica · Next Level" (reescrito no padrão deste livro) ---------- */
+const bdPad = (passos, hh = HH8, sn = SN) => { const evs = groove({ hh, sn }); passos.forEach((p) => evs.push(ev('bd', p, p % 2 ? 1 : 2))); return evs; };
+const cardBd = (n, txt, passos, extra = '') => L.card(`${n} · bumbo`, txt, (() => { const e = bdPad(passos); return L.comContagem(sem(e), e); })(), extra);
+
+B.empunhadura = () => pg({ tag: T('empunhadura', 'BÁSICO'), titulo: 'Empunhadura: o fulcro', sub: 'Como segurar a baqueta sem apertar. É o que decide se a mão corre ou trava.', corpo: `
+<p>A empunhadura mais usada hoje é a <b>simétrica</b> (<i>matched grip</i>): as duas mãos seguram do mesmo jeito. O segredo é o <b>fulcro</b>: o ponto em que a baqueta “gira”, como numa gangorra.</p>
+<h2 class="s">O fulcro</h2>
+<ul class="passos"><li>Ache o <b>ponto de equilíbrio</b>: mais ou menos <b>1/3 do comprimento</b>, contando a partir da parte grossa (o “pé” da baqueta).</li><li>Segure ali entre o <b>polegar e a lateral do indicador</b>.</li><li>Os outros dedos (médio, anelar e mínimo) <b>envolvem a baqueta sem apertar</b>.</li><li>As pontas das duas baquetas formam um <b>“V” de 60° a 90°</b> sobre a caixa.</li><li>A baqueta <b>volta sozinha</b> depois de bater (rebote): você só guia.</li></ul>
+<h2 class="s">Quem trabalha em cada situação</h2>
+<table class="t"><tr><th>Quando</th><th>Quem trabalha</th></tr><tr><td>notas rápidas e baixas</td><td>os dedos (controle fino)</td></tr><tr><td>notas médias, groove normal</td><td>o pulso (movimento principal)</td></tr><tr><td>notas fortes e grandes</td><td>pulso e antebraço, sem esticar o ombro</td></tr></table>
+<h2 class="s">Erros comuns</h2>
+<table class="t"><tr><th>Erro</th><th>Sintoma</th><th>Correção</th></tr><tr><td>apertar demais</td><td>baqueta “morta”, dor no antebraço</td><td>afrouxe os dedos e deixe quicar</td></tr><tr><td>fulcro solto</td><td>a baqueta escorrega</td><td>feche o polegar no indicador</td></tr><tr><td>polegar esticado</td><td>perde o controle das notas rápidas</td><td>dobre o polegar e apoie no indicador</td></tr><tr><td>punhos duros</td><td>cansaço rápido</td><td>relaxe: o punho é uma dobradiça</td></tr><tr><td>baquetas muito juntas</td><td>uma bate na outra</td><td>abra o “V” entre as pontas</td></tr></table>
+<h2 class="s">Ângulo na pele</h2>
+<p>A baqueta bate <b>quase paralela à pele</b> (uns 10° a 20°). Bata no <b>centro</b> da caixa para o som cheio e <b>perto da borda</b> para um som mais fino.</p>
+${L.dica('Teste do rebote', 'solte a baqueta de uns 5 cm sobre o pad: ela deve quicar 3 vezes ou mais. se morrer logo, você está apertando. faça com as duas mãos e compare.')}${L.caderno()}` });
+
+B.rebote = () => pg({ tag: T('rebote', 'BÁSICO'), titulo: 'Rebote: deixar a baqueta voltar', sub: 'Quem aprende a usar o rebote toca mais rápido, com menos esforço e com menos dor.', corpo: `
+<p>O <b>rebote</b> é a volta da baqueta depois do golpe. Cada rebote é menor e mais rápido que o anterior, até a baqueta parar. <b>Mão solta, muitos rebotes. Mão apertada, o rebote morre na hora.</b></p>
+<h2 class="s">O segredo é soltar</h2>
+<ul class="lista"><li>Depois de bater, <b>não pare a baqueta</b>: deixe ela voltar.</li><li>O fulcro é <b>firme mas leve</b>. Se você aperta, mata o rebote.</li><li>A mão só guia: <b>levanta a baqueta até a altura certa e solta</b>.</li><li>Quanto mais <b>baixo</b> o golpe, mais <b>rápido</b> o rebote.</li></ul>
+<h2 class="s">O papel do rebote em cada rudimento</h2>
+<table class="t"><tr><th>Rudimento</th><th>Papel do rebote</th></tr><tr><td>dobrada (D D)</td><td>a 2ª nota é só o rebote, controlado pelos dedos</td></tr><tr><td>rolo fechado</td><td>rebotes encadeados, quase sem esforço</td></tr><tr><td>paradiddle</td><td>as dobradas usam o rebote; as alternadas usam o pulso</td></tr><tr><td>flam</td><td>a notinha vem de uma altura baixa, quase só rebote</td></tr></table>
+<h2 class="s">Teste: quantos toques?</h2>
+<table class="t"><tr><th>Teste</th><th>Mão direita</th><th>Mão esquerda</th></tr><tr><td>solte de ≈ 5 cm, sem apertar</td><td>____ toques</td><td>____ toques</td></tr><tr><td>segure apertando bem e solte</td><td>____ toques</td><td>____ toques</td></tr><tr><td>segure leve no fulcro e solte</td><td>____ toques</td><td>____ toques</td></tr></table>
+${L.dica('Leitura do teste', 'se a mão esquerda dá menos toques que a direita, ela está mais apertada. é a mão que precisa de mais treino no pad.')}` });
+
+B.duasvozes = () => { const ex = nota({ hh: HH8, sn: SN, bd: BD }); return pg({ tag: T('duasvozes', 'BÁSICO'), titulo: 'Duas vozes: mãos e pés', sub: 'A partitura de bateria tem duas vozes. O cérebro aprende a ler as duas ao mesmo tempo.', corpo: `
+<ul class="lista"><li><b>Mãos:</b> as notas com a haste para <b>cima</b> (chimbal, caixa, toms e pratos).</li><li><b>Pés:</b> as notas com a haste para <b>baixo</b> (bumbo e chimbal de pé).</li></ul>
+${L.card('Rock básico: as duas vozes', 'em cima, as mãos (chimbal e caixa) · embaixo, o pé (bumbo)', ex.svg, 'Leia a voz de cima e a de baixo ao mesmo tempo, sempre de cima para baixo na mesma coluna.')}
+<h2 class="s">Notas na mesma coluna tocam juntas</h2>
+<p>No tempo 1, o chimbal (haste para cima) e o bumbo (haste para baixo) estão <b>na mesma coluna</b>: tocam <b>ao mesmo tempo</b>. No tempo 2, são o chimbal e a caixa.</p>
+<h2 class="s">Pausas</h2>
+<p>Quando uma voz <b>não toca</b> num tempo, existe uma pausa. Em muitas partituras os pés têm as pausas escritas; <b>aqui, para limpar a leitura, não escrevemos as pausas dos pés</b>: um tempo sem nota de bumbo é um tempo de silêncio do pé.</p>
+<div class="cit-p">Uma nota sozinha no tempo vale uma semínima: escrevemos assim para não confundir.</div>
+${L.dica('Dica de estudo', 'bata o pé no chão em todo tempo e leia só a voz de baixo. depois leia só a de cima. por fim, as duas juntas.')}${L.caderno()}` }); };
+
+B.ponto = () => pg({ tag: T('ponto', 'PULSO'), titulo: 'Ponto de aumento e ligadura', sub: 'Duas ferramentas para escrever durações que não cabem numa figura só.', corpo: `
+<p>O <b>ponto</b> depois da nota aumenta a duração em <b>metade do valor</b>. A <b>ligadura</b> junta duas notas iguais numa só, <b>somando as durações</b>.</p>
+<table class="t"><tr><th>Figura</th><th>Vale</th><th>Com ponto</th><th>Soma</th></tr><tr><td>semínima</td><td>1 tempo</td><td>semínima pontuada</td><td>1 + ½ = 1½</td></tr><tr><td>mínima</td><td>2 tempos</td><td>mínima pontuada</td><td>2 + 1 = 3</td></tr><tr><td>colcheia</td><td>½ tempo</td><td>colcheia pontuada</td><td>½ + ¼ = ¾</td></tr><tr><td>semibreve</td><td>4 tempos</td><td>semibreve pontuada</td><td>4 + 2 = 6</td></tr></table>
+<h2 class="s">Exemplos</h2>
+<ul class="lista"><li><b>Semínima pontuada + colcheia:</b> 1½ + ½ = <b>2 tempos</b>.</li><li><b>Ligadura:</b> uma semínima ligada à outra soa <b>uma vez</b> e dura <b>2 tempos</b> (só se bate a primeira).</li></ul>
+<h2 class="s">Resumo dos valores</h2>
+<table class="t"><tr><th>semibreve</th><th>mínima</th><th>semínima</th><th>colcheia</th><th>semicolcheia</th></tr><tr><td>4</td><td>2</td><td>1</td><td>½</td><td>¼</td></tr></table>
+<h2 class="s">Exercício: quantos tempos dura cada grupo? (semínima = 1)</h2>
+<table class="t"><tr><th style="width:10mm"></th><th>Grupo</th><th style="width:30mm">Tempos</th></tr><tr><td>a</td><td>semínima pontuada + colcheia</td><td></td></tr><tr><td>b</td><td>mínima pontuada</td><td></td></tr><tr><td>c</td><td>colcheia pontuada + semicolcheia</td><td></td></tr><tr><td>d</td><td>semínima ligada a semínima + semínima</td><td></td></tr><tr><td>e</td><td>mínima ligada a semínima</td><td></td></tr></table>
+<p class="mut" style="font-size:10.4pt">Respostas: a = 2 · b = 3 · c = 1 · d = 3 · e = 3.</p>
+${L.dica('Regra', 'o ponto vale metade da nota que ele acompanha.')}` });
+
+B.sincope = () => { const ct = nota({ hh: '..x...x...x...x.', bd: 'x...x...x...x...' }, { passo: 2 }); return pg({ tag: T('sincope', 'PULSO'), titulo: 'Síncope e contratempo', sub: 'O gingado da música brasileira vem de colocar o acento fora do lugar em que o ouvido espera.', corpo: `
+<h2 class="s">Síncope</h2>
+<p>Na <b>síncope</b>, o som começa numa parte fraca do tempo (no “&”) e <b>se prolonga sobre o tempo seguinte</b>, deslocando o acento. O ouvido espera o acento no tempo, mas ele chega antes ou depois.</p>
+<ul class="lista"><li>Uma nota começa no <b>“&”</b> e dura até o tempo seguinte.</li><li>Ou uma nota fraca é <b>ligada</b> a um tempo forte.</li></ul>
+<p><b>Forma mais comum em 4/4:</b> colcheia, semínima, colcheia. A semínima do meio começa no “&” do tempo 1 e vai até o “&” do tempo 2. Essa mesma figura no meio do compasso é a levada do <b>samba</b>.</p>
+<h2 class="s">Contratempo</h2>
+<p>No <b>contratempo</b>, a nota toca no tempo fraco e o <b>tempo forte fica em silêncio</b>: conte “(1) & (2) & (3) & (4) &” e fale só os “&”. É a base do <b>reggae</b> e do <b>ska</b>.</p>
+${L.card('Contratempo no chimbal', 'o pé marca o tempo; o chimbal toca só nos “&”', ct.svg, 'Bata o pé no chão em todo tempo e toque o chimbal só entre as batidas do pé.')}
+<h2 class="s">Anacruse: começar antes do tempo 1</h2>
+<table class="t"><tr><th>Tipo de início</th><th>Começa em</th><th>Exemplo</th></tr><tr><td>tético</td><td>no 1º tempo (forte)</td><td>“Brilha, brilha, estrelinha”</td></tr><tr><td>anacrúsico</td><td>no tempo fraco, antes do forte</td><td>“Parabéns pra você”</td></tr><tr><td>acéfalo</td><td>depois do 1º tempo (começa com pausa)</td><td>muitas músicas de samba e bossa</td></tr></table>
+${L.dica('Exercício', 'encontre no seu repertório uma música anacrúsica e uma tética. cante o começo contando e descubra em que tempo cai a primeira nota.')}` }); };
+
+B.tercinas = () => pg({ tag: T('tercinas', 'PULSO'), titulo: 'Tercinas e o shuffle', sub: 'Dividir o tempo em 3 em vez de 2 ou 4: o balanço do blues, do shuffle e da música ternária.', corpo: `
+<p>A <b>tercina</b> coloca <b>3 notas no lugar de 2</b>: três colcheias ocupam o tempo de uma semínima, e cada nota vale <b>⅓ de tempo</b>. É um exemplo de <b>quiáltera</b>: dividir o tempo em um número diferente do normal.</p>
+<div class="dica" style="margin-top:2mm"><b>Atenção à contagem</b><span>Para não confundir com as semicolcheias (“1 e & a”), neste livro as tercinas se contam <b>“1 la li, 2 la li…”</b>. Se você ouvir “1 e a”, é a mesma tercina com outra sílaba.</span></div>
+<h2 class="s">Como contar</h2>
+<table class="t"><tr><th>Divisão</th><th>Notas por tempo</th><th>Contagem</th><th>Cada nota vale</th></tr><tr><td>semínimas</td><td>1</td><td>1 · 2 · 3 · 4</td><td>1 tempo</td></tr><tr><td>colcheias</td><td>2</td><td>1 & 2 & 3 & 4 &</td><td>½ tempo</td></tr><tr><td>tercinas</td><td>3</td><td>1 la li · 2 la li…</td><td>⅓ de tempo</td></tr><tr><td>semicolcheias</td><td>4</td><td>1 e & a · 2 e & a…</td><td>¼ de tempo</td></tr><tr><td>sextinas</td><td>6</td><td>1 la li 2 la li (rápido)</td><td>⅙ de tempo</td></tr></table>
+<h2 class="s">O shuffle</h2>
+<p>No <b>shuffle</b> e no blues, o chimbal toca a <b>1ª e a 3ª notas</b> de cada tercina e <b>pula a do meio</b>. Conte “1 la li”, e toque em “1” e em “li”. O resultado é aquele balanço “manco” e gostoso.</p>
+<ol class="passos"><li>Conte em voz alta “1 la li 2 la li 3 la li 4 la li”, batendo o pé nos números.</li><li>Toque o chimbal em todas as sílabas (12 batidas por compasso).</li><li>Agora tire a sílaba do meio (“la”): é o shuffle.</li><li>Acrescente a caixa nos tempos 2 e 4 e o bumbo nos tempos 1 e 3.</li></ol>
+<h2 class="s">Outras quiálteras</h2>
+<table class="t"><tr><th>Nome</th><th>Notas</th><th>Ocupa o lugar de</th></tr><tr><td>tercina</td><td>3</td><td>2</td></tr><tr><td>quintina</td><td>5</td><td>4</td></tr><tr><td>sextina</td><td>6</td><td>4</td></tr></table>
+<p class="mut" style="font-size:10.4pt">As partituras deste livro escrevem as divisões em 2 e em 4 (colcheias e semicolcheias). As tercinas aparecem aqui como conceito e contagem; para ler e tocar tercinas na partitura, use o Beaterista PRO quando ele ganhar essa escrita.</p>
+${L.dica('Dica de estudo', 'tercinas começam na boca: conte “1 la li” em voz alta com o metrônomo a 60 bpm até ficar automático. só depois leve para as mãos.')}${L.caderno()}` });
+
+B.compasso = () => pg({ tag: T('compasso', 'PULSO'), titulo: 'Compasso: simples e composto', sub: 'A fórmula de compasso diz como é cada “caixinha” de tempos.', corpo: `
+<p>O compasso agrupa os pulsos em “caixinhas” separadas por barras. A <b>fórmula</b> tem dois números: o de cima diz <b>quantos tempos</b> cabem no compasso; o de baixo diz <b>qual figura vale 1 tempo</b> (2 = mínima, 4 = semínima, 8 = colcheia).</p>
+<h2 class="s">Compassos simples (cada tempo se divide em 2)</h2>
+<table class="t"><tr><th>Fórmula</th><th>Nome</th><th>Sensação</th><th>Onde aparece</th></tr><tr><td>2/4</td><td>binário</td><td>forte, fraco</td><td>marcha, samba</td></tr><tr><td>3/4</td><td>ternário</td><td>forte, fraco, fraco</td><td>valsa</td></tr><tr><td>4/4</td><td>quaternário</td><td>forte, fraco, meio-forte, fraco</td><td>rock, pop, funk</td></tr></table>
+<h2 class="s">Compassos compostos (cada tempo se divide em 3)</h2>
+<p>No compasso composto, cada tempo vale uma figura <b>pontuada</b>. O 6/8 parece <b>2 tempos “balançados”</b>: “1 la li 2 la li”. A unidade de tempo é a semínima pontuada (3 colcheias).</p>
+<table class="t"><tr><th>Fórmula</th><th>Tempos</th><th>Contagem</th></tr><tr><td>6/8</td><td>2</td><td>1 la li · 2 la li</td></tr><tr><td>9/8</td><td>3</td><td>1 la li · 2 la li · 3 la li</td></tr><tr><td>12/8</td><td>4</td><td>1 la li · 2 la li · 3 la li · 4 la li</td></tr></table>
+<h2 class="s">Simples × composto</h2>
+<table class="t"><tr><th></th><th>Simples</th><th>Composto</th></tr><tr><td>cada tempo se divide em</td><td>2 partes</td><td>3 partes</td></tr><tr><td>unidade de tempo</td><td>figura simples (semínima)</td><td>figura pontuada (semínima pontuada)</td></tr><tr><td>exemplos</td><td>2/4 · 3/4 · 4/4</td><td>6/8 · 9/8 · 12/8</td></tr><tr><td>como achar o nº de tempos</td><td>o numerador</td><td>numerador ÷ 3</td></tr></table>
+<h2 class="s">Exercício: classifique</h2>
+<table class="t"><tr><th>Fórmula</th><th>Simples ou composto?</th><th>Quantos tempos?</th></tr><tr><td>2/4</td><td></td><td></td></tr><tr><td>6/8</td><td></td><td></td></tr><tr><td>3/4</td><td></td><td></td></tr><tr><td>9/8</td><td></td><td></td></tr></table>
+<p class="mut" style="font-size:10.4pt">Respostas: 2/4 simples, 2 tempos · 6/8 composto, 2 tempos · 3/4 simples, 3 tempos · 9/8 composto, 3 tempos.</p>` });
+
+B.bumbo8 = () => pg({ tag: T('bumbo8', 'GROOVE'), titulo: 'Bumbo independente: 8 padrões', sub: 'Chimbal e caixa ficam fixos. Só o pé muda de desenho.', corpo: `
+<p><b>Independência</b> é o pé fazer um desenho enquanto as mãos fazem outro. Toque o groove de rock (chimbal e caixa) sem mudar nada e <b>troque só o bumbo</b>. Os números embaixo são o endereço de cada batida do pé.</p>
+${cardBd('1', 'nos tempos 1 e 3', [0, 8])}${cardBd('2', '1, 3 e “&” do 3', [0, 8, 10])}${cardBd('3', 'nos 4 tempos', [0, 4, 8, 12])}${cardBd('4', '1, “a” do 1, 3 e “a” do 3', [0, 3, 8, 11])}
+${cardBd('5', '1, “&” do 2 e 3', [0, 6, 8])}${cardBd('6', '1, “&” do 1, 3 e “&” do 3', [0, 2, 8, 10])}${cardBd('7', '1, 3 e “a” do 4', [0, 8, 15])}${cardBd('8', 'sincopado: 1, “&” do 1, “e” do 2, 3, “&” do 3, “e” do 4', [0, 2, 5, 8, 10, 13])}
+<h2 class="s">Exercício: qual é o padrão?</h2>
+<table class="t"><tr><th style="width:10mm"></th><th>Passos do bumbo (0 a 15)</th><th>Em palavras</th></tr><tr><td>a</td><td>0, 4, 8, 12</td><td></td></tr><tr><td>b</td><td>0, 8, 10</td><td></td></tr><tr><td>c</td><td>0, 3, 8, 11</td><td></td></tr></table>
+<p class="mut" style="font-size:10.4pt">Os passos contam de 0 a 15: o tempo 1 é o passo 0, o tempo 2 é o passo 4, o tempo 3 é o passo 8 e o tempo 4 é o passo 12. Dentro do tempo: “e” = +1, “&” = +2, “a” = +3. Respostas: a = nos 4 tempos · b = 1, 3 e “&” do 3 · c = 1, “a” do 1, 3 e “a” do 3.</p>
+${L.dica('Como estudar', 'conte o desenho do pé em voz alta, sozinho. depois junte o chimbal. por último, acrescente a caixa e suba 5 bpm a cada acerto triplo.')}` });
+
+B.moeller = () => { const m = (txt, passo) => stick(txt.replace(/D/g, 'R').replace(/E/g, 'L'), passo, 'sn'); return pg({ tag: T('moeller', 'TÉCNICA'), titulo: 'Técnica Moeller: o chicote', sub: 'Acento forte sem tensão: o braço joga a baqueta como a ponta de um chicote.', corpo: `
+<p>A técnica <b>Moeller</b> usa o movimento de chicote do braço para dar <b>acento forte sem esforço</b>. Vem dos tambores militares e foi descrita pelo baterista Sanford Moeller (livro de 1925).</p>
+<h2 class="s">O movimento em 4 quadros</h2>
+<table class="t"><tr><th>Quadro</th><th>O que acontece</th></tr><tr><td>1 · preparo</td><td>o antebraço sobe primeiro; o pulso e a baqueta vêm atrás</td></tr><tr><td>2 · chicote</td><td>o braço desce, como a ponta de um chicote</td></tr><tr><td>3 · golpe</td><td>a baqueta bate (nota forte)</td></tr><tr><td>4 · rebote</td><td>a baqueta volta sozinha e leva o antebraço de volta para cima</td></tr></table>
+<h2 class="s">As três fases</h2>
+<table class="t"><tr><th>Fase</th><th>O que acontece</th><th>Som</th></tr><tr><td>1 · golpe (down)</td><td>o braço desce em chicote</td><td>nota forte (acento)</td></tr><tr><td>2 · toque (tap)</td><td>o rebote dá uma nota macia</td><td>nota suave</td></tr><tr><td>3 · subida (up)</td><td>a mão sobe e prepara o próximo acento</td><td>nota suave</td></tr></table>
+<p>Padrão clássico: <b>acento – toque – toque</b> (uma forte e duas suaves por mão), alternando D e E. Maiúscula é acento; minúscula é toque suave.</p>
+${L.card('Moeller em semicolcheias', 'D d E e D d E e · acento + toque, trocando de mão', m('DdEeDdEeDdEeDdEe', 1), 'Toque a 55 bpm. A maiúscula é o chicote; a minúscula é só o rebote.')}
+<h2 class="s">Quando usar</h2>
+<table class="t"><tr><th>Situação</th><th>Por quê</th></tr><tr><td>acentos que alternam as mãos</td><td>o chicote dá o acento sem esforço</td></tr><tr><td>semicolcheias e tercinas rápidas</td><td>poupa força e evita tensão no braço</td></tr><tr><td>dinâmica de forte para fraco</td><td>o movimento cresce ou diminui junto</td></tr></table>
+${L.dica('Dica de estudo', 'comece em colcheias, bem devagar, e só depois acelere. no pad, a mão tem que parecer “jogar” a baqueta, não empurrar.')}` }); };
+
+B.flam = () => pg({ tag: T('flam', 'TÉCNICA'), titulo: 'Flam, rimshot e cross-stick', sub: 'Três recursos que mudam o som da caixa sem mudar o ritmo.', corpo: `
+<h2 class="s">Flam (pivô)</h2>
+<p>O <b>flam</b> é uma notinha pequena colada na nota principal: duas baquetas quase juntas, <b>uma baixa e uma alta</b>. Soa como uma nota “gorda”. Na partitura, a notinha pequena vem <b>antes</b> da nota principal.</p>
+<ul class="lista"><li><b>Baqueta baixa:</b> toca a notinha, bem suave.</li><li><b>Baqueta alta:</b> toca a principal, mais forte.</li><li>O intervalo é <b>minúsculo</b>: as duas notas quase se juntam.</li><li>A mão da notinha é <b>sempre a contrária</b> da mão da nota principal.</li></ul>
+<p>Baquetagem: <b>e D</b> (notinha na esquerda, principal na direita) e <b>d E</b> (o contrário). Minúscula é a notinha suave.</p>
+<h2 class="s">Rimshot e cross-stick</h2>
+<table class="t"><tr><th>Técnica</th><th>Como</th><th>Som</th><th>Uso</th></tr><tr><td><b>rimshot</b></td><td>a ponta bate na pele e no aro ao mesmo tempo</td><td>forte e brilhante</td><td>backbeat de rock, pop e funk</td></tr><tr><td><b>cross-stick</b></td><td>baqueta deitada na pele; a parte de trás bate no aro</td><td>seco e baixinho</td><td>baladas, bossa e samba-jazz</td></tr></table>
+<p>Os dois aparecem como <b>“aro”</b> na partitura, no lugar da bolinha da caixa.</p>
+<h2 class="s">Exercício: baquetagem do flam</h2>
+<table class="t"><tr><th>Principal na…</th><th>Baquetagem</th></tr><tr><td>direita</td><td></td></tr><tr><td>esquerda</td><td></td></tr></table>
+<p class="mut" style="font-size:10.4pt">Respostas: principal na direita = e D · principal na esquerda = d E.</p>
+${L.dica('Dica de estudo', 'treine o flam devagar, no pad, ouvindo uma “nota gorda” e não duas separadas. se você ouve duas, aproxime as baquetas.')}` });
+
+B.ritornelo = () => pg({ tag: T('ritornelo', 'MÚSICA'), titulo: 'Sinais de repetição', sub: 'O ritornelo e os atalhos de leitura poupam papel e organizam a música em partes.', corpo: `
+<h2 class="s">Barras de repetição</h2>
+<p><b>|: … :|</b> manda repetir o trecho entre as barras. A 1ª barra (com os pontos para a direita) abre a repetição; a 2ª (com os pontos para a esquerda) manda voltar.</p>
+<p><b>1ª e 2ª casas:</b> na primeira vez, toque a casa 1 e volte; na segunda vez, <b>pule a casa 1</b> e toque a casa 2.</p>
+<h2 class="s">Atalhos de leitura</h2>
+<table class="t"><tr><th>Sinal</th><th>Nome</th><th>O que fazer</th></tr><tr><td>D.C.</td><td>da capo</td><td>volte ao começo</td></tr><tr><td>D.S.</td><td>dal segno</td><td>volte ao sinal (segno)</td></tr><tr><td>Fine</td><td>fim</td><td>termine aqui (depois do D.C. ou do D.S.)</td></tr><tr><td>Coda</td><td>coda</td><td>pule para a coda (o final) ao chegar no “To Coda”</td></tr><tr><td>x2, x4</td><td>repetições</td><td>toque o trecho o número de vezes indicado</td></tr></table>
+<h2 class="s">Uma música em partes</h2>
+<table class="t"><tr><th>Parte</th><th>O que acontece</th></tr><tr><td>intro</td><td>prepara: pode ser só a bateria</td></tr><tr><td>verso</td><td>conta a história, groove mais leve</td></tr><tr><td>refrão</td><td>a parte mais forte e cantada</td></tr><tr><td>ponte</td><td>muda o clima e prepara a volta</td></tr><tr><td>final (coda)</td><td>fecha a música</td></tr></table>
+<h2 class="s">Exercício: qual é a ordem de execução?</h2>
+<p><b>1.</b> |: A B :| → <b>A B A B</b> (exemplo resolvido).</p>
+<p><b>2.</b> |: A B C :| 1. D · 2. E → escreva a ordem: ____________________</p>
+<p><b>3.</b> |: verso :| refrão, ponte, D.C. al Fine (o Fine está no fim do refrão) → escreva a ordem: ____________________</p>
+<p class="mut" style="font-size:10.4pt">Respostas: 2 = A B C D A B C E · 3 = verso, verso, refrão, ponte, verso, refrão (na volta do D.C., o ritornelo não se repete).</p>
+${L.dica('Dica de estudo', 'antes de tocar uma música com sinais, escreva a ordem das partes num papel. quem lê o roteiro não se perde no meio.')}` });
+
+B.plano12 = () => pg({ tag: 'PLANO · 12 semanas', titulo: 'Plano de 12 semanas', sub: '20 a 30 minutos por dia: 10 de pad, 10 de grooves e 5 de leitura. Pouco todo dia vale mais que muito de vez em quando.', corpo: `
+<table class="t"><tr><th>Sem.</th><th>Técnica e leitura</th><th>Grooves</th><th>Pad</th><th>OK</th></tr>
+<tr><td>1</td><td>postura, empunhadura e rebote</td><td>rock básico</td><td>alternado simples, 60 bpm</td><td>☐</td></tr>
+<tr><td>2</td><td>leitura da pauta e contagem</td><td>rock com bumbo extra</td><td>paradiddle simples, 60 bpm</td><td>☐</td></tr>
+<tr><td>3</td><td>dobrada e paradiddle simples</td><td>bumbo independente (padrões 1 a 4)</td><td>paradiddle simples, 70 bpm</td><td>☐</td></tr>
+<tr><td>4</td><td>acentos e notas fantasma</td><td>funk com fantasma</td><td>acentos móveis, 70 bpm</td><td>☐</td></tr>
+<tr><td>5</td><td>tercinas e shuffle</td><td>shuffle e rock em tercina</td><td>tercinas alternadas, 60 bpm</td><td>☐</td></tr>
+<tr><td>6</td><td>paradiddle duplo</td><td>chimbal em semicolcheias</td><td>duplo, 60 bpm</td><td>☐</td></tr>
+<tr><td>7</td><td>paradiddle triplo e paradiddle-diddle</td><td>chimbal aberto e fechado</td><td>triplo, 60 bpm</td><td>☐</td></tr>
+<tr><td>8</td><td>flam, rimshot e cross-stick</td><td>abertura de chimbal com o pé</td><td>flam, 60 bpm</td><td>☐</td></tr>
+<tr><td>9</td><td>dinâmica: de pp a ff</td><td>cúpula do ride</td><td>crescendo e diminuendo, 70 bpm</td><td>☐</td></tr>
+<tr><td>10</td><td>ritmos lineares</td><td>viradas (1 a 3)</td><td>linear, 60 bpm</td><td>☐</td></tr>
+<tr><td>11</td><td>sinais de repetição</td><td>viradas (4 a 6)</td><td>padrões lineares, 70 bpm</td><td>☐</td></tr>
+<tr><td>12</td><td>revisão e projeto final</td><td>montar uma música completa</td><td>todos os rudimentos, 80 bpm</td><td>☐</td></tr></table>
+${L.dica('Como usar', 'marque o quadrado quando conseguir tocar a meta da semana 4 vezes seguidas, sem errar. se a semana não fechou, repita: não existe atraso, existe repetição.')}` });
 
 /* ================= montagem ================= */
 const EXTRAS = process.env.EXTRAS && existsSync(process.env.EXTRAS) ? JSON.parse(readFileSync(process.env.EXTRAS, 'utf8')) : {};
