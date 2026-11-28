@@ -3,7 +3,7 @@ import { groove, svgBateria, AUDITORIA } from './notas.mjs';
 import * as L from './lib-premium.mjs';
 import { readFileSync, existsSync } from 'node:fs';
 import { writeFileSync } from 'node:fs';
-const NOME = 'BATERIA PARA ADULTOS';
+const NOME = 'BEATERISTA TOCA BATERIA';
 let MODI = 0; let IDATUAL = '';
 const pg = (o) => L.pagina({ ...o, modulo: MODI, id: IDATUAL });
 const nota = (linhas, o = {}, larg = 640) => { const evs = groove(linhas, o); return { evs, svg: L.comContagem(L.semB(svgBateria(evs, larg)), evs) }; };
@@ -547,7 +547,7 @@ ${L.dica('Como usar', 'marque o quadrado quando conseguir tocar a meta da semana
 const EXTRAS = process.env.EXTRAS && existsSync(process.env.EXTRAS) ? JSON.parse(readFileSync(process.env.EXTRAS, 'utf8')) : {};
 const NUMS = process.env.NUMS && existsSync(process.env.NUMS) ? JSON.parse(readFileSync(process.env.NUMS, 'utf8')) : {};
 const modulos = MODS.map((m, i) => ({ livro: NOME, nome: m[1] ? `MÓDULO ${String(i + 1).padStart(2, '0')} · ${m[1].toUpperCase()}` : 'PARA LEVAR' }));
-const P = []; P.push(L.capa({ tipo: 'bateria', t1: 'bateria', t2: 'para adultos', lema: 'da primeira baqueta ao primeiro groove, em 15 minutos por dia.' }));
+const P = []; P.push(L.capa({ tipo: 'bateria', t1: 'bateria', t2: 'para adultos', kicker: 'Beaterista toca bateria', lema: 'da primeira baqueta ao primeiro groove, em 15 minutos por dia.' }));
 const sumPos = P.length; P.push('');
 for (const [i, m] of MODS.entries()) {
   MODI = i;

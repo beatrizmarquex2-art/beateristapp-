@@ -5,7 +5,7 @@ import { CLAVE_SOL_D, CLAVE_SOL, CLAVE_FA_D, CLAVE_FA } from '../../js/paulta/cl
 import * as L from './lib-premium.mjs';
 import { readFileSync, existsSync } from 'node:fs';
 import { writeFileSync } from 'node:fs';
-const NOME = 'TECLADO DO ZERO';
+const NOME = 'BEATERISTA TOCA TECLADO';
 let MODI = 0; let IDATUAL = '';
 const pg = (o) => L.pagina({ ...o, modulo: MODI, id: IDATUAL });
 const NOTAS = ['Dó', 'Dó♯', 'Ré', 'Ré♯', 'Mi', 'Fá', 'Fá♯', 'Sol', 'Sol♯', 'Lá', 'Lá♯', 'Si']; const nm = (m) => NOTAS[((m % 12) + 12) % 12];
@@ -354,7 +354,7 @@ ${L.dica('Exercício', 'toque C – G – Am – F usando um ritmo diferente em 
 const EXTRAS = process.env.EXTRAS && existsSync(process.env.EXTRAS) ? JSON.parse(readFileSync(process.env.EXTRAS, 'utf8')) : {};
 const NUMS = process.env.NUMS && existsSync(process.env.NUMS) ? JSON.parse(readFileSync(process.env.NUMS, 'utf8')) : {};
 const modulos = MODS.map((m, i) => ({ livro: NOME, nome: m[1] ? `MÓDULO ${String(i + 1).padStart(2, '0')} · ${m[1].toUpperCase()}` : (m[0] === 'Hora de brincar' ? 'HORA DE BRINCAR' : 'PARA LEVAR') }));
-const P = []; P.push(L.capa({ tipo: 'teclado', t1: 'teclado', t2: 'do zero', lema: 'da primeira tecla à primeira música, em 15 minutos por dia.' }));
+const P = []; P.push(L.capa({ tipo: 'teclado', t1: 'teclado', t2: 'do zero', kicker: 'Beaterista toca teclado', lema: 'da primeira tecla à primeira música, em 15 minutos por dia.' }));
 const sumPos = P.length; P.push('');
 for (const [i, m] of MODS.entries()) {
   MODI = i;

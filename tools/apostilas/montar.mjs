@@ -2,7 +2,7 @@
 import { execFileSync } from 'node:child_process'; import { writeFileSync } from 'node:fs'; import path from 'node:path'; import { usoPaginas } from './verificar.mjs';
 const dir = import.meta.dirname; const node = (f, env = {}, ...a) => execFileSync('node', [path.join(dir, f), ...a], { env: { ...process.env, ...env }, encoding: 'utf8' });
 const paginas = (pdf) => execFileSync('pdftotext', ['-layout', pdf, '-'], { encoding: 'utf8', maxBuffer: 1 << 28 }).split('\f');
-for (const nome of ['bateria', 'teclado']) {
+for (const nome of (process.env.LIVROS || 'bateria,teclado,violao').split(',')) {
   const pdf = `/tmp/apo/${nome}.pdf`; const html = `/tmp/apo/${nome}.html`; const extras = {}; let numsArq = `/tmp/apo/${nome}_nums.json`; writeFileSync(numsArq, '{}');
   const monta = (final = false) => { const saida = node(`${nome}.mjs`, { NUMS: numsArq, EXTRAS: `/tmp/apo/${nome}_extras.json`, SEMMARCA: final ? '1' : '' }); node('render.mjs', {}, html, pdf); return JSON.parse(saida.split('\n').filter((l) => l.startsWith('[')).pop()); };
   const numera = (ids) => { const txt = paginas(pdf); const nums = {}; for (const id of ids) { const i = txt.findIndex((t) => t.includes(`zzmk_${id}_zz`)); if (i >= 0) nums[id] = i + 1; } writeFileSync(numsArq, JSON.stringify(nums)); return nums; };
