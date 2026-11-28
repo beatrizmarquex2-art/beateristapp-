@@ -326,7 +326,7 @@ function lojinhaView(view, parts = []) {
   const vitrineBox = h('div');
   if (LOJA_ABERTA) view.classList.add('lj-escura'); // a vitrine é escura (css/lojinha.css); a classe sai quando a pessoa deixa a Lojinha
   if (LOJA_ABERTA) import('./views/lojinha-vitrine.js').then((m) => { if (!gone) vitrineBox.replaceChildren(m.vitrine(secaoLoja, { abrirCodigo, inicio: `#/${HOME}` })); });
-  view.append(banner('Lojinha', 'exercícios, atividades pra imprimir e o seu código'), LOJA_ABERTA ? abas : null, h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
+  view.append(banner('Lojinha', 'o passe, as apostilas e os baralhos do Paul'), LOJA_ABERTA ? abas : null, h('div', { class: 'pad-x', style: 'display:grid;gap:12px' },
     LOJA_ABERTA ? vitrineBox : h('section', { class: 'card pad al-lock' }, h('div', { class: 'al-lock-i', 'aria-hidden': 'true' }, '🛍️'), h('h2', { class: 'hand' }, 'a lojinha vem em breve!'),
       h('p', { class: 'muted' }, 'aqui vão ficar os materiais da Beaterista: exercícios, atividades pra imprimir e o código de acesso.')),
     LOJA_ABERTA ? null : arteDoPaul('arte-por-que-paul', 'por que Paul?', 'a homenagem do nome do robozinho', 'por que Paul? o nome é uma homenagem ao Paul McCartney, um dos músicos favoritos da Bea'),
