@@ -2402,3 +2402,15 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 .jg-treino .tl-caixa .tr-count { color: #fff7e6; font-weight: 800; }
 .jg-treino .dc-como { text-align: left; line-height: 1.35; } .jg-treino .dc-como b { color: #ffe08a; }
 .jg-treino .tl-barra .btn { white-space: nowrap; flex: none; } .jg-treino .tl-tit { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- paleta dos jogos da Fuga (pedido da Bea, 28/nov): nada de roxo nem rosa; azul-marinho, ouro, vermelho, azul-céu e creme. Pads mais vivos (antes ficavam apagados). ---------- */
+.fgm-pads, .fgm-grade, .fgn-banca { background: radial-gradient(120% 100% at 50% 0, #24406b, #0b1830 72%); border-color: #050a16; box-shadow: inset 0 2px 0 #ffffff22, inset 0 -8px 18px #000a, 0 10px 24px #0009, 0 0 0 2px #355a8a; }
+.fgm-pad, .fgm-cel { filter: brightness(.86) saturate(1); }
+.fgm-pad:disabled:not(.on) { filter: brightness(.8) saturate(.95); }
+.fgm-hub { background: radial-gradient(circle at 35% 28%, #36598c, #081224 72%); box-shadow: inset 0 3px 6px #ffffff2a, 0 0 0 3px #1f3355, 0 6px 14px #000c; }
+.fgm-grade .fgm-cel:nth-child(6) { --c: #f4efe4; } .fgm-grade .fgm-cel:nth-child(7) { --c: #2fb6c4; }
+.fgn-peca.c4 { --c: #3b8cff; }
+.fgm-carta { border-color: #2f6bb5; background: #10284f; color: #ffd23f; }
+.fgm-carta.up { background: #fff6e0; color: #0f1b33; border-color: #ffd23f; } .fgm-carta.par { color: #0f1b33; } .fgm-sym, .fgm-carta.up .fgm-sym { color: #0f1b33; }
+.fgq-campo { background: radial-gradient(120% 90% at 50% 0, #1f5a96, #0a1a33 70%); }
+.fgq-nome { background: linear-gradient(165deg, #2f6bb5, #173a69); border-color: #8cc0ff; }

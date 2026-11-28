@@ -8,7 +8,7 @@ export const JOGOS = [
   { id: 'memoria', nome: 'Memória', desc: 'ache os pares de música', emoji: '🃏', cor: '#f7b733', mini: true },
   { id: 'queda', nome: 'Notas caindo', desc: 'pegue as figuras certas', emoji: '🎼', cor: '#2fa8c4', mini: true },
   { id: 'queda4', nome: 'Notas caindo (4 faixas)', desc: 'mais rápido e com 4 faixas', emoji: '🎶', cor: '#3b6fd8', mini: true },
-  { id: 'montar', nome: 'Monte o ritmo', desc: 'encaixe as figuras no compasso', emoji: '🧩', cor: '#8a5cf0', mini: true },
+  { id: 'montar', nome: 'Monte o ritmo', desc: 'encaixe as figuras no compasso', emoji: '🧩', cor: '#f4efe4', mini: true },
   { id: 'compasso', nome: 'Complete o compasso', desc: 'some as figuras sem passar', emoji: '⏱️', cor: '#4fd8ff', mini: true },
   { id: 'intruso', nome: 'Qual é o intruso?', desc: 'ache o diferente do grupo', emoji: '🕵️', cor: '#e8384f', mini: true },
   { id: 'caca', nome: 'Caça-palavras', desc: 'palavras de música na grade', emoji: '🔎', cor: '#f2762e', duelo: true },

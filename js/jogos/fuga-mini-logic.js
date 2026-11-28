@@ -14,8 +14,8 @@ export const estrelasMemoria = (erros, pares) => estrelasPorErros(erros, Math.ma
 /* ---------- Genius ---------- */
 /** Botões do Genius: `notas` (piano, pentatônica) ou `bateria` (som de cada peça). A cor nunca é verde (a Bea não gostou do led verde). */
 export const PADS_GENIUS = {
-  notas: [{ nome: 'Dó', midi: 60, cor: '#ff3b5c' }, { nome: 'Mi', midi: 64, cor: '#ffd23f' }, { nome: 'Sol', midi: 67, cor: '#4fd8ff' }, { nome: 'Lá', midi: 69, cor: '#b18cff' }, { nome: 'Ré', midi: 62, cor: '#ff9f43' }, { nome: 'Dó agudo', midi: 72, cor: '#ff7ad9' }],
-  bateria: [{ nome: 'bumbo', som: 'kick', cor: '#ff3b5c' }, { nome: 'caixa', som: 'snare', cor: '#ffd23f' }, { nome: 'chimbal', som: 'hihat', cor: '#4fd8ff' }, { nome: 'prato', som: 'cymbal', cor: '#b18cff' }, { nome: 'tom', som: 'tom', cor: '#ff9f43' }, { nome: 'surdo', som: 'surdo', cor: '#ff7ad9' }],
+  notas: [{ nome: 'Dó', midi: 60, cor: '#ff3b5c' }, { nome: 'Mi', midi: 64, cor: '#ffd23f' }, { nome: 'Sol', midi: 67, cor: '#4fd8ff' }, { nome: 'Lá', midi: 69, cor: '#3b8cff' }, { nome: 'Ré', midi: 62, cor: '#ff9f43' }, { nome: 'Dó agudo', midi: 72, cor: '#f4efe4' }],
+  bateria: [{ nome: 'bumbo', som: 'kick', cor: '#ff3b5c' }, { nome: 'caixa', som: 'snare', cor: '#ffd23f' }, { nome: 'chimbal', som: 'hihat', cor: '#4fd8ff' }, { nome: 'prato', som: 'cymbal', cor: '#3b8cff' }, { nome: 'tom', som: 'tom', cor: '#ff9f43' }, { nome: 'surdo', som: 'surdo', cor: '#f4efe4' }],
 };
 /** Os botões usados: `n` primeiros da área (4 ou 6). */
 export const padsDe = (area, n) => (PADS_GENIUS[area] || PADS_GENIUS.notas).slice(0, n);

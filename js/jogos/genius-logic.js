@@ -4,7 +4,7 @@ import { confere } from './fuga-mini-logic.js';
 export { confere };
 
 // cores sem verde (a Bea não gosta do led verde do Genius)
-const COR = ['#e8384f', '#f2762e', '#f7b733', '#4fd8ff', '#2fa8c4', '#3b6fd8', '#8a5cf0', '#e8384f'];
+const COR = ['#e8384f', '#f2762e', '#f7b733', '#4fd8ff', '#2fa8c4', '#3b6fd8', '#f4efe4', '#e8384f'];
 const NOTAS = [['dó', 60], ['ré', 62], ['mi', 64], ['fá', 65], ['sol', 67], ['lá', 69], ['si', 71], ['dó', 72]];
 export const INSTRUMENTOS = {
   xilofone: { nome: 'xilofone', pads: NOTAS.map(([nome, midi], i) => ({ nome, midi, cor: COR[i] })) },
