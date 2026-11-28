@@ -2379,3 +2379,20 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 .jg-treino .tl-fim { text-align: center; display: grid; gap: 8px; }
 @media (max-width: 380px) { .jg-treino .tl-grade { grid-template-columns: 1fr 1fr; } }
 @media (max-height: 520px) and (min-width: 640px) { .jg-treino .tl-grade { grid-template-columns: repeat(5, 1fr); } .jg-treino .tl-outros { grid-template-columns: repeat(4, 1fr); } .jg-treino .tl-cab .jg-p, .jg-treino .tl-mais-t { display: none; } .jg-treino .tl-cab .jg-h { font-size: 20px; } .jg-treino .tl-card small { display: none; } .jg-treino .tl-card { min-height: 44px; } }
+
+/* Treino livre: os jogos da Fuga eram em cartão bege; aqui ficam no azul da casa (mesmo clima do Genius infinito). Troca só as cores do tema dentro do treino. */
+.jg-treino { --card: #1a2a49; --card-soft: #223457; --field: #14213a; --note: #243a63; --ink-rgb: 255 247 230; --muted: #b7c3dd; --line: rgb(255 247 230 / .18); --line-strong: rgb(255 247 230 / .35); color: #fff7e6; }
+.jg-treino .card { background: linear-gradient(180deg, #1d2f52, #15233f); border: 1px solid rgb(255 255 255 / .14); box-shadow: 0 6px 18px rgb(0 0 0 / .35); color: #fff7e6; }
+.jg-treino .card::before { display: none; }
+/* … e o que ainda era bege/escuro demais dentro do treino */
+.jg-treino .fgn-cena { background: linear-gradient(#e6edf8, #b8c6dc); border-color: #0b1224; }
+.jg-treino .fgn-banca .btn.primary { background: linear-gradient(180deg, #ffe58a, #f7b733); color: #142036; border-color: #b27a12; }
+.jg-treino .dc-cell { background: #f1f6ff; }
+.jg-treino .dc-cell.hint { background: #dbe8ff; color: #c4122c; }
+.jg-treino .dc-cell small, .jg-treino .dc-cell sup { color: #142036; }
+.jg-treino h3.tag, .jg-treino .card .tag { color: #ffe08a !important; }
+.jg-treino .dc-dir { color: #9fb3d9; }
+.jg-treino .dc-input, .jg-treino .dc-wrap input { background: #f1f6ff; color: #142036; }
+.jg-treino .dc-chip { background: #f1f6ff; color: #142036 !important; border-color: #9fb3d9; }
+.jg-treino .dc-cell.hint, .jg-treino .dc-cell.hint * { color: #c4122c !important; font-weight: 800; }
+.jg-treino .dc-cell.on, .jg-treino .dc-cell.on * { color: #142036 !important; }
