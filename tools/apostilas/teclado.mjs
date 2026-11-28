@@ -269,7 +269,7 @@ B.folha2 = () => pg({ tag: 'FOLHA PARA IMPRIMIR', titulo: 'Seu teclado em branco
 
 /* montagem */
 const arte = (() => { const w = 22; let o = ''; for (let i = 0; i < 14; i++) o += `<rect x="${i * w}" y="0" width="${w - 1.5}" height="78" rx="2" fill="none" stroke="#d9b866" stroke-width="1.1"/>`; [0, 1, 3, 4, 5, 7, 8, 10, 11, 12].forEach((i) => { o += `<rect x="${i * w + 15}" y="0" width="14" height="46" rx="1.5" fill="#d9b866"/>`; }); return `<svg viewBox="0 0 ${14 * w} 80" width="${14 * w * .95}" height="76" xmlns="http://www.w3.org/2000/svg">${o}</svg>`; })();
-const P = []; P.push(L.capa({ t1: 'teclado', t2: 'do zero', lema: 'da primeira tecla à primeira música', arte, faixa: 'apostila de teclado · método Beaterista' }));
+const P = []; P.push(L.capa({ t1: 'teclado', t2: 'do zero', lema: 'da primeira tecla à primeira música', arte, faixa: 'apostila de teclado · método Beaterista', adesivo: 'toque no seu ritmo ✦' }));
 P.push('@@SUMARIO@@'); L.pular();
 for (const [i, m] of MODS.entries()) {
   if (m[1]) P.push(L.divisor({ modulo: i + 1, titulo: m[1], citacao: m[2], texto: m[3], itens: m[4].map((id) => [N(id), TITULOS[id]]), nome: NOME }));

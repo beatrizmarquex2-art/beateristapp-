@@ -5,10 +5,11 @@ export const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<
 export const CSS = `
 @font-face{font-family:'Bodoni';src:url('${f('AbrilFatface-latin.woff2')}') format('woff2');font-weight:400;font-style:normal}
 @font-face{font-family:'Hanken';src:url('${f('HankenGrotesk-latin.woff2')}') format('woff2');font-weight:100 900}
+@font-face{font-family:'Gochi';src:url('${f('GochiHand-latin.woff2')}') format('woff2');font-weight:400}
 @page{size:A4;margin:0}
 :root{--marinho:#0e1a3a;--marinho2:#16264f;--ouro:#b8913f;--ouro2:#d9b866;--creme:#fbf7ee;--papel:#f4eee0;--tinta:#1d2236;--cinza:#6b6a78;--linha:#e3dac4;--vermelho:#a02f3a}
 *{box-sizing:border-box}html,body{margin:0;background:#888}body{font-family:'Hanken',Helvetica,Arial,sans-serif;color:var(--tinta);font-size:10.4pt;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.pg{width:210mm;height:297mm;position:relative;overflow:hidden;background:var(--creme);page-break-after:always;break-after:page;padding:17mm 18mm 22mm}
+.pg{width:210mm;height:297mm;position:relative;overflow:hidden;background:var(--creme);page-break-after:always;break-after:page;padding:14mm 18mm 21mm}
 .serif{font-family:'Bodoni','Bitstream Charter',Georgia,serif}.it{font-family:'Bitstream Charter','DejaVu Serif',Georgia,serif;font-style:italic}
 .tag{font-size:7.6pt;letter-spacing:.22em;text-transform:uppercase;color:var(--ouro);font-weight:700;margin:0 0 3mm}
 h1.t{font-family:'Bodoni',Georgia,serif;font-weight:400;font-size:27pt;line-height:1.05;color:var(--marinho);margin:0 0 2mm;letter-spacing:-.01em}
@@ -46,26 +47,70 @@ table.t{width:100%;border-collapse:collapse;font-size:9.2pt;margin:2mm 0 4mm}tab
 .chip{display:inline-block;padding:.6mm 2.4mm;border-radius:6mm;background:var(--papel);border:.25mm solid var(--linha);font-size:8pt;color:var(--marinho);font-weight:600;margin:0 1mm 1mm 0}
 .kbd{display:inline-block;margin:0 2mm 2mm 0;text-align:center;font-size:7.8pt;font-weight:700;color:var(--marinho)}.kbd svg{display:block;width:34mm;height:auto}.kbd.g svg{display:block;width:52mm;height:auto}
 .dedos{display:flex;gap:2mm;justify-content:center}.dedos div{width:15mm;padding:2mm 0;border:.3mm solid var(--ouro);border-radius:2mm;text-align:center;background:#fff;font-size:8pt}.dedos b{display:block;font-family:'Bodoni',serif;font-size:15pt;color:var(--ouro)}
+
+/* ====== versão jovem e elegante ====== */
+:root{--acento:#4fb3bf;--post:#e4f5f6;--sombra:rgba(79,179,191,.38)}
+.tag{display:inline-block;background:var(--acento);color:#fff;padding:1mm 3.4mm;border-radius:6mm;transform:rotate(-1.6deg);letter-spacing:.16em;font-size:7pt;margin:0 0 2.6mm}
+h1.t{font-size:26pt;line-height:1.02;position:relative;z-index:1}
+hr.regua{height:3.2mm;border:0;margin:0 0 4mm;background:var(--swoosh) no-repeat left center;background-size:62mm 3.6mm}
+.sub{font-family:'Gochi',cursive;font-style:normal;font-size:12.5pt;line-height:1.2;color:var(--cinza);margin-bottom:1.4mm}
+h2.s{position:relative;display:inline-block;z-index:1}h2.s::after{content:'';position:absolute;left:-1mm;right:-1mm;bottom:.4mm;height:2.6mm;background:var(--sombra);z-index:-1;border-radius:1mm;transform:rotate(-.6deg)}
+.lista li::before{content:'✦';background:none;width:auto;height:auto;top:1.6mm;left:0;color:var(--acento);font-size:9pt;border-radius:0}
+.card{border-radius:4mm;border:.35mm solid var(--linha);box-shadow:1.2mm 1.2mm 0 var(--sombra)}
+.card h4::before{content:'';display:inline-block;width:2.4mm;height:2.4mm;border-radius:50%;background:var(--acento);margin-right:2mm;vertical-align:.3mm}
+.dica{position:relative;background:var(--post);border-left:0;border-radius:1.6mm;padding:2.6mm 5mm 2.4mm;transform:rotate(-.45deg);box-shadow:0 1.2mm 2.6mm rgba(20,20,40,.14);margin:4.4mm 1mm 2.4mm}
+.dica::before{content:'';position:absolute;top:-2.6mm;left:14mm;width:19mm;height:5.2mm;background:rgba(255,255,255,.7);border:.2mm solid rgba(0,0,0,.06);transform:rotate(-3deg)}
+.dica b{font-family:'Gochi',cursive;font-size:13pt;letter-spacing:0;text-transform:none;color:var(--marinho);margin-bottom:.4mm}
+.cad{border:.35mm dashed var(--acento);border-radius:4mm}.cad b{font-family:'Gochi',cursive;font-size:12pt;letter-spacing:0;text-transform:none}
+.cit-p{font-family:'Gochi',cursive;font-style:normal;font-size:15pt;line-height:1.25;border-left:0;padding:2mm 4mm 2mm 10mm;position:relative;color:var(--marinho)}
+.cit-p::before{content:'“';position:absolute;left:0;top:-3mm;font-family:'Bodoni',serif;font-size:42pt;color:var(--acento);line-height:1}
+.passos li::before{background:var(--acento);color:#fff;transform:rotate(-6deg);border-radius:1.6mm}
+.trilha li::before{border-color:var(--acento);border-radius:50%}
+table.t th{border-radius:0}table.t tr:nth-child(even) td{background:var(--post)}
+.rod .n{display:inline-grid;place-items:center;width:7mm;height:7mm;border-radius:50%;background:var(--marinho);color:#fff!important;font-family:'Hanken',sans-serif!important;font-size:7.6pt!important;font-weight:700;margin-left:2mm}
+.doo{position:absolute;pointer-events:none;opacity:.9;z-index:0}
+.cap h1,.div h2{text-shadow:.9mm .9mm 0 var(--acento)}
+.cap h1 em{text-shadow:none}
+.cap .lema{font-family:'Gochi',cursive;font-style:normal;font-size:17pt;color:#f3ead9}
+.adesivo{display:inline-block;background:var(--acento);color:#fff;font-family:'Gochi',cursive;font-size:15pt;padding:1.4mm 5mm;border-radius:6mm;transform:rotate(-4deg);box-shadow:1.2mm 1.2mm 0 rgba(0,0,0,.25)}
+.div h2 small{text-shadow:none}.div .cit{font-family:'Gochi',cursive;font-style:normal;font-size:19pt;border-left:0;padding-left:0}
+.bign{position:absolute;right:14mm;bottom:20mm;font-family:'Bodoni',serif;font-size:230pt;line-height:1;color:transparent;-webkit-text-stroke:.45mm var(--ouro2);opacity:.55}
+.div ol li b{color:var(--acento)}
 `;
 let contaPagina = 0; export const resetaPaginas = () => { contaPagina = 0; }; export const paginaAtual = () => contaPagina; export const pular = () => { contaPagina++; return contaPagina; };
 export function rodape(nome, texto, numero = 0) { const n = numero || ++contaPagina; return `<div class="rod"><span>${esc(nome)} <span class="n">${n}</span></span><span>${texto}</span></div>`; }
-export const pagina = ({ tag, titulo, sub = '', corpo, nome, promo }) => { const r = rodape(nome, promo || ''); return `<section class="pg">${tag ? `<p class="tag">${tag}</p>` : ''}${titulo ? `<h1 class="t">${titulo}</h1>` : ''}${sub ? `<p class="sub">${sub}</p>` : ''}${titulo ? '<hr class="regua">' : ''}${corpo}${r}</section>`; };
+const DOO = [
+  '<svg width="16mm" height="16mm" viewBox="0 0 40 40"><path d="M20 3l4.5 12.5L38 17l-10 8.5L31 38 20 31 9 38l3-12.5L2 17l13.5-1.5z" fill="none" stroke="var(--acento)" stroke-width="2.2" stroke-linejoin="round"/></svg>',
+  '<svg width="18mm" height="12mm" viewBox="0 0 60 40"><path d="M3 28c8-18 12 14 20-2s12-18 20 0 10 8 14-6" fill="none" stroke="var(--acento)" stroke-width="3" stroke-linecap="round"/></svg>',
+  '<svg width="15mm" height="15mm" viewBox="0 0 40 40"><circle cx="14" cy="26" r="6" fill="var(--acento)"/><path d="M20 26V6l12 4" fill="none" stroke="var(--marinho)" stroke-width="2.6" stroke-linecap="round"/></svg>',
+  '<svg width="15mm" height="15mm" viewBox="0 0 40 40"><path d="M20 6v28M6 20h28" stroke="var(--acento)" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="8" r="3" fill="var(--ouro)"/></svg>',
+];
+export const pagina = ({ tag, titulo, sub = '', corpo, nome, promo }) => { const r = rodape(nome, promo || ''); const doo = `<div class="doo" style="top:9mm;right:${12 + (contaPagina % 3) * 4}mm;transform:rotate(${(contaPagina % 5) * 7 - 12}deg)">${DOO[contaPagina % DOO.length]}</div>`; return `<section class="pg">${doo}${tag ? `<p class="tag">${tag}</p>` : ''}${titulo ? `<h1 class="t">${titulo}</h1>` : ''}${sub ? `<p class="sub">${sub}</p>` : ''}${titulo ? '<hr class="regua">' : ''}${corpo}${r}</section>`; };
 export const dica = (t, x) => `<div class="dica"><b>${t}</b><span>${x}</span></div>`;
 export const caderno = () => `<div class="cad"><b>Seu caderno de treino</b>data ____/____ &nbsp; bpm ______ &nbsp; como foi: ☐ difícil ☐ ok ☐ fácil</div>`;
 export const card = (titulo, meta, svg, texto = '') => `<div class="card"><h4>${titulo}</h4>${meta ? `<div class="meta">${meta}</div>` : ''}${svg}${texto ? `<p>${texto}</p>` : ''}</div>`;
-export const divisor = ({ modulo, titulo, citacao, texto, itens, nome }) => { const r = rodape(nome, ''); return `<section class="pg div"><div class="moldura"></div><div class="moldura2"></div><div class="conteudo"><h2><small>Módulo ${modulo}</small>${titulo}</h2><p class="cit">“${citacao}”</p><p style="color:#cfd3e6;font-size:11pt;max-width:120mm">${texto}</p><ol>${itens.map(([n, t]) => `<li><b>${n}</b>${t}</li>`).join('')}</ol></div>${r}</section>`; };
+const CONF = (n, av = [26, 40, 184, 204]) => { const out = []; for (let i = 1; out.length < n && i < 600; i++) { const x = 8 + ((i * 61.803) % 194); const y = 8 + ((i * 97.131) % 281); if (x > av[0] && x < av[2] && y > av[1] && y < av[3]) continue; const c = ['var(--acento)', 'var(--ouro2)', '#ffffff'][out.length % 3]; const k = out.length; out.push(k % 2 ? `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(0.9 + (k % 3) * 0.6).toFixed(1)}" fill="${c}" opacity=".9"/>` : `<path d="M${x.toFixed(1)} ${(y - 2.4).toFixed(1)}v4.8M${(x - 2.4).toFixed(1)} ${y.toFixed(1)}h4.8" stroke="${c}" stroke-width=".7" stroke-linecap="round" transform="rotate(${(k * 31) % 90} ${x.toFixed(1)} ${y.toFixed(1)})"/>`); } return out.join(''); };
+export const divisor = ({ modulo, titulo, citacao, texto, itens, nome }) => { const r = rodape(nome, ''); return `<section class="pg div"><div class="moldura"></div><div class="moldura2"></div><svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 210 297" preserveAspectRatio="xMidYMid slice">${CONF(30, [16, 50, 194, 220])}</svg><div style="position:absolute;right:-22mm;top:-22mm;width:80mm;height:80mm;border-radius:50%;background:var(--acento);opacity:.9"></div><div style="position:absolute;left:-18mm;bottom:40mm;width:48mm;height:48mm;border-radius:50%;border:1.4mm solid var(--ouro2);opacity:.6"></div><div class="bign">${modulo}</div><div class="conteudo"><h2><small>Módulo ${modulo}</small>${titulo}</h2><p class="cit">“${citacao}”</p><p style="color:#cfd3e6;font-size:11pt;max-width:120mm">${texto}</p><ol>${itens.map(([n, t]) => `<li><b>${n}</b>${t}</li>`).join('')}</ol></div>${r}</section>`; };
 export const sumario = (modulos, nome, nota = '', numero = 2) => { const r = rodape(nome, '', numero); return `<section class="pg"><p class="tag">Sumário</p><h1 class="t">O que tem aqui</h1><hr class="regua"><div style="columns:2;column-gap:10mm">${modulos.map(([t, itens]) => `<div class="mod" style="break-inside:avoid"><h3>${t}</h3><ul class="sum">${itens.map(([n, x, pg]) => `<li><b>${n}</b>${x}<span></span><em>${pg || ''}</em></li>`).join('')}</ul></div>`).join('')}</div>${nota ? `<p class="mut" style="font-size:8.6pt">${nota}</p>` : ''}${r}</section>`; };
-/** Capa. `arte` = SVG decorativo dourado; `faixa` = linha de baixo. */
-export function capa({ marca = 'Beaterista', t1, t2, lema, arte = '', faixa = '' }) {
+/** Capa jovem: título grande com sombra colorida, adesivo, confete e a arte da apostila. */
+export function capa({ marca = 'Beaterista', t1, t2, lema, arte = '', faixa = '', adesivo = '' }) {
   contaPagina++;
   return `<section class="pg cap"><div class="moldura"></div><div class="moldura2"></div>
-  <div class="centro" style="top:30mm"><div class="kick">${marca}</div></div>
-  <div class="centro" style="top:50mm"><h1>${t1}<em>${t2}</em></h1></div>
-  <div class="centro" style="top:122mm;padding:0 30mm"><p class="lema">${lema}</p></div>
-  <div class="centro" style="top:150mm">${arte}</div>
+  <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 210 297" preserveAspectRatio="xMidYMid slice">${CONF(34, [24, 34, 186, 205])}</svg>
+  <div style="position:absolute;left:-30mm;top:92mm;width:90mm;height:90mm;border-radius:50%;background:var(--acento);opacity:.16"></div>
+  <div style="position:absolute;right:-26mm;bottom:48mm;width:76mm;height:76mm;border-radius:50%;border:1.6mm solid var(--ouro2);opacity:.45"></div>
+  <div class="centro" style="top:28mm"><div class="kick">${marca}</div></div>
+  <div class="centro" style="top:46mm"><h1>${t1}<em>${t2}</em></h1></div>
+  ${adesivo ? `<div class="centro" style="top:118mm"><span class="adesivo">${adesivo}</span></div>` : ''}
+  <div class="centro" style="top:142mm;padding:0 30mm"><p class="lema">${lema}</p></div>
+  <div class="centro" style="top:172mm">${arte}</div>
   <div class="centro" style="bottom:22mm"><div class="kick" style="font-size:8pt;letter-spacing:.4em">${faixa}</div></div></section>`;
 }
-export const TEMAS = { azul: '', vinho: ':root{--marinho:#4d0f1f;--marinho2:#6e1a30;--creme:#fbf6ef;--papel:#f3e9dc;--linha:#e4d3c2;--vermelho:#8b1d33}.div .cit{color:#e7c987}.cap .rod,.div .rod{color:#d9b9bf;border-color:#7a2a40}.div ol li{border-color:#7a2a40}.cap .rod .n,.div .rod .n{color:#e7c987}' };
+const SW = (c) => `--swoosh:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 12%27%3E%3Cpath d=%27M2 8 C30 2 60 11 100 6 S170 3 198 7%27 stroke=%27%23${c}%27 stroke-width=%273.4%27 fill=%27none%27 stroke-linecap=%27round%27/%3E%3C/svg%3E")`;
+export const TEMAS = {
+  azul: `:root{--acento:#4fb3bf;--post:#e4f5f6;--sombra:rgba(79,179,191,.38);${SW('4fb3bf')}}`,
+  vinho: `:root{--marinho:#4d0f1f;--marinho2:#6e1a30;--creme:#fbf6ef;--papel:#f3e9dc;--linha:#e4d3c2;--vermelho:#8b1d33;--acento:#ee8a9b;--post:#fde8ea;--sombra:rgba(238,138,155,.40);${SW('ee8a9b')}}.div .cit{color:#e7c987}.cap .rod,.div .rod{color:#d9b9bf;border-color:#7a2a40}.div ol li{border-color:#7a2a40}.cap .rod .n,.div .rod .n{background:#ee8a9b;color:#4d0f1f!important}`,
+};
 export const doc = (paginas, titulo, tema = 'azul') => `<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>${esc(titulo)}</title><style>${CSS}${TEMAS[tema] || ''}</style><body>${paginas.join('')}</body></html>`;
 /** Põe a contagem ("1 e 2 e…") embaixo de cada coluna do SVG da pauta (usa a posição das notas desenhadas). */
 export function comContagem(svg, evs, rotulo = null) {
