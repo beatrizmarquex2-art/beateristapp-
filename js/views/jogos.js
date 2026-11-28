@@ -10,6 +10,7 @@ import { soundOn, setSound } from '../jogos/base.js';
 import { silence } from '../audio.js';
 import { salaAtual, esquecerSala, PAUSA_TIPOS, PAUSA_RESP } from '../jogos/online.js';
 import { abrirPerfil } from '../jogos/perfil-sala.js';
+import { montarFalas } from '../jogos/falas-sala.js';
 import * as CODE from '../codigo.js';
 import { listaCurta } from '../lista-curta.js';
 import * as cartas from '../jogos/cartas.js';
@@ -293,14 +294,15 @@ function game(host, entry) {
   const desenhaFaixa = () => { const s = salaAtual(); const c = s && s.conn; if (!c) { faixa.hidden = true; return; } const ns = c.nomes(); const outros = ns.map((_, i) => i).filter((i) => i !== c.me); if (!outros.length) { faixa.hidden = true; return; }
     faixa.replaceChildren(...outros.map((i) => { const n = c.nomeDe(i, ns.length > 2 ? `jogador ${i + 1}` : 'o outro'); return h('button', { type: 'button', class: `ps-chip${c.perfilDe(i) ? ' tem' : ''}`, 'aria-label': `ver o perfil de ${n}`, onclick: () => abrirPerfil(n, c.perfilDe(i)) }, n, h('i', { 'aria-hidden': 'true' }, '›')); })); faixa.hidden = false; };
   document.addEventListener('bt-perfis-sala', desenhaFaixa); document.addEventListener('bt-pausa-sala', desenhaFaixa);
+  const falas = montarFalas(document.body); // botão "falar" e avisos de reação/mensagem na sala (só aparece dentro de sala por código)
   const btnPausa = h('button', { class: 'btn small ghost jg-pausa-btn', type: 'button', 'aria-label': 'pausar o jogo', onclick: pausar }, '⏸ pausa');
   const wrap = h('div', { class: `jg jg-wrap jg-game${darkOn(entry[0]) ? ' jg-dark' : ''}` },
     h('div', { class: 'jg-top' }, h('a', { class: 'jg-link', href: '#/jogos', onclick: async (e) => { if (ctl.inProgress && ctl.inProgress()) { e.preventDefault(); if (await confirmSheet('sair da partida?', 'a partida atual será perdida.', 'sair')) { deVez = true; location.hash = '#/jogos'; } } } }, '‹ jogos'), h('b', { class: 'hand jg-title' }, title),
       btnPausa, h('button', { class: 'btn small ghost', type: 'button', onclick: () => ctl.restart() }, 'nova partida'), snd, musicButton('icon-btn jg-mus')),
-    faixa, body);
+    faixa, falas.el, body);
   host.replaceChildren(wrap); desenhaFaixa();
   const offFesta = attachFesta(wrap);
-  return () => { document.removeEventListener('bt-perfis-sala', desenhaFaixa); document.removeEventListener('bt-pausa-sala', desenhaFaixa); document.removeEventListener('bt-pausa-sala', aoPausaSala); document.removeEventListener('bt-pausa-abrir', aoPedir); musicaVolta(); const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
+  return () => { falas.off(); document.removeEventListener('bt-perfis-sala', desenhaFaixa); document.removeEventListener('bt-pausa-sala', desenhaFaixa); document.removeEventListener('bt-pausa-sala', aoPausaSala); document.removeEventListener('bt-pausa-abrir', aoPedir); musicaVolta(); const andava = !!(ctl.inProgress && ctl.inProgress()); if (andava && !deVez) lembrarJogo(entry[0], entry[1]); else esquecerJogo(entry[0]); offFesta(); ctl.destroy(); };
 }
 
 /** Jogo com Modo Aventura: #/jogos/<id> escolhe o modo, /livre = como sempre, /aventura = mapa, /aventura/<n> = missão. Sem módulo de aventura (ou se falhar), cai direto no Modo Livre. */

@@ -19,13 +19,21 @@ const limpoNome = (s) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, 14
 export const meuNomeSala = () => { try { return limpoNome(localStorage.getItem(NOME_KEY)); } catch { return ''; } };
 export const guardarNomeSala = (v) => { try { localStorage.setItem(NOME_KEY, limpoNome(v)); } catch { /* sem armazenamento */ } };
 const objeto = (x) => !!x && typeof x === 'object' && !Array.isArray(x);
-const semNomes = (x) => { const { nomes, pausaSala, perfis, ...resto } = x; return JSON.stringify(resto); }; // nomes e pausa geral não são jogada
+const semNomes = (x) => { const { nomes, pausaSala, perfis, falas, ...resto } = x; return JSON.stringify(resto); }; // nomes e pausa geral não são jogada
 
 /* ---- pausa geral (vale pra todos os celulares da sala): viaja em `estado.pausaSala = { by, tipo, resp: { [quem]: resposta } }` ----
    tipo: 'ja-volto' | 'sair' | 'aguarda' (quem pausou escolhe) ou 'saiu' (deixou a sala). Quem recebe responde 'beleza' | 'tchau' | 'nao'. */
 export const PAUSA_TIPOS = [['ja-volto', 'já volto rapidão'], ['sair', 'tenho que sair'], ['aguarda', 'pode aguardar um pouco?']];
 export const PAUSA_RESP = [['beleza', 'beleza'], ['tchau', 'blz tchau'], ['nao', 'não consigo']];
 const limpaPausa = (p) => { if (!objeto(p) || ![0, 1, 2, 3].includes(p.by)) return null; const tipo = p.tipo === 'saiu' || PAUSA_TIPOS.some((t) => t[0] === p.tipo) ? p.tipo : 'ja-volto'; const resp = {}; if (objeto(p.resp)) for (const k of ['0', '1', '2', '3']) if (PAUSA_RESP.some((r) => r[0] === p.resp[k])) resp[k] = p.resp[k]; return { by: p.by, tipo, resp }; };
+/* ---- mensagens e reações (pedido da Bea): sem texto livre (tem criança na sala). Só os Pauls e frases prontas abaixo.
+   Viajam em `estado.falas = { [lugar]: { k, n } }`: k = 'r:<paul>' (reação) ou 'f:<frase>' (mensagem); n sobe a cada fala, e é assim que os outros celulares sabem que é nova. Cada um só escreve o próprio lugar. */
+export const REACOES = [['vitoria', 'vitória'], ['joinha', 'joinha'], ['orgulho', 'orgulho'], ['fofo', 'fofo'], ['pensando', 'pensando'], ['cansado', 'cansado'], ['animado', 'animado'], ['amor', 'amor'], ['estiloso', 'estiloso'], ['sono', 'sono'], ['fogo', 'fogo'], ['ok', 'ok'], ['palmas', 'palmas'], ['nota', 'nota'], ['trofeu', 'troféu'], ['tchau', 'tchau']];
+export const FRASES = [['bora', 'bora!'], ['boa', 'boa jogada!'], ['calma', 'calma, já jogo'], ['susto', 'que susto!'], ['ufa', 'ufa!'], ['revanche', 'quero revanche!'], ['gg', 'boa partida!'], ['vez', 'sua vez!']];
+export const falaValida = (k) => typeof k === 'string' && (k.startsWith('r:') ? REACOES.some((r) => r[0] === k.slice(2)) : k.startsWith('f:') ? FRASES.some((r) => r[0] === k.slice(2)) : false);
+export const falaRotulo = (k) => { const l = k.startsWith('r:') ? REACOES : FRASES; return (l.find((r) => r[0] === k.slice(2)) || ['', ''])[1]; };
+const limpaFalas = (f) => { const o = {}; if (!objeto(f)) return o; for (const i of ['0', '1', '2', '3']) { const x = f[i]; if (objeto(x) && falaValida(x.k) && Number.isInteger(x.n) && x.n > 0 && x.n < 1e9) o[i] = { k: x.k, n: x.n }; } return o; };
+const avisaFala = (detail) => { try { document.dispatchEvent(new CustomEvent('bt-fala-sala', { detail })); } catch { /* fora do navegador */ } };
 let ativa = null; // a sala em que este celular está jogando agora: { conn, jogo }
 /** A sala em que este celular está agora (ou null). A moldura dos jogos usa pra mostrar a pausa geral. */
 export const salaAtual = () => ativa;
@@ -57,7 +65,7 @@ export async function acharJogoDaSala(code) {
 
 /** Conexão com uma sala já criada/entrada. `me` = 0 (quem criou) ou 1 (quem entrou). */
 function connection(code, me, ver, onPeer) {
-  let stopped = false; let timer = 0; let busy = false; let peer = me === 1; let ok = true; let ultimo = null; let nomes = ['', '']; let pausa = null; let perfis = [];
+  let stopped = false; let timer = 0; let busy = false; let peer = me === 1; let ok = true; let ultimo = null; let nomes = ['', '']; let pausa = null; let perfis = []; let falas = {}; let vistas = null; let ultimaFala = 0;
   prepararPerfil(); // monta a miniatura do meu perfil (se eu ligei "mostrar meu perfil na sala"); vai junto da próxima jogada
   const on = {}; // o jogo pendura aqui: on.state(estado), on.link(true|false) e (opcional) on.nomes() quando só os nomes mudaram
   const absorve = (st) => {
@@ -65,6 +73,9 @@ function connection(code, me, ver, onPeer) {
     if (Array.isArray(st.perfis)) perfis = Array.from({ length: Math.min(4, st.perfis.length) }, (_, i) => limpaPerfil(st.perfis[i])); // perfis de quem ligou (nunca confia no que chega)
     if (Array.isArray(st.nomes)) nomes = Array.from({ length: Math.max(2, Math.min(4, st.nomes.length)) }, (_, i) => limpoNome(st.nomes[i])); // 2 a 4 nomes (salas de 3 e 4 celulares)
     if (JSON.stringify([nomes, perfis]) !== antes) avisaPerfis();
+    const novas = limpaFalas(st.falas); const primeira = vistas === null; if (primeira) vistas = {};
+    for (const i of Object.keys(novas)) { if (Number(i) === me) continue; if (!primeira && novas[i].n > (vistas[i] || 0)) avisaFala({ seat: Number(i), k: novas[i].k }); vistas[i] = Math.max(vistas[i] || 0, novas[i].n); falas[i] = novas[i]; } // fala nova de outro lugar vira aviso; a minha eu guardo daqui
+    if (novas[me] && (!falas[me] || novas[me].n > falas[me].n)) falas[me] = novas[me];
     const p = limpaPausa(st.pausaSala); const mudou = JSON.stringify(p) !== JSON.stringify(pausa); pausa = p; if (mudou) avisaPausa();
   };
   /** muda a pausa geral e manda pra sala; se o outro mexeu ao mesmo tempo, pega o estado dele e tenta de novo */
@@ -113,7 +124,7 @@ function connection(code, me, ver, onPeer) {
     async push(state) {
       busy = true;
       try {
-        if (objeto(state)) { const mine = meuNomeSala(); const n = nomes.slice(); if (mine) n[me] = mine; const { pausaSala: _velha, perfis: _pv, ...resto } = state; const pf = perfis.slice(); const eu = meuPerfil(); pf[me] = eu || null; state = { ...resto, nomes: n }; if (pf.some(Boolean)) state.perfis = Array.from(pf, (x) => x || null); if (pausa) state.pausaSala = pausa; } // o meu nome vai junto de toda jogada
+        if (objeto(state)) { const mine = meuNomeSala(); const n = nomes.slice(); if (mine) n[me] = mine; const { pausaSala: _velha, perfis: _pv, falas: _fv, ...resto } = state; const pf = perfis.slice(); const eu = meuPerfil(); pf[me] = eu || null; state = { ...resto, nomes: n }; if (pf.some(Boolean)) state.perfis = Array.from(pf, (x) => x || null); if (pausa) state.pausaSala = pausa; if (Object.keys(falas).length) state.falas = falas; } // o meu nome vai junto de toda jogada
         const n = await rpc('sala_enviar', { p_code: code, p_ver: ver, p_estado: state });
         link(true);
         if (n > 0) { ver = n; absorve(state); ultimo = state; if (api.progresso) api.progresso(); return true; }
@@ -125,6 +136,18 @@ function connection(code, me, ver, onPeer) {
     pausarTodos: (tipo) => mudaPausa((p) => (p && p.tipo !== 'saiu' ? p : { by: me, tipo, resp: {} })),
     responderPausa: (r) => mudaPausa((p) => (p && p.by !== me ? { ...p, resp: { ...p.resp, [me]: r } } : p)),
     retomarTodos: () => mudaPausa(() => null),
+    /** manda uma reação ('r:fogo') ou frase pronta ('f:bora') pra sala. No máximo uma a cada 1,5 s (devolve false se for rápido demais ou inválida). */
+    async falar(k) {
+      if (!falaValida(k) || stopped || Date.now() - ultimaFala < 1500) return false; ultimaFala = Date.now();
+      if (!objeto(ultimo)) return false;
+      falas = { ...falas, [me]: { k, n: ((falas[me] && falas[me].n) || 0) + 1 } }; avisaFala({ seat: me, k, eu: true });
+      for (let i = 0; i < 4 && !stopped; i++) {
+        if (!objeto(ultimo)) return false;
+        if (await api.push(ultimo)) return true;
+        await espera(700); while (busy && !stopped) await espera(100);
+      }
+      return false;
+    },
     deixarSala: () => mudaPausa(() => ({ by: me, tipo: 'saiu', resp: {} })),
     close() { stopped = true; clearInterval(timer); document.removeEventListener('visibilitychange', onVis); if (api.parouSaida) api.parouSaida(); if (ativa && ativa.conn === api) { ativa = null; avisaPausa(); } },
   };
