@@ -181,3 +181,12 @@ html[data-estilo="serio"] .mp-node.st-current .mp-disc { background: repeating-r
 html[data-estilo="serio"] .mp-node.st-current .mp-disc::before { background: var(--avp-accent); border-color: var(--avp-gold); }
 html[data-estilo="serio"] .mp-node.st-locked .mp-disc { opacity: .55; border-style: solid; }
 html[data-estilo="serio"] .mp-stars i.on { color: var(--avp-gold); }
+
+/* sério · acabamento: vinheta nas bordas, rótulos em pílula fina, caminho aceso com brilho discreto e números mais nítidos */
+html[data-estilo="serio"] .mp-world::after { display: block !important; content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2; background: radial-gradient(120% 90% at 50% 50%, transparent 55%, color-mix(in srgb, #000 38%, transparent)); }
+html[data-estilo="serio"] .mp-tag { display: inline-block; padding: .6cqw 2.4cqw; border: 1px solid color-mix(in srgb, var(--avp-gold) 50%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--avp-bg) 82%, transparent); font-size: 3.2cqw; letter-spacing: .04em; }
+html[data-estilo="serio"] .mp-tag:empty { display: none; }
+html[data-estilo="serio"] .mp-lit { stroke-width: 3.4; filter: drop-shadow(0 0 4px color-mix(in srgb, var(--avp-gold) 70%, transparent)); }
+html[data-estilo="serio"] .mp-lab { font-weight: 900; letter-spacing: .02em; }
+html[data-estilo="serio"] .mp-node.st-locked .mp-disc::before { background: color-mix(in srgb, var(--avp-card) 60%, transparent); }
+html[data-estilo="serio"] .mp-sign b { font-size: 4cqw; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
