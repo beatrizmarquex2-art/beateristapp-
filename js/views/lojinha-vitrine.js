@@ -7,7 +7,7 @@ import { precoPasse, URL_CARTAO } from '../passe-preco.js';
 import { GRATIS } from '../amostra.js';
 import * as AC from '../acesso.js';
 import { premios } from './premios.js';
-import { BANNERS, TELAS_PASSE, PILARES_PASSE, UNIVERSO, BANCA, MUSICOS, ADULTOS, COMBOS, COMBO_ITENS, GRATIS_ITENS } from '../loja-vitrine-config.js';
+import { BANNERS, TELAS_PASSE, PILARES_PASSE, UNIVERSO, BANCA, MUSICOS, COMECE, COMBOS, COMBO_ITENS, GRATIS_ITENS } from '../loja-vitrine-config.js';
 
 const CONTATO = 'fale com a equipe #BeateristaTeam pelo WhatsApp (18) 99180-4150';
 const prod = (id) => PRODUTOS.find((p) => p.id === id);
@@ -152,16 +152,22 @@ function passe() {
       h('button', { type: 'button', class: 'lj-btn amarelo', 'data-id': 'passe', onclick: escolhaPasse }, 'Adquirir o passe', h('b', { 'aria-hidden': 'true' }, '›'))));
 }
 
+const FRASES_COMBO = {
+  'combo-ensina': 'o caminho completo: teoria, ritmo e prática. mais de 200 páginas e 48 atividades pra imprimir',
+  'combo-brincando': 'jogo da memória, colorir e jogo de cartas: a criança aprende música brincando, sem tela',
+  'combo-cards': '360 cartas pra imprimir, recortar e revisar: estudar fica um jogo',
+};
 function combo(c) {
   const itens = (COMBO_ITENS[c.id] || []).map(prod).filter(Boolean);
   const alvo = c.link ? c : c.provisorio ? { id: c.id, nome: c.provisorio.nome, preco: c.provisorio.preco, link: c.provisorio.link } : c;
-  const paga = num(alvo.preco); const soma = itens.reduce((t, p) => t + num(p.preco), 0); const eco = c.link && paga ? soma - paga : 0; // só mostra economia quando o combo tem preço próprio e a conta fecha a favor
+  // sem conta de economia (pedido da Bea): em vez disso uma frase que mostra aos pais por que vale a pena
+  const frase = FRASES_COMBO[c.id] || '';
   const breve = !alvo.link;
   return h('article', { class: 'ljv-combo', 'data-id': c.id },
     h('div', { class: 'ljv-combo-itens', style: `--n:${itens.length}`, 'aria-label': 'o que vem no combo' }, ...itens.map((p) => h('button', { type: 'button', class: 'ljv-mini', 'aria-label': `ver ${p.nome}`, onclick: () => ampliar(p) }, h('img', { src: p.img, alt: p.nome, loading: 'lazy', draggable: 'false' })))),
     h('div', { class: 'ljv-combo-fim' },
-      h('div', { class: 'ljv-combo-nome' }, h('b', {}, c.nome), h('small', {}, c.provisorio && !c.link ? 'combo chegando · por enquanto leve o jogo da memória' : `${c.itens.length || itens.length} materiais${soma && itens.length === c.itens.length ? ` · ${brl(soma)} se comprados separados` : ''}`)),
-      h('div', { class: 'ljv-combo-preco' }, alvo.preco ? h('b', { class: 'ljv-preco' }, c.precoDe ? [h('s', { class: 'lj-de' }, c.precoDe), ' ', alvo.preco] : alvo.preco) : null, eco > 0.004 ? h('span', { class: 'ljv-eco' }, `economia de ${brl(eco)}`) : null)),
+      h('div', { class: 'ljv-combo-nome' }, h('b', {}, c.nome), h('small', {}, frase || `${c.itens.length || itens.length} materiais`)),
+      h('div', { class: 'ljv-combo-preco' }, alvo.preco ? h('b', { class: 'ljv-preco' }, c.precoDe ? [h('s', { class: 'lj-de' }, c.precoDe), ' ', alvo.preco] : alvo.preco) : null)),
     breve ? h('button', { type: 'button', class: 'lj-btn breve', onclick: () => abrirPagamento({}) }, 'em breve') : botao(c.link ? 'Adquirir' : 'Levar o jogo', alvo, 'amarelo'));
 }
 
@@ -187,13 +193,15 @@ const comprarPix = () => irPara(PASSE.link);
 const comprarCartao = () => irPara(URL_CARTAO);
 const LENDARIAS_IMG = ['L01', 'L02', 'L03', 'L04', 'L05', 'L06'].map((c) => `assets/figurinhas/lendarias/${c}.webp`);
 
-/** Topo da vitrine: materiais do Paul (PDF pra imprimir). Os combos e o colorir vêm logo abaixo; o passe fica mais pra baixo. */
-function heroMateriais() {
-  return h('section', { class: 'ljv-hero ljv-hero-mat', id: 'lj-topo', 'aria-label': 'materiais do Paul' },
+/** ÁREA "Robôterista" (pra crianças): cabeçalho, a arte larga dos 3 combos, as frases de valor, os combos e a banca do Paul. Fica no topo da Lojinha. */
+function areaRobo(combos, banca) {
+  return h('section', { class: 'ljv-area ljv-area-robo', id: 'lj-robo', 'aria-label': 'Robôterista: materiais pra crianças' },
     h('div', { class: 'ljv-hero-top' },
-      h('div', {}, h('small', { class: 'ljv-kick' }, 'lojinha do paul'), h('h1', {}, 'Música pra ', h('br'), 'imprimir, colorir ', h('br'), 'e brincar.')),
+      h('div', {}, h('small', { class: 'ljv-kick' }, 'área · pra crianças'), h('h1', {}, 'Robôterista'), h('p', { class: 'ljv-area-sub' }, 'o Paul ensina música brincando: apostilas, jogos e colorir pra imprimir')),
       h('img', { class: 'ljv-hero-paul', src: 'assets/paul/animacoes/web/paul-comemoracao.webp', alt: 'Paul comemorando', width: 140, height: 140 })),
-    h('div', { class: 'ljv-hero-chips' }, h('span', {}, 'PDF na hora'), h('span', {}, 'pagamento único'), h('span', {}, 'pouca tinta')));
+    h('img', { class: 'ljv-combos-arte', src: BANNER_COMBOS.img, alt: BANNER_COMBOS.alt, width: BANNER_COMBOS.w, height: BANNER_COMBOS.h, draggable: 'false' }),
+    h('ul', { class: 'ljv-vale' }, ...['pagamento único, sem mensalidade', 'PDF na hora: imprima quantas vezes quiser', 'feito pra imprimir com pouca tinta', 'brincar e aprender, sem tela'].map((t) => h('li', {}, t))),
+    combos, banca);
 }
 
 /** Passe anual (acesso aos jogos): título, preço, botão do Pix e do cartão. Fica depois dos combos e da banca. */
@@ -219,25 +227,33 @@ function lendarias() {
 }
 
 
-const ALVO = { cards: 'banca', ensina: 'universo', evoluir: 'musicos' }; // rotas antigas #/lojinha/<seção>
+const ALVO = { cards: 'banca', ensina: 'universo', evoluir: 'comece' }; // rotas antigas #/lojinha/<seção>
 
 /** `secao` = rota antiga (cards | ensina | evoluir) ou id de seção: abre a vitrine já rolada até lá. `opts.abrirCodigo` = folha "já tenho meu código". */
 export function vitrine(secao_ = '', { abrirCodigo, inicio = '#/inicio' } = {}) {
   const universo = secao('universo', 'Universo Robôterista', 'as apostilas do Paul: toque na capa e folheie por dentro', { src: 'assets/entrada/paul-professor.webp', alt: 'Paul professor' }, produtos(UNIVERSO));
-  const musicos = secao('musicos', 'Para músicos', 'estudo de bateria, violão e os exercícios que a Bea leva pro palco', { src: 'assets/entrada/paul-guitarra.webp', alt: 'Paul com a guitarra' }, produtos(MUSICOS));
-  const adultos = secao('adultos', 'Adolescentes e adultos', 'apostilas pra quem quer tocar de verdade: bateria e teclado', { src: 'assets/paul/animacoes/web/paul-pensativo.webp', alt: 'Paul pensando' }, produtos(ADULTOS));
-  const combos = secao('combos', 'Combos completos', 'tudo que vem dentro e quanto você economiza', { src: 'assets/paul/animacoes/web/paul-bau.webp', alt: 'Paul com o baú' }, h('img', { class: 'ljv-combos-arte', src: BANNER_COMBOS.img, alt: BANNER_COMBOS.alt, width: BANNER_COMBOS.w, height: BANNER_COMBOS.h, loading: 'lazy', draggable: 'false' }), ...COMBOS.map(combo));
+  const comece = secao('comece', 'Comece por aqui', 'bateria, teclado e violão do zero, pra adolescentes e adultos', { src: 'assets/paul/animacoes/web/paul-pensativo.webp', alt: 'Paul pensando' }, produtos(COMECE));
+  const combos = secao('combos', 'Combos completos', 'cada combo reúne tudo de um jeito de aprender', { src: 'assets/paul/animacoes/web/paul-bau.webp', alt: 'Paul com o baú' }, ...COMBOS.map(combo));
   const resp = h('details', { class: 'ljv-resp' },
     h('summary', {}, 'para os responsáveis: pagamento e informações'),
     h('ul', {}, h('li', {}, AVISO_DIGITAL), h('li', {}, 'o passe: 12 meses de acesso, pagamento único (pix) pelo WhatsApp. os materiais: pagamento na página da Hotmart.'), h('li', {}, CONTATO)),
     h('a', { class: 'ljv-link', href: '#/jogos/relatorio' }, 'ver o que cada jogo desenvolve ›'));
   const prem = premios(); // só quem tem o passe (código válido) vê os prêmios; quem não tem vê o Passe à venda
-  const nav = [...(prem ? [['premios', 'Prêmios']] : []), ['combos', 'Combos'], ['banca', 'Colorir e jogos'], ['lendarias', 'Lendárias'], ...(prem ? [] : [['acesso', 'Passe']]), ['universo', 'Apostilas'], ['musicos', 'Músicos'], ['adultos', 'Teens e adultos'], ['gratis', 'Grátis']];
+  const nav = [...(prem ? [['premios', 'Prêmios']] : []), ['lendarias', 'Lendárias'], ...(prem ? [] : [['acesso', 'Passe']]), ['gratis', 'Grátis']];
   const topo = h('div', { class: 'ljv-topo' },
     h('div', { class: 'ljv-topo-l' }, h('a', { class: 'ljv-link', href: inicio }, '‹ voltar ao início'), h('button', { type: 'button', class: 'ljv-link', onclick: () => (abrirCodigo ? abrirCodigo() : toast('digite o código no fim da página')) }, 'já tenho um código')),
     h('nav', { class: 'ljv-nav', 'aria-label': 'seções da lojinha' }, ...nav.map(([id, t]) => h('button', { type: 'button', onclick: () => rolar(document.getElementById(`lj-${id}`)) }, t))));
-  const heroEl = prem ? null : hero(); // quem já tem o passe vê os prêmios no topo; quem não tem vê o passe depois dos combos
-  const raiz = h('div', { class: 'ljv ljv-azul bmr' }, topo, prem || heroMateriais(), prem ? null : combos, prem ? null : banca(), prem ? combos : null, prem ? banca() : null, lendarias(), heroEl, heroEl ? passe() : null, banners(), universo, musicos, adultos, gratis(), resp);
+  // 2 abas (pedido da Bea): "Comece por aqui" (do zero, adolescentes e adultos) e "Robôterista Ensina" (combos, banca e apostilas pra crianças)
+  const painelComece = h('div', { class: 'ljv-painel-aba', id: 'lj-aba-comece', role: 'tabpanel', hidden: true }, comece);
+  const painelRobo = h('div', { class: 'ljv-painel-aba', id: 'lj-aba-robo', role: 'tabpanel' }, areaRobo(combos, banca()), universo);
+  const ABAS = [['comece', 'Comece por aqui', painelComece], ['robo', 'Robôterista Ensina', painelRobo]];
+  const botoes = ABAS.map(([id, t]) => h('button', { type: 'button', class: 'ljv-aba', role: 'tab', 'data-aba': id, onclick: () => abrirAba(id) }, t));
+  function abrirAba(id) { ABAS.forEach(([k, , p], i) => { const on = k === id; p.hidden = !on; botoes[i].classList.toggle('on', on); botoes[i].setAttribute('aria-selected', String(on)); }); }
+  const abasEl = h('div', { class: 'ljv-abas', role: 'tablist', 'aria-label': 'escolha por onde começar' }, ...botoes);
+  const heroEl = prem ? null : hero(); // quem já tem o passe vê os prêmios no topo; quem não tem vê o passe depois das abas
+  const raiz = h('div', { class: 'ljv ljv-azul bmr' }, topo, prem, abasEl, painelRobo, painelComece, lendarias(), heroEl, heroEl ? passe() : null, banners(), gratis(), resp);
+  const NA_ABA = { comece: 'comece', evoluir: 'comece', musicos: 'comece', adultos: 'comece', robo: 'robo', combos: 'robo', banca: 'robo', universo: 'robo', ensina: 'robo', cards: 'robo' };
+  abrirAba(NA_ABA[secao_] || 'robo'); // abre a aba onde está o que a pessoa pediu (padrão: Robôterista Ensina, com os combos)
   const alvo = ALVO[secao_] || (secao_ && document.getElementById ? secao_ : '');
   if (alvo) setTimeout(() => rolar(raiz.querySelector(`#lj-${alvo}`)), 350);
   return raiz;
