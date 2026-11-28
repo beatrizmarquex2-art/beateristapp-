@@ -141,7 +141,7 @@ html.lite .mp-stk { animation: none; }
 
 /* ===== visual SÉRIO do mapa (pedido da Bea, 28/nov/2026): sem adesivos, sem Paul, sem pixel art; discos lisos, traço fino, texto grande e legível =====
    Liga pelo botão "kids/adulto" do cabeçalho (js/campanha/tema.js, html[data-estilo="serio"]). Só desliga o enfeite: fases, regras, progresso e cliques são os mesmos. */
-html[data-estilo="serio"] .mp-stk, html[data-estilo="serio"] .mp-deco, html[data-estilo="serio"] .mp-paul, html[data-estilo="serio"] .mp-sign small { display: none !important; }
+html[data-estilo="serio"] .mp-stk, html[data-estilo="serio"] .mp-deco, html[data-estilo="serio"] .mp-say, html[data-estilo="serio"] .mp-sign small { display: none !important; }
 html[data-estilo="serio"] .mp-world, html[data-estilo="serio"] .mp-world.beat-mapa[data-beat-mundo]:has([data-beat-regiao]) { background: var(--avp-bg) !important; background-image: none !important; }
 html[data-estilo="serio"] .mp-band { background: var(--avp-bg) !important; background-image: none !important; border-top: 1px solid var(--avp-line) !important; image-rendering: auto; }
 html[data-estilo="serio"] .mp-band::before, html[data-estilo="serio"] .mp-band::after, html[data-estilo="serio"] .mp-world::before, html[data-estilo="serio"] .mp-world::after { display: none !important; }
@@ -190,3 +190,7 @@ html[data-estilo="serio"] .mp-lit { stroke-width: 3.4; filter: drop-shadow(0 0 4
 html[data-estilo="serio"] .mp-lab { font-weight: 900; letter-spacing: .02em; }
 html[data-estilo="serio"] .mp-node.st-locked .mp-disc::before { background: color-mix(in srgb, var(--avp-card) 60%, transparent); }
 html[data-estilo="serio"] .mp-sign b { font-size: 4cqw; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+
+/* minimalista: o Paul sério (assets/paul/serio.png) fica pequeno ao lado do disco atual, sem balão */
+html[data-estilo="serio"] .mp-paul .mp-cor { filter: drop-shadow(0 3px 5px #0008); }
+.av-estilo { white-space: nowrap; }

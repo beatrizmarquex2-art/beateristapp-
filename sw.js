@@ -250,6 +250,7 @@ const EXTRA = [
   'assets/mural/tape.svg',
   'assets/mural/underline.svg',
   'assets/mural/vinyl.svg',
+  'assets/paul/serio.png',
   'assets/paul/animacoes/Paul-aceno.gif',
   'assets/paul/animacoes/Paul-bau.gif',
   'assets/paul/animacoes/Paul-celular.gif',
