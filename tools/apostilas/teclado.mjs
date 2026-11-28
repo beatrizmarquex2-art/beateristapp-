@@ -142,8 +142,7 @@ B.duas = () => pg({ tag: T('duas', 'BÁSICO'), titulo: 'Duas mãos juntas', sub:
 <p>Toque devagar, uma mão de cada vez, até cada uma estar firme. Só depois junte as duas. Aqui, “Brilha, brilha, estrelinha” com a esquerda tocando <b>Dó, Fá e Sol</b>.</p>
 <div class="card"><h4>Mão direita · melodia</h4>${sis(mdEst)}</div>
 <div class="card"><h4>Mão esquerda · acompanhamento</h4>${sis(meEst, 'fa')}<p>Quatro compassos de Dó, Fá e Sol: <b>Dó (um compasso inteiro)</b> · <b>Fá e Dó</b> · <b>Fá e Dó</b> · <b>Sol e Dó</b>.</p></div>
-<ol class="passos"><li>Toque só a direita, a 60 bpm, três vezes.</li><li>Toque só a esquerda, três vezes.</li><li>Junte as duas bem devagar, a 50 bpm. Se travar, volte a uma mão.</li><li>Quando sair limpo, suba para 60 bpm.</li></ol>
-${L.dica('Dica de estudo', 'se uma mão contaminar a outra, pare e treine só a que erra. o cérebro precisa de pequenos blocos.')}` });
+<ol class="passos"><li>Toque cada mão sozinha, a 60 bpm, três vezes.</li><li>Junte as duas bem devagar, a 50 bpm. Se uma mão contaminar a outra, treine só a que erra.</li></ol>` });
 
 B.maiores = () => pg({ tag: T('maiores', 'BÁSICO'), titulo: 'Acordes maiores', sub: 'Soam alegres e abertos. Na cifra, é só a letra.', corpo: `
 <p>Um acorde é <b>três notas ao mesmo tempo</b>, pulando uma tecla branca entre elas: a 1ª, a 3ª e a 5ª. Use os dedos <b>1 – 3 – 5</b> da mão direita.</p>
