@@ -20,7 +20,7 @@ Quem for montar stories, destaques ou agendar publicações **começa por aqui**
 - Aparecem mãos, braços e, em alguns, cabeça de aluno de costas. A Bea liberou (14/nov) por não dar pra identificar ninguém.
 - **Som**: quase todos usam uma batida de bateria gerada (sem direito autoral). O 25 e o 26 usam o som real da sala; um detector automático de voz não achou fala neles, mas ninguém ouviu: a Bea precisa escutar antes de postar.
 - **Com prazo**: o 21 (apostila a R$ 14,90) só vale até 30/nov/2026. Depois, não postar.
-- Preços usados: passe R$ 49,90 · combo Robôterista R$ 79,90 (de R$ 99,60) · curso Bateria Start R$ 79,90 · Mood R$ 29,90 · memória e Bateria Kids R$ 19,90 · apostila Bateria Start R$ 14,90 (promoção) · gibi do Paul vol. 1 R$ 9,90.
+- Preços usados: passe R$ 49,90 · combo Robôterista R$ 79,90 (de R$ 99,60) · curso Bateria Start R$ 79,90 · Mood R$ 49,90 · memória e Bateria Kids R$ 19,90 · apostila Bateria Start R$ 14,90 (promoção) · gibi do Paul vol. 1 R$ 9,90.
 
 ## Ordem sugerida (1 por dia)
 | dia | peça | perfil |

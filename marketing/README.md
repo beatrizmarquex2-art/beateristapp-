@@ -122,7 +122,7 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 | 12_achar_na_pauta | pais | "seu filho lendo partitura. e achando que é jogo" |
 | 13_explorar_a_bateria | iniciante | "a primeira bateria cabe no tablet" |
 | 15_memoria_da_tela_pro_papel | pais e profs | memória no tablet e depois impressa, R$ 19,90 |
-| 16_beaterista_mood | bateristas (perfil da Bea) | "os exercícios que eu estudo e levo pro palco", 55 páginas + 20 de bônus, R$ 29,90 |
+| 16_beaterista_mood | bateristas (perfil da Bea) | "os exercícios que eu estudo e levo pro palco", 55 páginas + 20 de bônus, R$ 49,90 |
 | 17_beat_hero | geral | "parece videogame. é aula de ritmo", cada cor é uma peça da bateria |
 | passe_carrossel_1 a 7 (imagens 1080x1350) | geral | "o que tem dentro do passe beaterista?"; gerado por `marketing/reels/carrossel_passe.js RECORTES SAIDA` |
 | 18_toca_na_tela | iniciante | "sem instrumento em casa? toca na tela" (bateria, xilofone, ritmo Rock 1, aula com o Paul) |
@@ -153,4 +153,4 @@ python3 marketing/reels/build.py marketing/reels/specs/NOME.json PASTA_DOS_BRUTO
 - Instagram @beaterista_ ~32 mil. Perfil do Paul no Instagram: **@jogos.beaterista**.
 - beaterista.com.br (GoDaddy): curso "Aprenda do Zero" R$ 79,90; falta garantia visível, depoimentos, lista de aulas e vídeo; muitos produtos competindo.
 - Regra de toda peça: 1 promessa + 1 chamada ("link na bio" ou palavra pra comentar), hashtags só no fim, um produto por peça.
-- Preços e fatos pra usar: passe anual R$ 49,90 (pagamento único, 12 meses), mais de 15 jogos e estudos, mais de 100 figurinhas, combo Robôterista R$ 79,90 (4 PDFs, de R$ 99,60); avulsos em `js/loja-config.js`: Ritmo e Figuras, Harmonia e Melodia, Mood e Violão do Zero R$ 29,90; Na Prática, Memória e Bateria Kids R$ 19,90, jogar grátis em jogos.beaterista.com.br. Nunca inventar depoimento, número ou escassez.
+- Preços e fatos pra usar: passe anual R$ 49,90 (pagamento único, 12 meses), mais de 15 jogos e estudos, mais de 100 figurinhas, combo Robôterista R$ 79,90 (4 PDFs, de R$ 99,60); avulsos em `js/loja-config.js`: Ritmo e Figuras, Harmonia e Melodia, Violão do Zero R$ 29,90, Mood R$ 49,90; Na Prática, Memória e Bateria Kids R$ 19,90, jogar grátis em jogos.beaterista.com.br. Nunca inventar depoimento, número ou escassez.
