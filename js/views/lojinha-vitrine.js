@@ -185,17 +185,21 @@ const ALVO = { cards: 'banca', ensina: 'universo', evoluir: 'musicos' }; // rota
 export function vitrine(secao_ = '', { abrirCodigo, inicio = '#/inicio' } = {}) {
   const universo = secao('universo', 'Universo Robôterista', 'as apostilas do Paul: toque na capa e folheie por dentro', { src: 'assets/entrada/paul-professor.webp', alt: 'Paul professor' }, produtos(UNIVERSO));
   const musicos = secao('musicos', 'Para músicos', 'estudo de bateria, violão e os exercícios que a Bea leva pro palco', { src: 'assets/entrada/paul-guitarra.webp', alt: 'Paul com a guitarra' }, produtos(MUSICOS));
+  // aba nova (adolescentes e adultos): enquanto os materiais não chegam, aparece "em breve" (a Bea manda os produtos e aqui entram os cartões)
+  const adultos = secao('adultos', 'Adolescentes e adultos', 'materiais novos pra quem quer tocar de verdade', { src: 'assets/paul/animacoes/web/paul-pensativo.webp', alt: 'Paul pensando' },
+    h('div', { class: 'ljv-breve' }, h('span', { class: 'ljv-breve-tag' }, 'em breve'), h('b', {}, 'novidades a caminho'), h('p', {}, 'estamos preparando materiais novos pra adolescentes e adultos. quando chegarem, aparecem aqui.'),
+      h('button', { type: 'button', class: 'lj-btn breve', onclick: () => abrirPagamento({}) }, 'em breve')));
   const combos = secao('combos', 'Combos completos', 'tudo que vem dentro e quanto você economiza', { src: 'assets/paul/animacoes/web/paul-bau.webp', alt: 'Paul com o baú' }, ...COMBOS.map(combo));
   const resp = h('details', { class: 'ljv-resp' },
     h('summary', {}, 'para os responsáveis: pagamento e informações'),
     h('ul', {}, h('li', {}, AVISO_DIGITAL), h('li', {}, 'o passe: 12 meses de acesso, pagamento único (pix) pelo WhatsApp. os materiais: pagamento na página da Hotmart.'), h('li', {}, CONTATO)),
     h('a', { class: 'ljv-link', href: '#/jogos/relatorio' }, 'ver o que cada jogo desenvolve ›'));
   const prem = premios(); // só quem tem o passe (código válido) vê os prêmios; quem não tem vê o Passe à venda
-  const nav = [prem ? ['premios', 'Prêmios'] : ['passe', 'Passe'], ['universo', 'Apostilas'], ['banca', 'Banca do Paul'], ['combos', 'Combos'], ['musicos', 'Músicos'], ['gratis', 'Grátis']];
+  const nav = [prem ? ['premios', 'Prêmios'] : ['passe', 'Passe'], ['universo', 'Apostilas'], ['banca', 'Banca do Paul'], ['combos', 'Combos'], ['musicos', 'Músicos'], ['adultos', 'Teens e adultos'], ['gratis', 'Grátis']];
   const topo = h('div', { class: 'ljv-topo' },
     h('div', { class: 'ljv-topo-l' }, h('a', { class: 'ljv-link', href: inicio }, '‹ voltar ao início'), h('button', { type: 'button', class: 'ljv-link', onclick: () => (abrirCodigo ? abrirCodigo() : toast('digite o código no fim da página')) }, 'já tenho um código')),
     h('nav', { class: 'ljv-nav', 'aria-label': 'seções da lojinha' }, ...nav.map(([id, t]) => h('button', { type: 'button', onclick: () => rolar(document.getElementById(`lj-${id}`)) }, t))));
-  const raiz = h('div', { class: 'ljv' }, topo, banners(), prem || passe(), universo, banca(), combos, musicos, gratis(), resp);
+  const raiz = h('div', { class: 'ljv' }, topo, banners(), prem || passe(), universo, banca(), combos, musicos, adultos, gratis(), resp);
   const alvo = ALVO[secao_] || (secao_ && document.getElementById ? secao_ : '');
   if (alvo) setTimeout(() => rolar(raiz.querySelector(`#lj-${alvo}`)), 350);
   return raiz;

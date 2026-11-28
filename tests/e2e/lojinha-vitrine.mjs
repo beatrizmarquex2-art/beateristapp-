@@ -6,7 +6,7 @@ await ctx.route('**/*.supabase.co/**', (r) => r.fallback());
 await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'visitante'); localStorage.setItem('bt-mute', '1'); } catch { /* ok */ } });
 await page.goto(`${url}/aluno.html#/lojinha`); await sleep(1800);
 const ids = await page.locator('.ljv > section').evaluateAll((es) => es.map((e) => e.id).filter(Boolean));
-check('seções na ordem pedida (passe, apostilas, banca, combos, músicos, grátis)', ids.join() === 'lj-passe,lj-universo,lj-banca,lj-combos,lj-musicos,lj-gratis', ids.join());
+check('seções na ordem pedida (passe, apostilas, banca, combos, músicos, adolescentes e adultos [em breve], grátis)', ids.join() === 'lj-passe,lj-universo,lj-banca,lj-combos,lj-musicos,lj-adultos,lj-gratis', ids.join());
 check('o carrossel de banners vem antes do passe', await page.evaluate(() => { const v = document.querySelector('.ljv'); const b = v.querySelector('.ljv-banners'); const p = v.querySelector('#lj-passe'); return !!b && !!(b.compareDocumentPosition(p) & Node.DOCUMENT_POSITION_FOLLOWING); }));
 check('os banners mostram a arte inteira (contain, sem corte)', await page.locator('.ljv-banner img').first().evaluate((i) => getComputedStyle(i).objectFit !== 'cover' && i.naturalWidth > 0));
 check('setas do carrossel de banners funcionam', await (async () => { const t = page.locator('.ljv-banners .ljv-trilho'); const a = await t.evaluate((e) => e.scrollLeft); await page.locator('.ljv-banners .ljv-seta.prox').click(); await sleep(700); return (await t.evaluate((e) => e.scrollLeft)) > a; })());

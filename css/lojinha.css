@@ -235,3 +235,8 @@ body:has(#view.lj-escura) { background: #070b19; }
 .rs-ic { width: 30px !important; height: 30px !important; background: #f6c93b !important; border: 2px solid #fbf3e0 !important; margin-left: 5px; }
 .rs-ic .ic-loja { width: 19px !important; height: 19px !important; }
 .rs-ic:active { background: #fbf3e0 !important; }
+
+/* aba "Adolescentes e adultos" enquanto os materiais não chegam */
+.ljv-breve { display: grid; gap: 8px; justify-items: start; padding: 16px; border-radius: 20px; background: linear-gradient(135deg, #ffffff14, #ffffff08); border: 1px dashed #ffffff55; }
+.ljv-breve b { font: 900 18px/1.1 var(--body); } .ljv-breve p { margin: 0; font: 14px/1.4 var(--body); opacity: .85; }
+.ljv-breve-tag { font: 900 10px var(--body); letter-spacing: .12em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: #ffd23f; color: #10265a; }
