@@ -100,6 +100,7 @@ function produtos(ids, { classe = '' } = {}) {
     painel.replaceChildren(
       h('div', { class: 'ljv-p-top' }, h('h3', {}, p.nome), p.tag ? h('span', { class: 'lj-selo' }, p.tag) : null),
       p.selo ? h('span', { class: 'ljv-selo' }, p.selo) : null,
+      fotos.length ? h('button', { type: 'button', class: 'ljv-dentro-link', 'aria-expanded': 'false', onclick: (e) => { const ab = painel.classList.toggle('aberto'); e.currentTarget.setAttribute('aria-expanded', String(ab)); e.currentTarget.textContent = ab ? 'esconder o por dentro ▴' : 'ver por dentro ▾'; } }, 'ver por dentro ▾') : null,
       fotos.length ? carrossel(fotos.slice(0, 3).map((f, i) => h('button', { type: 'button', class: `ljv-pag${i > 0 ? ' marca' : ''}`, 'aria-label': `ver a página ${i + 1} de ${p.nome}`, onclick: () => ampliar(p, i), oncontextmenu: (e) => e.preventDefault() },
         h('img', { src: f, alt: `${p.nome}, página ${i + 1}`, loading: 'lazy', draggable: 'false', onerror: (e) => { const b = e.target.closest('.ljv-pag'); if (b) b.remove(); } }))), { rotulo: `páginas de ${p.nome}`, cls: 'ljv-paginas' }) : null,
       h('div', { class: 'ljv-compra' }, precoEl(p), botao('Adquirir', p, 'amarelo')));

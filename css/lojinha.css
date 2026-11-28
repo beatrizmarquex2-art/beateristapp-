@@ -387,3 +387,23 @@ body:has(#view.lj-escura) { background: #070b19; }
 /* barra de compra com borda de luz */
 .ljv-barra { box-shadow: 0 18px 34px -12px #000, 0 0 30px rgb(255 210 63 / .18), inset 0 1px 0 rgb(255 255 255 / .22); }
 @media (prefers-reduced-motion: reduce) { .ljv-hero-top::before, .ljv-azul .ljv-cta::after, .ljv-barra .ljv-cta::after, .ljv-azul .ljv-lend::before { animation: none; } }
+
+/* luz do Paul em OUTRA cor (azul-violeta, combina com o boné vermelho e a jaqueta azul), sem o amarelo que ficou ruim */
+.ljv-hero-top::before { background: radial-gradient(closest-side, rgb(185 200 255 / .6), rgb(120 120 255 / .3) 45%, transparent 72%); }
+.ljv-hero-top::after { background: radial-gradient(closest-side, rgb(140 150 255 / .6), transparent 75%); }
+
+/* banca e apostilas COMPACTAS: capa pequena, painel enxuto (nome, preço e botão numa olhada) e o "por dentro" só se a pessoa quiser */
+.ljv-azul .ljv-prods { gap: 6px; }
+.ljv-azul .ljv-cap { flex: 0 0 clamp(70px, 20vw, 88px); }
+.ljv-azul .ljv-capas .ljv-trilho { gap: 8px; padding: 6px 2px 4px; }
+.ljv-azul .ljv-cap.on { transform: translateY(-3px) scale(1.04); }
+.ljv-azul .ljv-banca-prods .ljv-cap:nth-child(odd):not(.on), .ljv-azul .ljv-banca-prods .ljv-cap:nth-child(even):not(.on) { transform: none; }
+.ljv-azul .ljv-painel { gap: 6px; padding: 10px 14px 12px; border-radius: 22px; }
+.ljv-azul .ljv-p-top h3 { font-size: 15px; }
+.ljv-azul .ljv-paginas { display: none; }
+.ljv-azul .ljv-painel.aberto .ljv-paginas { display: block; }
+.ljv-dentro-link { justify-self: start; background: none; border: 0; padding: 2px 0; color: #ffd23f; font: 800 12.5px var(--body); cursor: pointer; min-height: 28px; }
+.ljv-azul .ljv-compra .lj-btn { min-width: 118px; padding: 10px 14px; font-size: 14px; }
+.ljv-azul .ljv-preco { font-size: 18px; }
+.ljv-azul .ljv-s { gap: 6px; } .ljv-azul .ljv-host { width: 44px; height: 44px; }
+.ljv-azul .ljv-s-top p { font-size: 12px; }
