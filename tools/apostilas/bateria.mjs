@@ -543,7 +543,7 @@ for (const [i, m] of MODS.entries()) {
   MODI = i;
   if (m[1]) P.push(L.divisor({ modulo: i + 1, titulo: m[1], citacao: m[2], itens: m[4].filter((id) => id !== 'respostas').map((id) => [N(id), TITULOS[id]]), nome: NOME }));
   for (const id of m[4]) { if (id === 'folha2') continue; IDATUAL = id; P.push(B[id]()); if (id === 'folha1') { IDATUAL = 'folha2'; P.push(B.folha2()); } }
-  if (m[1] && m[1] !== null && EXTRAS[i] !== undefined) P.push(L.revisao({ modulo: i, titulos: m[4].filter((id) => id !== 'respostas').map((id) => TITULOS[id]), linhas: EXTRAS[i] }));
+  if (m[1] && m[1] !== null && true) P.push(L.revisao({ modulo: i, titulos: m[4].filter((id) => id !== 'respostas').map((id) => TITULOS[id]), linhas: EXTRAS[i] ?? (+process.env.LIN || 8) }));
 }
 P[sumPos] = L.sumario(MODS.map((m) => [m[0], m[4].filter((id) => !['folha2', 'respostas'].includes(id)).map((id) => [['plano4', 'plano8', 'registro', 'glossario', 'proximo', 'folha1'].includes(id) ? '·' : N(id), TITULOS[id], NUMS[id] || ''])]), NOME, 'cada groove desta apostila foi escrito no Beaterista PRO: o mesmo desenho que você vê aqui abre no editor, toca e dá para imprimir.');
 writeFileSync('/tmp/apo/bateria.html', L.doc(P, 'Bateria para adultos · Beaterista', 'vinho', modulos));

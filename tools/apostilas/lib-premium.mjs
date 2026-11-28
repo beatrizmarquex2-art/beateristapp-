@@ -24,7 +24,7 @@ b,strong{font-weight:800}
 .mk{position:absolute;left:0;top:0;font-size:3pt;line-height:1;color:var(--papel);white-space:nowrap}
 /* ---- seção em fluxo ---- */
 @media screen{body{padding:0 16mm}.cheia{margin:0 -16mm}}
-.sec.nova{break-before:page;margin-top:0}.sec.pequena{break-inside:avoid}
+.sec.nova{break-before:page;margin-top:0}.sec.revisao{break-inside:avoid}.sec.pequena{break-inside:avoid}
 .sec{position:relative;padding-top:5mm}.sec+.sec{margin-top:13mm}
 .sec .trilho{position:absolute;left:0;top:0;width:32mm}
 .sec .trilho .num{font-family:'Anton';font-size:76pt;line-height:.86;color:var(--v)}
@@ -56,7 +56,7 @@ table.t tr:nth-child(even) td{background:none}
 .lista li::before{content:'';position:absolute;left:0;top:4.2mm;width:3.4mm;height:1.3mm;background:var(--v)}
 .passos{counter-reset:p;list-style:none;margin:0 0 4mm;padding:0}.passos li{counter-increment:p;padding:1.9mm 0 1.9mm 14mm;position:relative;border-bottom:.25mm solid var(--linha);break-inside:avoid}
 .passos li::before{content:counter(p);position:absolute;left:0;top:.6mm;font-family:'Anton';font-size:21pt;color:var(--v);line-height:1.2}
-.trilha{margin:0;padding:0}.trilha li{list-style:none;position:relative;padding:2.2mm 0 2.2mm 11mm;border-bottom:.25mm solid var(--linha);break-inside:avoid}
+.trilha{margin:0;padding:0}.rev .trilha{columns:2;column-gap:10mm}.trilha li{list-style:none;position:relative;padding:2.2mm 0 2.2mm 11mm;border-bottom:.25mm solid var(--linha);break-inside:avoid}
 .trilha li::before{content:'';position:absolute;left:0;top:3.2mm;width:5mm;height:5mm;border:.5mm solid var(--v)}
 .cad{margin-top:6mm;border-top:.45mm solid var(--ink);padding-top:3mm;font-size:11.6pt;color:var(--cinza);font-weight:600;break-inside:avoid}.cad b{letter-spacing:.14em;text-transform:uppercase;font-size:8.6pt;color:var(--v);margin-right:3mm}
 .dedos{display:flex;gap:3mm;justify-content:center}.dedos div{flex:1;padding:2.4mm 0;border:.5mm solid var(--ink);text-align:center;font-size:11.8pt;font-weight:700}.dedos b{display:block;font-family:'Anton';font-weight:400;font-size:22pt;color:var(--v)}
@@ -70,11 +70,11 @@ table.t tr:nth-child(even) td{background:none}
 .capa .topo{position:absolute;right:16mm;top:16mm;text-align:right}.capa .topo small{display:block;font-size:9pt;letter-spacing:.32em;text-transform:uppercase;font-weight:800;margin-bottom:2mm}.capa .topo em{font-family:'Anton';font-size:30pt;font-style:normal;font-weight:400;line-height:1;text-transform:uppercase;letter-spacing:.05em}
 .capa .arte{position:absolute}
 .capa .rod{position:absolute;right:16mm;bottom:16mm;width:100mm;border-top:.6mm solid var(--ink);padding-top:3.4mm;font-size:12pt;line-height:1.4;font-weight:700}.capa .rod b{color:var(--v);display:block;font-size:8.8pt;letter-spacing:.3em;text-transform:uppercase;margin-bottom:1.6mm}
-.div{background:var(--v);color:#f6efe0}
-.div .gr{position:absolute;left:12mm;top:34mm;font-family:'Anton';font-size:380pt;line-height:.8;color:transparent;-webkit-text-stroke:.6mm var(--ouro);letter-spacing:-.02em}
-.div h2{position:absolute;left:16mm;right:16mm;bottom:122mm;margin:0;font-family:'Anton';font-weight:400;text-transform:uppercase;font-size:70pt;line-height:.95;color:#f6efe0}
-.div .cita{position:absolute;left:16mm;width:160mm;bottom:78mm;font-family:'Hanken';font-style:normal;font-weight:800;font-size:20pt;line-height:1.25;color:var(--ouro)}
-.div ol{position:absolute;left:16mm;right:16mm;bottom:20mm;margin:0;padding:0;list-style:none;border-top:.45mm solid #f6efe0;columns:2;column-gap:10mm;font-size:12.6pt;font-weight:700}
+.div{background:var(--v);color:#f6efe0;display:flex;flex-direction:column;justify-content:flex-end;padding:0 16mm 18mm}
+.div .gr{position:absolute;left:12mm;top:24mm;font-family:'Anton';font-size:200pt;line-height:.8;color:transparent;-webkit-text-stroke:.6mm var(--ouro);letter-spacing:-.02em}
+.div h2{position:static;margin:0 0 8mm;font-family:'Anton';font-weight:400;text-transform:uppercase;font-size:70pt;line-height:.95;color:#f6efe0}
+.div .cita{position:static;width:160mm;margin:0 0 10mm;font-family:'Hanken';font-style:normal;font-weight:800;font-size:20pt;line-height:1.25;color:var(--ouro)}
+.div ol{position:static;margin:0;padding:0;list-style:none;border-top:.45mm solid #f6efe0;columns:2;column-gap:10mm;font-size:11.6pt;font-weight:700}
 .div ol li{padding:2.2mm 0;border-bottom:.25mm solid rgba(246,239,224,.35);break-inside:avoid}.div ol b{font-family:'Anton';font-weight:400;color:var(--ouro);margin-right:3mm;font-size:13pt}
 .div .topo{position:absolute;left:16mm;right:16mm;top:11mm;font-size:8.6pt;letter-spacing:.24em;font-weight:800;text-transform:uppercase;border-bottom:.45mm solid #f6efe0;padding-bottom:3mm;display:flex;justify-content:space-between}.div .topo b{color:var(--ouro)}
 /* ---- sumário ---- */
@@ -101,7 +101,7 @@ export function capa({ tipo, t1, t2, lema }) { const V = TEMAS[tipo === 'bateria
 export function divisor({ modulo, titulo, citacao, itens, nome }) { return `<section class="cheia div"><div class="topo"><span>${nome}</span><span><b>Módulo ${String(modulo).padStart(2, '0')}</b></span></div><div class="gr">${String(modulo).padStart(2, '0')}</div><h2>${titulo.replace(/ e /, '<br>e ')}</h2><div class="cita">${citacao}</div><ol>${itens.map(([n, t]) => `<li><b>${String(n).padStart(2, '0')}</b>${t}</li>`).join('')}</ol></section>`; }
 export function sumario(modulos, nome, nota = '') { return `<section class="sec larga" style="page:conteudo"><div class="col"><div class="barra"></div><h1 class="t" style="font-size:54pt;margin-bottom:10mm">Índice</h1><div class="mods">${modulos.map(([t, itens], i) => `<div class="mod"><div class="k">${String(i + 1).padStart(2, '0')}</div><div><h3>${t.replace(/^Módulo \d+ · /, '')}</h3>${itens.map(([n, x, pg]) => `<div class="it"><span>${n === '·' ? '' : String(n).padStart(2, '0')}</span><span>${x}</span><span>${pg || ''}</span></div>`).join('')}</div></div>`).join('')}</div>${nota ? `<p class="mut" style="font-size:10pt">${nota}</p>` : ''}</div></section>`; }
 /** Revisão no fim de cada módulo: lista pra marcar + linhas de anotação. `linhas` é calculado pra fechar a página (montar.mjs). */
-export function revisao({ modulo, titulos, linhas = 0 }) { return `<section class="sec larga" style="page:m${modulo}"><div class="col"><h2 class="s" style="margin-top:0">Revisão do módulo · marque o que você já faz</h2><ul class="trilha">${titulos.map((t) => `<li><b>${t}</b></li>`).join('')}</ul>${linhas > 0 ? `<h2 class="s">Minhas anotações · o que travou, o que melhorou</h2><div class="linhas">${'<div></div>'.repeat(linhas)}</div>` : ''}</div></section>`; }
+export function revisao({ modulo, titulos, linhas = 0 }) { return `<section class="sec larga revisao" style="page:m${modulo}"><div class="col"><h2 class="s" style="margin-top:0">Revisão do módulo · marque o que você já faz</h2><ul class="trilha rev-l" style="columns:2;column-gap:10mm">${titulos.map((t) => `<li><b>${t}</b></li>`).join('')}</ul>${linhas > 0 ? `<h2 class="s">Minhas anotações · o que travou, o que melhorou</h2><div class="linhas">${'<div></div>'.repeat(linhas)}</div>` : ''}</div></section>`; }
 export const doc = (paginas, titulo, tema, modulos) => `<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>${esc(titulo)}</title><style>${css(tema, modulos)}</style><body>${paginas.join('')}</body></html>`;
 /** Contagem "1 e & a" embaixo da pauta (letras grandes e grossas, na cor do livro). */
 export function comContagem(svg, evs, rotulo = null, tam = 20) {

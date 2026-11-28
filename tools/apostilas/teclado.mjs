@@ -317,7 +317,7 @@ for (const [i, m] of MODS.entries()) {
   MODI = i;
   if (m[1]) P.push(L.divisor({ modulo: i + 1, titulo: m[1], citacao: m[2], itens: m[4].map((id) => [N(id), TITULOS[id]]), nome: NOME }));
   for (const id of m[4]) { if (id === 'folha2') continue; IDATUAL = id; P.push(B[id]()); if (id === 'folha1') { IDATUAL = 'folha2'; P.push(B.folha2()); } }
-  if (m[1] && EXTRAS[i] !== undefined) P.push(L.revisao({ modulo: i, titulos: m[4].filter((id) => id !== 'respostas').map((id) => TITULOS[id]), linhas: EXTRAS[i] }));
+  if (m[1] && true) P.push(L.revisao({ modulo: i, titulos: m[4].filter((id) => id !== 'respostas').map((id) => TITULOS[id]), linhas: EXTRAS[i] ?? (+process.env.LIN || 8) }));
 }
 P[sumPos] = L.sumario(MODS.map((m) => [m[0], m[4].filter((id) => !['folha2', 'respostas'].includes(id)).map((id) => [SEMNUM.includes(id) ? '·' : N(id), TITULOS[id], NUMS[id] || ''])]), NOME, '');
 writeFileSync('/tmp/apo/teclado.html', L.doc(P, 'Teclado do zero · Beaterista', 'azul', modulos));

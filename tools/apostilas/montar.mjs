@@ -11,8 +11,8 @@ for (const nome of ['bateria', 'teclado']) {
   const mods = JSON.parse(node(`${nome}.mjs`, { NUMS: numsArq, EXTRAS: `/tmp/apo/${nome}_extras.json` }).split('\n').find((l) => l.startsWith('MODS:')).slice(5));
   const fimDe = (i) => { const prox = mods[i + 1]; if (!prox) return null; const n = nums[prox.primeira]; return n ? n - (mods[i + 1].divisor ? 2 : 1) : null; };
   const alvo = mods.map((m, i) => (m.divisor ? i : null)).filter((i) => i !== null);
-  for (const i of alvo) extras[i] = 0; writeFileSync(`/tmp/apo/${nome}_extras.json`, JSON.stringify(extras)); ids = monta(); nums = numera(ids);
-  for (let it = 0; it < 5; it++) {
+  for (const i of alvo) extras[i] = (nome === 'teclado' ? +process.env.LINT : +process.env.LIN) || 8; writeFileSync(`/tmp/apo/${nome}_extras.json`, JSON.stringify(extras)); ids = monta(); nums = numera(ids);
+  for (let it = 0; it < 0; it++) {
     const uso = usoPaginas(pdf); let mudou = false;
     for (const i of alvo) { const f = fimDe(i); const u = f ? uso[f - 1] : null; if (u === null || u === undefined) continue; const cabe = Math.floor((0.9 - u) * 246 / 9.5) - 3; if (u < 0.82 && cabe > 0) { extras[i] += cabe; mudou = true; } else if (u > 0.97 && extras[i] > 0) { extras[i] -= 1; mudou = true; } }
     if (!mudou) break; writeFileSync(`/tmp/apo/${nome}_extras.json`, JSON.stringify(extras)); ids = monta(); nums = numera(ids);
