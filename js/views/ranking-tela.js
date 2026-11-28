@@ -9,8 +9,7 @@ import { icone } from '../ranking-icones.js';
 
 export function mount(view) {
   let i = 0; let periodo = 'mes'; let gone = false; let nums = null; let req = 0;
-  const estilo = (() => { try { const e = localStorage.getItem('bt-rank-estilo'); return ['a', 'b', 'c'].includes(e) ? e : 'c'; } catch { return 'c'; } })();
-  const raiz = h('section', { class: `rk rk-${estilo}`, 'aria-label': 'ranking' });
+  const raiz = h('section', { class: 'rk', 'aria-label': 'ranking' });
   const cab = h('div', { class: 'rk-cab' }); const abas = h('div', { class: 'rk-abas', role: 'radiogroup', 'aria-label': 'período' }); const corpo = h('div', { class: 'rk-corpo', 'aria-live': 'polite' }); const pontos = h('div', { class: 'rk-pts', role: 'tablist', 'aria-label': 'quadros' }); const rodape = h('div', { class: 'rk-eu' });
   raiz.append(cab, pontos, abas, corpo, rodape);
   const cat = () => CATEGORIAS[i]; const per = () => (cat().mensal ? periodo : 'geral');

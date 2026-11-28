@@ -2417,7 +2417,7 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 
 
 
-/* ---------- Ranking dos alunos (js/views/ranking-tela.js, ícones em js/ranking-icones.js): 3 visuais, escolhidos por localStorage bt-rank-estilo = a | b | c ---------- */
+/* ---------- Ranking dos alunos (js/views/ranking-tela.js, ícones em js/ranking-icones.js): visual PALCO (escolha da Bea, 28/nov) ---------- */
 .rk { --rk-bg: #14213a; --rk-fg: #fff7e6; --rk-ac: #f7b733; --rk-ac2: #e8384f; --rk-card: rgb(255 255 255 / .08); --rk-linha: rgb(255 255 255 / .18); --rk-t: var(--display, 'Anton', sans-serif); --rk-n: var(--body, system-ui); position: relative; background: var(--rk-bg); color: var(--rk-fg); border-radius: 18px; padding: 14px 12px 12px; display: grid; gap: 10px; overflow: hidden; font-family: var(--rk-n); }
 .rk-i { display: block; width: 40px; height: 40px; overflow: visible; }
 .rk-cab { position: relative; display: grid; grid-template-columns: 46px 1fr 46px; align-items: center; gap: 8px; }
@@ -2440,21 +2440,7 @@ html.jg-fit .jg-game > .jg-top > .jg-link { grid-area: voltar; } html.jg-fit .jg
 .rk-eu { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; font-size: 13px; padding-top: 6px; border-top: 1px solid var(--rk-linha); } .rk-toggle { display: inline-flex; align-items: center; gap: 6px; opacity: .85; font-size: 12px; } .rk-toggle input { width: 18px; height: 18px; }
 @media (max-width: 380px) { .rk-tit b { font-size: 20px; } .rk-nome { font-size: 13px; } }
 
-/* A · ARCADE (fliperama): azul-noite com grade, fonte pixel (Silkscreen), bordas de néon e degraus quadrados */
-.rk-a { --rk-bg: #070b24; --rk-ac: #ffd23f; --rk-ac2: #4fd8ff; --rk-linha: rgb(79 216 255 / .45); --rk-card: rgb(79 216 255 / .1); --rk-t: 'Silkscreen', 'Courier New', monospace; --rk-n: 'Silkscreen', 'Courier New', monospace; border: 3px solid #4fd8ff; border-radius: 6px; box-shadow: 0 0 0 3px #070b24, 0 0 0 6px #ffd23f, 0 0 22px #4fd8ff88; background-image: linear-gradient(rgb(79 216 255 / .08) 1px, transparent 1px), linear-gradient(90deg, rgb(79 216 255 / .08) 1px, transparent 1px); background-size: 22px 22px; }
-.rk-a .rk-tit b { font-size: 17px; text-transform: uppercase; letter-spacing: .04em; text-shadow: 2px 2px 0 #e8384f; } .rk-a .rk-tit small, .rk-a .rk-eu, .rk-a .rk-toggle, .rk-a .rk-lugar small { font-size: 10px; letter-spacing: .02em; }
-.rk-a .rk-seta, .rk-a .rk-abas button, .rk-a .rk-lista li, .rk-a .rk-base { border-radius: 0 !important; } .rk-a .rk-seta { border-color: #4fd8ff; box-shadow: 3px 3px 0 #e8384f; } .rk-a .rk-abas button { border-color: #4fd8ff; text-transform: uppercase; font-size: 11px; box-shadow: 3px 3px 0 #000; } .rk-a .rk-abas button.on { background: #ffd23f; border-color: #ffd23f; }
-.rk-a .rk-nome { font-size: 12px; text-transform: uppercase; } .rk-a .rk-lugar.l1 .rk-nome { font-size: 13px; text-shadow: 2px 2px 0 #e8384f; } .rk-a .rk-base { font-size: 24px; box-shadow: 4px 4px 0 #000; border: 3px solid #070b24; }
-.rk-a .rk-lista li { border-left: 4px solid #4fd8ff; font-size: 11px; text-transform: uppercase; } .rk-a .rk-lista li.eu { border-left-color: #ffd23f; background: rgb(255 210 63 / .25); }
-
-/* B · CAMPEONATO (revista): papel creme, tinta azul, fita vermelha e fonte de cartaz com serifa (Abril Fatface) */
-.rk-b { --rk-bg: #fff4d6; --rk-fg: #142036; --rk-ac: #b3182f; --rk-card: rgb(20 32 54 / .07); --rk-linha: rgb(20 32 54 / .25); --rk-t: 'Abril Fatface', 'Bodoni Moda', Georgia, serif; border: 3px solid #142036; box-shadow: 6px 7px 0 rgb(20 32 54 / .3); border-radius: 14px; background-image: radial-gradient(circle at 12% 8%, rgb(232 56 79 / .12), transparent 40%), radial-gradient(circle at 92% 92%, rgb(247 183 51 / .25), transparent 45%); }
-.rk-b .rk-tit b { font-size: 26px; color: #b3182f; } .rk-b .rk-seta { background: #fffdf7; border-color: #142036; color: #142036; box-shadow: 0 3px 0 #142036; } .rk-b .rk-abas button { border-color: #142036; background: #fffdf7; color: #142036; } .rk-b .rk-abas button.on { background: #b3182f; border-color: #142036; color: #fff; }
-.rk-b .rk-pts button { background: rgb(20 32 54 / .25); } .rk-b .rk-pts button.on { background: #b3182f; }
-.rk-b .rk-lugar.l1 .rk-nome { color: #b3182f; } .rk-b .rk-base { border: 3px solid #142036; border-bottom: 0; font-size: 30px; } .rk-b .rk-lista li { background: #fffdf7; border: 2px solid #142036; box-shadow: 0 2px 0 #142036; } .rk-b .rk-lista li.eu, .rk-b .rk-lugar.eu .rk-nome { background: #ffe08a; }
-.rk-b .rk-i-med, .rk-b .rk-i-tit { filter: drop-shadow(0 3px 0 rgb(20 32 54 / .3)); } .rk-b .rk-eu { border-top-color: rgb(20 32 54 / .25); }
-
-/* C · PALCO: preto com refletor vermelho, título em Anton (cartaz) e degraus metálicos */
-.rk-c { --rk-bg: #0d0e14; --rk-ac: #ffd23f; --rk-t: 'Anton', 'Impact', sans-serif; background-image: radial-gradient(80% 55% at 50% 0, rgb(232 56 79 / .55), transparent 70%), radial-gradient(60% 40% at 50% 100%, rgb(247 183 51 / .14), transparent 70%); border: 2px solid rgb(255 255 255 / .12); }
-.rk-c .rk-tit b { font-size: 28px; text-transform: uppercase; letter-spacing: .02em; } .rk-c .rk-seta { border-color: #ffd23f; background: rgb(0 0 0 / .45); color: #ffd23f; }
-.rk-c .rk-base { font-size: 32px; text-shadow: 0 1px 0 rgb(255 255 255 / .6); box-shadow: inset 0 3px 0 rgb(255 255 255 / .5), 0 6px 14px rgb(0 0 0 / .5); } .rk-c .rk-lugar.l1 .rk-nome { text-transform: uppercase; letter-spacing: .03em; font-size: 18px; } .rk-c .rk-lista li { border-left: 4px solid #e8384f; }
+/* PALCO: preto com refletor vermelho, título em Anton (cartaz) e degraus metálicos */
+.rk { --rk-bg: #0d0e14; --rk-ac: #ffd23f; --rk-t: 'Anton', 'Impact', sans-serif; background-image: radial-gradient(80% 55% at 50% 0, rgb(232 56 79 / .55), transparent 70%), radial-gradient(60% 40% at 50% 100%, rgb(247 183 51 / .14), transparent 70%); border: 2px solid rgb(255 255 255 / .12); }
+.rk .rk-tit b { font-size: 28px; text-transform: uppercase; letter-spacing: .02em; } .rk .rk-seta { border-color: #ffd23f; background: rgb(0 0 0 / .45); color: #ffd23f; }
+.rk .rk-base { font-size: 32px; text-shadow: 0 1px 0 rgb(255 255 255 / .6); box-shadow: inset 0 3px 0 rgb(255 255 255 / .5), 0 6px 14px rgb(0 0 0 / .5); } .rk .rk-lugar.l1 .rk-nome { text-transform: uppercase; letter-spacing: .03em; font-size: 18px; } .rk .rk-lista li { border-left: 4px solid #e8384f; }
