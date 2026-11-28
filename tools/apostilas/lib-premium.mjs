@@ -49,7 +49,7 @@ table.t td{padding:1.9mm 2.4mm 1.9mm 0;border-bottom:.25mm solid var(--linha);ve
 table.t tr{break-inside:avoid}table.t td:first-child{font-weight:800}
 table.t tr:nth-child(even) td{background:none}
 .dica{background:var(--v);color:#f6efe0;padding:3.8mm 5.4mm;margin:4.4mm 0 3mm;break-inside:avoid}
-.dica b{display:block;font-size:9.2pt;letter-spacing:.28em;text-transform:uppercase;color:var(--ouro);margin-bottom:1.6mm;font-weight:800}
+.dica>b{display:block;font-size:9.2pt;letter-spacing:.28em;text-transform:uppercase;color:var(--ouro);margin-bottom:1.6mm;font-weight:800}
 .dica span{font-family:'Hanken';font-style:normal;font-weight:700;font-size:13.6pt;line-height:1.4}
 .cit-p{font-family:'Hanken';font-style:normal;font-weight:800;font-size:18.5pt;line-height:1.25;color:var(--v);margin:5mm 0 4mm;padding-left:8mm;border-left:2mm solid var(--ouro);break-inside:avoid}
 .lista{list-style:none;margin:0 0 4mm;padding:0}.lista li{padding:1.9mm 0 1.9mm 8mm;border-bottom:.25mm solid var(--linha);position:relative;break-inside:avoid}
@@ -112,4 +112,4 @@ export function comContagem(svg, evs, rotulo = null, tam = 20) {
   const lbl = [...col.values()].map((c) => `<text x="${c.x}" y="${H + 20}" text-anchor="middle" font-size="${tam}" font-weight="900" style="fill:var(--v)" font-family="Hanken, sans-serif">${rotulo ? rotulo(c.e) : nomes[c.t % 16]}</text>`).join('');
   return svg.replace(/viewBox="0 0 [\d.]+ [\d.]+"/, `viewBox="0 0 ${W} ${H + 28}"`).replace('</svg>', `${lbl}</svg>`);
 }
-export const semB = (svg) => svg.replace(/<text[^>]*fill="#6b6558">B<\/text>/g, '');
+export const semB = (svg) => svg.replace(/<text([^>]*fill="#6b6558">)B([DE]?)<\/text>/g, (m, a, x) => (x ? `<text${a}${x}</text>` : ''));

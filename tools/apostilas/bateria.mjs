@@ -152,24 +152,30 @@ ${L.card('8 · Funk com notas fantasma', 'funk e soul · 85 a 95 bpm', funk.svg,
 ${L.card('9 · Rock lento', 'baladas e rock · 65 a 80 bpm', slow.svg, 'Chimbal só nos tempos, bumbo sincopado. Dá espaço para a voz.')}
 ${L.dica('Como usar', 'não passe para o próximo groove antes de tocar o anterior três vezes seguidas sem errar. repita em outros andamentos.')}${L.caderno()}` }); };
 
-B.viradas = () => { const virada = (extra, nome) => { const evs = [...groove({ hh: 'x.x.x.x.x.x.....', sn: '....x...........', bd: 'x.......x.......' }), ...extra, ...comp(groove({ cr: 'x...............', bd: 'x...............' }), 1)]; return sem(evs); };
-  const v1 = virada([12, 13, 14, 15].map((i) => ev('sn', i, 1)));
-  const v2 = (() => { const evs = [...groove({ hh: 'x.x.x.x.........', sn: '....x...........', bd: 'x.......x.......' }), ev('sn', 8), ev('sn', 10), ev('sn', 12), ev('tt', 14), ...comp(groove({ cr: 'x...............', bd: 'x...............' }), 1)]; return sem(evs); })();
-  const v3 = (() => { const evs = [...groove({ hh: 'x.x.x.x.........', sn: '....x...........', bd: 'x.......x.......' }), ev('tt', 8), ev('tt', 10), ev('mt', 12), ev('ft', 14), ...comp(groove({ cr: 'x...............', bd: 'x...............' }), 1)]; return sem(evs); })();
+const baseV = (hh = 'x.x.x.x.x.x.....') => groove({ hh, sn: '....x...........', bd: 'x.......x.......' });
+const fimV = () => comp(groove({ cr: 'x...............', bd: 'x...............' }), 1);
+const mv = (lista, ini0) => lista.map(([p, m], i) => ev(p, ini0 + i, 1, { mao: m })); // lista de [peça, mão] em semicolcheias
+B.viradas = () => {
+  const v1 = sem([...baseV(), ...mv([['sn', 'D'], ['sn', 'E'], ['sn', 'D'], ['sn', 'E']], 12), ...fimV()]);
+  const v2 = sem([...baseV('x.x.x.x.........'), ev('sn', 8, 2, { mao: 'E' }), ev('sn', 10, 2, { mao: 'D' }), ev('sn', 12, 2, { mao: 'E' }), ev('tt', 14, 2, { mao: 'D' }), ...fimV()]);
+  const v3 = sem([...baseV('x.x.x.x.........'), ...mv([['tt', 'D'], ['sn', 'E'], ['tt', 'D'], ['sn', 'E'], ['mt', 'D'], ['sn', 'E'], ['ft', 'D'], ['sn', 'E']], 8), ...fimV()]);
   return pg({ tag: T('viradas', 'TÉCNICA'), titulo: 'Viradas', sub: 'A virada avisa que a música vai mudar de parte.', corpo: `
 <p>Uma <b>virada</b> (ou <i>fill</i>) preenche o último tempo ou os dois últimos tempos do compasso. Ela leva para a próxima parte, que geralmente começa com <b>prato e bumbo juntos</b> no tempo 1 do compasso seguinte.</p>
-${L.card('Virada 1 · só a caixa', 'quatro semicolcheias no último tempo', v1, 'Toque o groove normal por três tempos e, no tempo 4, quatro batidas rápidas na caixa. Termine com prato + bumbo no 1.')}
-${L.card('Virada 2 · caixa e tom', 'dois tempos de virada', v2, 'No tempo 3: caixa, caixa. No tempo 4: caixa e tom 1. A mão alterna D – E – D – E.')}
-${L.card('Virada 3 · descendo os tons', 'tom 1, tom 1, tom 2, surdo', v3, 'A virada “desce” dos tambores agudos para os graves. É a mais usada em rock e pop.')}
-${L.dica('Dica de estudo', 'treine a virada sozinha, sem o groove, vá a 60 bpm. só depois encaixe no compasso. o segredo é voltar ao groove sem tropeçar no prato.')}` }); };
+<div class="dica" style="margin-top:0"><b>Regra de mão (a mais importante)</b><span>Para quem é destro: <b>os tambores (tom 1, tom 2 e surdo) ficam sempre com a mão DIREITA</b>; a mão esquerda cuida da caixa. Assim as mãos nunca se cruzam e o movimento é natural. Os métodos clássicos chamam isso de “mão líder”.</span></div>
+${L.card('Virada 1 · só a caixa', 'quatro semicolcheias no último tempo', v1, 'Toque o groove normal por três tempos e, no tempo 4, quatro batidas rápidas na caixa: D E D E. Termine com prato + bumbo no 1.')}
+${L.card('Virada 2 · caixa e tom', 'dois tempos de virada', v2, 'Tempo 3: caixa E, caixa D. Tempo 4: caixa E e tom 1 com a D. O tom sempre cai na direita.')}
+${L.card('Virada 3 · a direita passeia pelos tons', 'tom 1, tom 1, tom 2, surdo com a mão D; a esquerda marca a caixa', v3, 'A direita desce pelos tambores (D) e a esquerda volta à caixa entre cada batida (E). É a mais usada em rock e pop.')}
+${L.dica('Dica de estudo', 'treine a virada sozinha, sem o groove, a 60 bpm. só depois encaixe no compasso. o segredo é voltar ao groove sem tropeçar no prato.')}` }); };
 
-B.viradas2 = () => { const base = () => groove({ hh: 'x.x.x.x.x.x.....', sn: '....x...........', bd: 'x.......x.......' }); const fim = () => comp(groove({ cr: 'x...............', bd: 'x...............' }), 1);
-  const a = sem([...base(), ev('tt', 12, 1), ev('tt', 13, 1), ev('mt', 14, 1), ev('ft', 15, 1), ...fim()]); const b = sem([...base(), ev('sn', 12, 1), ev('sn', 13, 1), ev('bd', 14, 1), ev('bd', 15, 1), ...fim()]); const c = sem([...base(), ev('sn', 12, 2), ev('sn', 14, 2), ...fim()]);
+B.viradas2 = () => { const base = () => baseV('x.x.x.x.........'); const fim = fimV;
+  const a = sem([...base(), ...mv([['tt', 'D'], ['sn', 'E'], ['mt', 'D'], ['sn', 'E'], ['mt', 'D'], ['sn', 'E'], ['ft', 'D'], ['sn', 'E']], 8), ...fim()]);
+  const b = sem([...baseV(), ev('sn', 12, 1, { mao: 'D' }), ev('sn', 13, 1, { mao: 'E' }), ev('bd', 14, 1), ev('bd', 15, 1), ...fim()]);
+  const c = sem([...baseV(), ev('sn', 12, 2, { mao: 'D' }), ev('sn', 14, 2, { mao: 'E' }), ...fim()]);
   return pg({ tag: T('viradas2', 'TÉCNICA'), titulo: 'Mais viradas', sub: 'Variações curtas para usar no fim de cada frase.', corpo: `
-${L.card('Virada 4 · semicolcheias nos tons', 'tom 1, tom 1, tom 2, surdo, tudo no último tempo', a, 'É a virada 3 acelerada: quatro batidas no tempo 4. Comece a 55 bpm.')}
-${L.card('Virada 5 · caixa e bumbo', 'caixa, caixa, bumbo, bumbo no último tempo', b, 'O pé entra na virada. É ótimo para treinar a coordenação entre mãos e pés.')}
-${L.card('Virada 6 · só duas colcheias', 'caixa e caixa nos dois últimos “&”', c, 'A virada mais simples. Perfeita para músicas lentas.')}
-<h2 class="s">Três regras de ouro</h2><ul class="lista"><li><b>Voltar no 1.</b> A virada só funciona se você volta ao tempo 1 do compasso seguinte, com prato e bumbo.</li><li><b>Menos é mais.</b> Uma boa virada curta vale mais do que uma longa e atropelada.</li></ul>
+${L.card('Virada 4 · de ponta a ponta', 'tom 1, tom 2, tom 2, surdo (todos com a D), caixa entre eles (E)', a, 'A direita faz o caminho do tom mais agudo ao mais grave e a esquerda marca a caixa. Comece a 55 bpm.')}
+${L.card('Virada 5 · caixa e bumbo', 'caixa D, caixa E, bumbo, bumbo no último tempo', b, 'Os pés entram na virada. É ótimo para treinar a coordenação entre mãos e pés.')}
+${L.card('Virada 6 · só duas colcheias', 'caixa D e caixa E nos dois últimos “&”', c, 'A virada mais simples. Perfeita para músicas lentas.')}
+<h2 class="s">Três regras de ouro</h2><ul class="lista"><li><b>Voltar no 1.</b> A virada só funciona se você volta ao tempo 1 do compasso seguinte, com prato e bumbo.</li><li><b>Menos é mais.</b> Uma boa virada curta vale mais do que uma longa e atropelada.</li><li><b>Sem cruzar os braços.</b> Tons na direita, caixa na esquerda.</li></ul>
 ${L.dica('Dica de estudo', 'escolha uma virada por semana e use em todos os grooves da semana. assim ela vira automática.')}` }); };
 
 const stick = (txt, passo = 2, p = 'sn') => { const evs = []; txt.split('').forEach((c, i) => evs.push(ev(p, i * passo, passo, { mao: c === 'R' ? 'D' : 'E' }))); return svgBateria(evs, 640); };
@@ -180,12 +186,13 @@ ${L.card('Dobrado', 'D D E E D D E E · duas batidas por mão', stick('RRLLRRLLR
 ${L.card('Paradiddle', 'D E D D · E D E E · o rudimento mais famoso', stick('RLRRLRLLRLRRLRLL'), 'Os dois “D D” e os dois “E E” fazem a mão inverter. É ótimo para viradas.')}
 ${L.dica('Dica de estudo', 'comece devagar e use o metrônomo. dois minutos de cada rudimento por dia valem mais do que vinte minutos de um só.')}` });
 
-B.rud2 = () => { const pdd = stick('RLRRLLRLRRLLRLRRLL'.slice(0, 16)); const ton = (() => { const evs = []; ['sn', 'tt', 'mt', 'ft'].forEach((p, k) => { for (let i = 0; i < 4; i++) evs.push(ev(p, (k * 4 + i) * 2, 2, { mao: i % 2 === 0 ? 'D' : 'E' })); }); return svgBateria(evs, 640); })(); const dob = (() => { const evs = []; 'RRLLRRLL'.split('').forEach((c, i) => evs.push(ev(i < 4 ? 'tt' : 'ft', i * 2, 2, { mao: c === 'R' ? 'D' : 'E' }))); return svgBateria(evs, 640); })();
-  return pg({ tag: T('rud2', 'TÉCNICA'), titulo: 'Rudimentos nos tambores', sub: 'Os mesmos padrões, agora passeando pela bateria.', corpo: `
-<p>Depois que um rudimento sai bem na caixa, leve-o para os <b>tons</b> e o <b>surdo</b>. É assim que as viradas ganham vida.</p>
-${L.card('Paradiddle-diddle', 'D E D D E E · seis batidas, usado em viradas fluidas', pdd, 'Toque devagar. Ele é a base de muitas viradas modernas.')}
-${L.card('Alternado nos tambores', 'caixa, tom 1, tom 2 e surdo, quatro batidas em cada', ton, 'Mova só os braços para o próximo tambor. Os cotovelos ficam soltos e relaxados.')}
-${L.card('Dobrado entre tom 1 e surdo', 'D D E E no tom 1 e D D E E no surdo', dob, 'Treine a mudança de tambor sem perder o tempo. Comece a 55 bpm.')}
+B.rud2 = () => { const pdd = stick('RLRRLLRLRRLLRLRRLL'.slice(0, 16)); const lider = (() => { const evs = []; [['tt', 'R'], ['sn', 'L'], ['tt', 'R'], ['sn', 'L'], ['mt', 'R'], ['sn', 'L'], ['mt', 'R'], ['sn', 'L'], ['ft', 'R'], ['sn', 'L'], ['ft', 'R'], ['sn', 'L'], ['ft', 'R'], ['sn', 'L'], ['ft', 'R'], ['sn', 'L']].forEach(([p, m], i) => evs.push(ev(p, i, 1, { mao: m === 'R' ? 'D' : 'E' }))); return svgBateria(evs, 640); })();
+  const dob = (() => { const evs = []; [['mt', 'R'], ['mt', 'R'], ['sn', 'L'], ['sn', 'L'], ['ft', 'R'], ['ft', 'R'], ['sn', 'L'], ['sn', 'L'], ['tt', 'R'], ['tt', 'R'], ['sn', 'L'], ['sn', 'L'], ['mt', 'R'], ['mt', 'R'], ['sn', 'L'], ['sn', 'L']].forEach(([p, m], i) => evs.push(ev(p, i * 2, 2, { mao: m === 'R' ? 'D' : 'E' }))); return svgBateria(evs, 640); })();
+  return pg({ tag: T('rud2', 'TÉCNICA'), titulo: 'Rudimentos nos tambores', sub: 'Os mesmos padrões, agora passeando pela bateria sem cruzar os braços.', corpo: `
+<p>Depois que um rudimento sai bem na caixa, leve-o para os tambores com a <b>mão líder</b>: a <b>direita passeia</b> pelo tom 1, tom 2 e surdo, e a <b>esquerda fica sempre na caixa</b>. É o jeito de orquestrar um padrão sem forçar o corpo. A ideia vem dos métodos clássicos de mão, como o <i>Stick Control</i>, de George Lawrence Stone, aplicados à bateria.</p>
+${L.card('Paradiddle-diddle', 'D E D D E E · seis batidas, usado em viradas fluidas', pdd, 'Toque devagar, na caixa. Ele é a base de muitas viradas modernas.')}
+${L.card('Mão líder: direita nos tambores', 'D no tom 1, tom 2 e surdo, E sempre na caixa', lider, 'Alternado simples: a direita desce pelos tambores e a esquerda volta à caixa a cada batida. Dezesseis semicolcheias, a 55 bpm.')}
+${L.card('Dobrado: direita nos tambores, esquerda na caixa', 'D D nos tambores · E E na caixa', dob, 'Duas batidas da direita num tambor, duas da esquerda na caixa. Troque o tambor a cada par.')}
 ${L.dica('Dica de estudo', 'grave seu estudo e escute: se os tambores soam desiguais, a baqueta está caindo com forças diferentes. relaxe o pulso.')}${L.caderno()}` }); };
 
 B.dinamica = () => { const dinam = (() => { const evs = []; for (let i = 0; i < 16; i += 2) evs.push(ev('hh', i)); evs.push(ev('sn', 4, 2, { acc: true }), ev('sn', 12, 2, { acc: true }), ev('bd', 0), ev('bd', 8), ev('sn', 7, 1, { fan: true })); return L.comContagem(sem(evs), evs); })();
@@ -279,7 +286,7 @@ B.registro = () => { const col = (a, b) => `<table class="t" style="table-layout
 
 B.glossario = () => pg({ tag: 'GLOSSÁRIO', titulo: 'Palavras que você vai ouvir', sub: 'Para conversar com outros músicos sem dúvida.', corpo: `
 <table class="t"><tr><th>Termo</th><th>O que é</th></tr>
-${[['Andamento', 'A velocidade da música, medida em bpm.'], ['bpm', 'Batidas por minuto. 60 bpm = uma batida por segundo.'], ['Compasso', 'Um “bloco” de tempos. Em 4/4, cada compasso tem quatro tempos.'], ['Pulso', 'A batida constante, como o coração da música.'], ['Groove', 'A levada: o padrão de bateria que se repete e dá a base da música.'], ['Virada (fill)', 'Um trecho curto que preenche o fim de uma frase e leva à próxima.'], ['Ostinato', 'Uma parte que se repete sem parar, enquanto o resto muda.'], ['Rudimento', 'Um padrão de mãos que treina técnica, como as escalas do pianista.'], ['Acento', 'Uma nota tocada mais forte do que as outras.'], ['Nota fantasma', 'Uma nota tocada muito baixinho, só para dar balanço.'], ['Síncope', 'Um acento fora do tempo forte, que cria balanço.'], ['Rim shot / cross-stick', 'Tocar a madeira do aro da caixa. Som seco, usado em baladas.'], ['Pad de estudo', 'Uma superfície de borracha para treinar sem barulho.'], ['Clique', 'O som do metrônomo.'], ['Prato de ataque (crash)', 'O prato que “explode”: marca o início de uma parte.'], ['Condução (ride)', 'O prato usado como pulso, no lugar do chimbal.']].map(([t, x]) => `<tr><td><b>${t}</b></td><td>${x}</td></tr>`).join('')}</table>` });
+${[['Andamento', 'A velocidade da música, medida em bpm.'], ['bpm', 'Batidas por minuto. 60 bpm = uma batida por segundo.'], ['Compasso', 'Um “bloco” de tempos. Em 4/4, cada compasso tem quatro tempos.'], ['Pulso', 'A batida constante, como o coração da música.'], ['Groove', 'A levada: o padrão de bateria que se repete e dá a base da música.'], ['Virada (fill)', 'Um trecho curto que preenche o fim de uma frase e leva à próxima.'], ['Ostinato', 'Uma parte que se repete sem parar, enquanto o resto muda.'], ['Rudimento', 'Um padrão de mãos que treina técnica, como as escalas do pianista.'], ['Acento', 'Uma nota tocada mais forte do que as outras.'], ['Nota fantasma', 'Uma nota tocada muito baixinho, só para dar balanço.'], ['Mão líder', 'A mão que passeia pelos tambores (a direita, para destros) enquanto a outra fica na caixa, sem cruzar os braços.'], ['Síncope', 'Um acento fora do tempo forte, que cria balanço.'], ['Rim shot / cross-stick', 'Tocar a madeira do aro da caixa. Som seco, usado em baladas.'], ['Pad de estudo', 'Uma superfície de borracha para treinar sem barulho.'], ['Clique', 'O som do metrônomo.'], ['Prato de ataque (crash)', 'O prato que “explode”: marca o início de uma parte.'], ['Condução (ride)', 'O prato usado como pulso, no lugar do chimbal.']].map(([t, x]) => `<tr><td><b>${t}</b></td><td>${x}</td></tr>`).join('')}</table>` });
 
 B.proximo = () => pg({ tag: 'PRÓXIMO PASSO', titulo: 'E agora? Continue tocando.', corpo: `
 <p>Quem chegou até aqui já fez o mais difícil: <b>começar</b>. Agora é repetir um pouco todo dia e deixar o corpo aprender.</p>
@@ -316,21 +323,19 @@ ${L.card('C · bumbo nas pontas', 'bumbo no 1, “&” do 1, “&” do 2, 3 e �
 <div class="cit-p">Mudar uma única nota do bumbo pode mudar o gênero inteiro da música.</div>
 ${L.dica('Ouça', 'ponha no celular uma música de forró e uma de rock e escute o bumbo de cada uma. o desenho das mãos é parecido; o do pé é que muda tudo.')}` }); };
 
-B.variar = () => { const tam = (lista) => { const evs = []; lista.forEach((p, i) => evs.push(ev(p, i, 1, { mao: i % 2 === 0 ? 'D' : 'E' }))); return svgBateria(evs, 640).replace(/<text[^>]*fill="#6b6558">B<\/text>/g, ''); };
-  const quadrado = tam(['sn', 'sn', 'sn', 'sn', 'tt', 'tt', 'tt', 'tt', 'mt', 'mt', 'mt', 'mt', 'ft', 'ft', 'ft', 'ft']);
-  const v1 = tam(['sn', 'sn', 'sn', 'tt', 'tt', 'mt', 'mt', 'mt', 'mt', 'ft', 'tt', 'tt', 'sn', 'sn', 'ft', 'ft']);
-  const v2 = tam(['tt', 'tt', 'tt', 'sn', 'mt', 'mt', 'ft', 'ft', 'ft', 'ft', 'sn', 'sn', 'tt', 'mt', 'ft', 'ft']);
-  const v3 = tam(['ft', 'ft', 'mt', 'mt', 'mt', 'tt', 'sn', 'tt', 'tt', 'mt', 'sn', 'sn', 'sn', 'ft', 'ft', 'ft']);
+B.variar = () => { const par = (toms) => { const evs = []; toms.forEach((tm, i) => { evs.push(ev(tm, i * 2, 1, { mao: 'D' }), ev('sn', i * 2 + 1, 1, { mao: 'E' })); }); return svgBateria(evs, 640).replace(/<text[^>]*fill="#6b6558">B<\/text>/g, ''); };
+  const quadrado = (() => { const evs = []; ['sn', 'tt', 'mt', 'ft'].forEach((p, k) => { for (let i = 0; i < 4; i++) evs.push(ev(p, k * 4 + i, 1)); }); return svgBateria(evs, 640).replace(/<text[^>]*fill="#6b6558">B<\/text>/g, ''); })();
   return pg({ tag: T('variar', 'TÉCNICA'), titulo: 'Não fique sempre na mesma variação', sub: 'O erro de quem aprende a virada é decorar “4 na caixa, 4 no tom 1, 4 no tom 2, 4 no surdo”.', corpo: `
 <p>Contar de quatro em quatro é <b>o caminho mais fácil</b>, e por isso todo mundo soa igual. A virada fica interessante quando a quantidade de notas e o tambor <b>variam no meio</b>.</p>
-${L.card('Evite sempre isso · o “quadrado”', 'caixa ×4 · tom 1 ×4 · tom 2 ×4 · surdo ×4', quadrado, 'Funciona, mas previsível. Use só como aquecimento de mão.')}
+${L.card('Evite sempre isso · o “quadrado”', 'caixa ×4 · tom 1 ×4 · tom 2 ×4 · surdo ×4', quadrado, 'Funciona, mas é previsível, e as mãos se enrolam: você acaba cruzando os braços. Use só como aquecimento.')}
+<div class="dica" style="margin-top:2mm"><b>Como orquestrar sem se enrolar</b><span>Use a <b>mão líder</b>: a direita toca todos os tambores (tom 1, tom 2 e surdo) e a esquerda fica na caixa. A mão que lidera é sempre a que vai para os tambores. Isso vem dos métodos clássicos de mão e é o que os bateristas usam para fazer viradas fluidas.</span></div>
 <h2 class="s">Três variações que quebram o quadrado</h2>
-${L.card('Variação 1', 'caixa ×3 · tom 1 ×2 · tom 2 ×4 · surdo ×1 · tom 1 ×2 · caixa ×2 · surdo ×2', v1, 'Repare que o tom 2 recebe mais notas e o surdo aparece em dois lugares.')}
-${L.card('Variação 2', 'tom 1 ×3 · caixa ×1 · tom 2 ×2 · surdo ×4 · caixa ×2 · tom 1, tom 2 · surdo ×2', v2, 'Começa em um tambor diferente. O surdo vira o “peso” no meio da frase.')}
-${L.card('Variação 3', 'surdo ×2 · tom 2 ×3 · tom 1 ×1 · caixa ×1 · tom 1 ×2 · tom 2 ×1 · caixa ×3 · surdo ×3', v3, 'Começa pelo surdo e termina nele: a frase “desce e volta”.')}
+${L.card('Variação 1', 'a direita: tom 1 ×2 · tom 2 ×1 · surdo ×3 · tom 2 ×1 · tom 1 ×1', par(['tt', 'tt', 'mt', 'ft', 'ft', 'ft', 'mt', 'tt']), 'Cada batida da direita é um tambor; a esquerda marca a caixa entre elas. O surdo aparece três vezes seguidas, no meio.')}
+${L.card('Variação 2', 'a direita: tom 2 ×3 · tom 1 ×1 · surdo ×2 · tom 1 ×1 · surdo ×1', par(['mt', 'mt', 'mt', 'tt', 'ft', 'ft', 'tt', 'ft']), 'Começa em um tambor diferente. O tom 2 abre a frase e o surdo fecha.')}
+${L.card('Variação 3', 'a direita: surdo ×2 · tom 1 ×3 · tom 2 ×1 · surdo ×2', par(['ft', 'ft', 'tt', 'tt', 'tt', 'mt', 'ft', 'ft']), 'Começa e termina no surdo: a frase “sobe e volta”.')}
 <h2 class="s">Receita para criar as suas</h2>
-<ol class="passos"><li><b>Mude a quantidade</b> de notas em cada tambor: 3, 2, 4, 1…</li><li><b>Mude o tambor de saída</b>: comece pelo surdo, pelo tom 2 ou pela caixa.</li><li><b>Pule tambores</b>: vá da caixa direto ao surdo.</li><li><b>Deixe um silêncio</b> no meio da frase: ela respira.</li><li><b>Conte em 16 notas</b> sempre, pra não perder o tempo 1 do próximo compasso.</li></ol>
-${L.dica('Exercício', 'escreva 3 viradas suas, trocando só a quantidade de notas em cada tambor. toque cada uma 4 vezes seguidas e depois emende todas.')}` }); };
+<ol class="passos"><li><b>Mude a quantidade</b> de notas em cada tambor: 3, 2, 1, 2…</li><li><b>Mude o tambor de saída</b>: comece pelo surdo, pelo tom 2 ou pelo tom 1.</li><li><b>Pule tambores</b>: vá do tom 1 direto ao surdo.</li><li><b>Deixe um silêncio</b> no meio da frase: ela respira.</li><li><b>Conte em 16 notas</b> sempre, pra não perder o tempo 1 do próximo compasso.</li></ol>
+${L.dica('Exercício', 'escreva 3 viradas suas, trocando só a quantidade de notas em cada tambor da direita. toque cada uma 4 vezes seguidas e depois emende todas.')}` }); };
 
 B.mao = () => { const e = (txt, vezes = 2) => col(txt, 2, 'sn', vezes); return pg({ tag: T('mao', 'TÉCNICA'), titulo: 'A mão alternada: D E e suas variações', sub: 'Com as mesmas duas mãos, trocar só o agrupamento já cria dezenas de exercícios.', corpo: `
 <p>O <b>D E D E</b> (alternado simples) é o ponto de partida. A partir dele, você pode <b>mudar o agrupamento</b> das mãos sem mudar o andamento. Pense nos agrupamentos como blocos de montar:</p>
@@ -341,7 +346,7 @@ ${L.card('3 · A + B', 'D E D E · D D E E', e('DEDEDDEE'), 'Um compasso de simp
 ${L.card('4 · B + A', 'D D E E · D E D E', e('DDEEDEDE'), 'Mesma mistura, ordem invertida.')}
 ${L.card('5 · C + A', 'E D E D · D E D E', e('EDEDDEDE'), 'Comece com a esquerda: treina a mão mais fraca.')}
 <h2 class="s">Como juntar sem se perder</h2>
-<ol class="passos"><li>Toque cada bloco quatro vezes, sozinho, a 60 bpm.</li><li>Junte dois blocos diferentes (A + B) e repita quatro vezes.</li><li>Troque a ordem (B + A). O cérebro estranha, e isso é bom.</li><li>Misture três blocos: A + B + C, sem pausa.</li><li>Leve para os tambores: o mesmo sticking na caixa, no tom 1 e no surdo.</li></ol>
+<ol class="passos"><li>Toque cada bloco quatro vezes, sozinho, a 60 bpm.</li><li>Junte dois blocos diferentes (A + B) e repita quatro vezes.</li><li>Troque a ordem (B + A). O cérebro estranha, e isso é bom.</li><li>Misture três blocos: A + B + C, sem pausa.</li><li>Leve para os tambores com a mão líder: a direita passeia pelos tons e a esquerda fica na caixa.</li></ol>
 ${L.dica('Regra', 'mude uma coisa por vez: ou o agrupamento, ou o andamento, ou o tambor. se mudar tudo junto, o exercício vira bagunça.')}` }); };
 
 B.paradiddles = () => { return pg({ tag: T('paradiddles', 'TÉCNICA'), titulo: 'Paradiddle: simples, duplo e triplo', sub: 'Um padrão que cresce: cada tipo acrescenta um par de batidas alternadas antes da dobrada.', corpo: `
