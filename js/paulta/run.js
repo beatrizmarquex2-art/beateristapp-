@@ -7,7 +7,7 @@ import { stars as sparkle } from '../ui.js';
 import * as P from '../kids/progress.js';
 import * as FB from '../feedback.js';
 import { svgEl } from '../kids/art.js';
-import { makeQuestion, phaseSpec, teachOf, revealOf, WORLDS, drumName, isDrum } from './worlds.js';
+import { MODES, makeQuestion, phaseSpec, teachOf, revealOf, WORLDS, drumName, isDrum } from './worlds.js';
 import { DRUM, drumStaff, clefStaff, kitImage } from './draw.js';
 import { noteName, CLEFS, placeText, sameSpotOther, letterOf, mk } from './music.js';
 import * as sfx from './sfx.js';
@@ -15,6 +15,9 @@ import * as S from './score.js';
 import * as V from './save.js';
 
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TEMA_KEY = 'beaterista-paulta-tema';
+export const TEMAS = [['palco', '🌙 palco'], ['limpo', '☀️ limpo'], ['arcade', '🔥 arcade']];
+export const getTema = () => { try { const t = localStorage.getItem(TEMA_KEY); return TEMAS.some((x) => x[0] === t) ? t : 'palco'; } catch { return 'palco'; } };
 const soundBtn = () => { const b = h('button', { type: 'button', class: 'btn small ghost pl-snd', onclick: () => { sfx.setMute(!sfx.muted()); paint(); } }); const paint = () => { b.textContent = sfx.muted() ? '🔇 sem som' : '🔊 som'; b.setAttribute('aria-pressed', String(!sfx.muted())); }; paint(); return b; };
 export { soundBtn };
 
@@ -31,15 +34,23 @@ export function teachCards(world, n) {
  * cfg: { host, title, world, n, mode, profile, spec:{rounds,secs,sudden,need,optSecs,streak}, make(i)->pergunta, intro?:Node, noScore?, onBack, onFinish(res) }
  */
 export function runSession(cfg) {
-  const { host, profile, mode, world } = cfg; const spec = { ...cfg.spec }; const S_ = session();
-  const tier = tierOf(P.totalStars(profile.id)); const bot = robo({ mood: 'happy', tier, size: 92 });
+  const { host, profile, world } = cfg; let mode = cfg.mode; const spec = { ...cfg.spec }; const S_ = session();
+  const tier = tierOf(P.totalStars(profile.id)); const bot = robo({ mood: 'happy', tier, size: 64 });
   let q = null; let i = 0; let right = 0; const misses = []; let locked = true; let gone = false; let finished = false; let restarts = 0; let streak = 0; let best = 0; let left = 0; let armedAt = 0; let tid = 0; let secs = spec.secs; const relieved = [];
   const dots = h('div', { class: 'kx-dots', 'aria-hidden': 'true' });
   const stage = h('div', { class: 'kx-stage pl-stage' });
   const tag = () => [secs ? `⏱ ${secs}s` : '', spec.sudden ? '💥 sem errar' : '', `${spec.rounds} rodadas`].filter(Boolean).join(' · ');
-  const redoBtn = h('button', { type: 'button', class: 'btn small ghost pl-redo', hidden: true, title: 'recomeçar a fase do zero (pra buscar as 3 estrelas)', onclick: () => redo() }, '↻ recomeçar');
+  const redoBtn = h('button', { type: 'button', class: 'btn small ghost pl-redo', hidden: true, title: 'recomeçar a fase do zero (pra buscar as 3 estrelas)', 'aria-label': 'recomeçar a fase', onclick: () => redo() }, '↻');
   const head = h('div', { class: 'kx-head' }, h('button', { class: 'btn small ghost', type: 'button', onclick: () => cfg.onBack() }, '‹ fases'), h('b', {}, cfg.title), redoBtn, soundBtn());
-  host.replaceChildren(h('div', { class: 'kx-run pl-run', 'data-world': world }, head, h('div', { class: 'kx-botrow' }, bot.el), dots, stage));
+  // seletor de modo DENTRO da fase: quem ainda não lê troca pra "desenhos" (partitura + clicar na figura) na hora, sem perder a rodada nem o cronômetro
+  const modeBar = h('div', { class: 'row kd-modes pl-modes pl-modes-run', role: 'group', 'aria-label': 'como responder' });
+  const paintModes = () => modeBar.replaceChildren(...MODES.map(([k, t]) => h('button', { type: 'button', class: `kd-chip${mode === k ? ' on' : ''}`, 'aria-pressed': String(mode === k), onclick: () => setMode(k) }, t)), h('button', { type: 'button', class: 'kd-chip pl-tema', 'aria-label': 'trocar o visual', title: 'trocar o visual', onclick: () => { const i = TEMAS.findIndex((x) => x[0] === getTema()); const nx = TEMAS[(i + 1) % TEMAS.length][0]; try { localStorage.setItem(TEMA_KEY, nx); } catch { /* ok */ } runEl.dataset.tema = nx; } }, '🎨'));
+  const setMode = (k) => {
+    if (k === mode) return; mode = k; paintModes(); try { cfg.onMode && cfg.onMode(k); } catch { /* ok */ }
+    if (q && !locked && stage._opts) { const o = buildOpts(); stage._opts.replaceWith(o); stage._opts = o; }
+  };
+  const runEl = h('div', { class: 'kx-run pl-run', 'data-world': world, 'data-tema': getTema() }, head, modeBar, h('div', { class: 'kx-botrow' }, bot.el), dots, stage);
+  host.replaceChildren(runEl); paintModes();
   const paintDots = () => dots.replaceChildren(...Array.from({ length: spec.rounds }, (_, k) => h('i', { class: k < i ? 'done' : k === i ? 'now' : '' })));
 
   const intro = () => {
@@ -60,16 +71,17 @@ export function runSession(cfg) {
   const begin = () => { S_.reset(); sfx.ok(); i = 0; right = 0; streak = 0; finished = false; redoBtn.hidden = false; countdown(next); };
   /** recomeço voluntário (quem quer as 3 estrelas): volta pra primeira pergunta, sem punição; os erros já ficam anotados */
   const redo = () => { if (gone || finished) return; S_.reset(); locked = true; restarts++; i = 0; right = 0; streak = 0; next(); };
+  const buildOpts = () => h('div', { class: `pl-opts n${q.options.length}${mode === 'imagens' ? ' img' : ''}`, role: 'group', 'aria-label': mode === 'imagens' ? 'escolha o desenho' : 'escolha a resposta' }, ...q.options.map((o) => {
+    const b = h('button', { type: 'button', class: 'kd-btn kd-opt pl-opt-btn', 'data-id': o.id, onclick: () => pick(o.id, b) }, mode === 'imagens' ? [svgEl(o.img, 'pl-optimg'), h('b', { class: 'pl-optname' }, o.label)] : o.label);
+    if (mode === 'imagens') b.setAttribute('aria-label', o.label);
+    return b;
+  }));
   const next = () => {
     if (gone) return; if (i >= spec.rounds) { finish(); return; }
     q = cfg.make(i); if (!q) { finish(); return; }
     locked = false; paintDots(); bot.set('think', q.say);
     if (q.clefName && world === 'duel') bot.set('think', `${q.clefName}!`);
-    const opts = h('div', { class: `pl-opts n${q.options.length}${mode === 'imagens' ? ' img' : ''}` }, ...q.options.map((o, k) => {
-      const b = h('button', { type: 'button', class: 'kd-btn kd-opt pl-opt-btn', 'data-id': o.id, onclick: () => pick(o.id, b) }, mode === 'imagens' ? svgEl(o.img, 'pl-optimg') : o.label);
-      if (mode === 'imagens') b.setAttribute('aria-label', `imagem ${k + 1}`);
-      return b;
-    }));
+    const opts = buildOpts();
     const fb = h('div', { class: 'kd-fb kx-fb pl-fb', 'aria-live': 'polite' });
     const bar = secs ? h('div', { class: 'kx-time', style: `--secs:${secs}s` }, h('i')) : null;
     const clefTag = q.kind === 'note' && world === 'duel' ? h('p', { class: `pl-clef ${q.clef}` }, q.clefName) : null;
@@ -108,7 +120,7 @@ export function runSession(cfg) {
     S_.later(() => { try { go.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); } catch { /* ok */ } }, 120);
   };
   const restart = () => { if (gone) return; S_.reset(); restarts++; i = 0; right = 0; streak = 0; bot.set('oops', 'recomeçando…'); stage.replaceChildren(h('div', { class: 'kx-restart' }, h('h2', {}, '💥 errou!'), h('p', {}, 'a fase recomeça do zero. a dica já ficou guardada.'), h('button', { class: 'kd-btn kx-go', type: 'button', onclick: () => { sfx.ok(); countdown(next); } }, 'tentar de novo'))); };
-  const finish = () => { if (finished) return; finished = true; cfg.onFinish({ right, total: spec.rounds, misses, restarts, best, bot, stage, spec, secs, perfectRun: right === spec.rounds }); };
+  const finish = () => { if (finished) return; finished = true; cfg.onFinish({ mode, right, total: spec.rounds, misses, restarts, best, bot, stage, spec, secs, perfectRun: right === spec.rounds }); };
   intro();
   return () => { gone = true; document.removeEventListener('visibilitychange', onVis); S_.dispose(); silence(); };
 }

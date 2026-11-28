@@ -3,7 +3,7 @@
 import { DRUM, drumStaff, clefStaff, keyboard, kitImage, dotsImage } from './draw.js';
 import { mk, noteName, CLEFS, OTHER, posOf, placeText, sameSpotOther, range, inStaff, letterOf, octOf, shuffle, pick, sylOf } from './music.js';
 
-export const MODES = [['nomes', '🔤 nomes'], ['imagens', '🖼 imagens']];
+export const MODES = [['nomes', '🔤 nomes'], ['imagens', '🖼 desenhos']];
 export const MAIN = ['drum', 'sol', 'fa'];
 export const WORLDS = {
   drum: { id: 'drum', name: 'Mundo da Bateria', short: 'Bateria', count: 12, color: '#a31d30', blurb: 'ler percussão na pauta', levels: ['drumF', 'drumI', 'drumD'] },
@@ -193,12 +193,12 @@ function drumQuestion(lv, n, mode, rnd, i) {
     const arts = ['sn', 'sg', 'sa', 'sr'].includes(bp) ? ['sn', 'sg', 'sa', 'sr'] : ['hh', 'ho', 'hf'];
     shuffle(arts.filter((x) => x !== bp), rnd).slice(0, 2).forEach((x) => set.add(comboId([x], f0)));
     const other = L.artFigs.find((f) => f !== f0) || (f0 === 'colcheia' ? 'seminima' : 'colcheia'); set.add(comboId([bp], other));
-    const options = shuffle([...set].slice(0, 4), rnd).map((id) => ({ id, label: symName(id), img: kitImage(partsOf(id), figOf(id)) }));
+    const options = shuffle([...set].slice(0, 4), rnd).map((id) => ({ id, label: symName(id), img: kitImage(partsOf(id), figOf(id), true) }));
     return { kind: 'drum', key: `art:${ans}`, ans, options, promptSvg: drumStaff(partsOf(ans), figOf(ans)), say: 'que peça, técnica e figura é essa?', sound: { type: 'drum', ids: partsOf(ans), fig: figOf(ans) }, tags: [`art:${bp}`, `fig:${f0}`], explain: (c) => explainDrum({ ans }, c) };
   }
   const ap = partsOf(ans); const nOpts = ap.length > 1 ? 4 : Math.min(4, Math.max(3, pool.length));
   const ids = drumOptions(ans, pool, learned, rnd, nOpts);
-  const options = ids.map((id) => ({ id, label: symName(id), img: kitImage(partsOf(id)) }));
+  const options = ids.map((id) => ({ id, label: symName(id), img: kitImage(partsOf(id), null, true) }));
   const key = ap.length > 1 ? `combo:${ans}` : `peca:${ans}`;
   return { kind: 'drum', key, ans, options, promptSvg: drumStaff(ap), say: ap.length > 1 ? 'quem toca nessas notas juntas?' : 'que peça é essa?', sound: { type: 'drum', ids: ap }, tags: [key], explain: (c) => explainDrum({ ans }, c) };
 }
@@ -314,7 +314,7 @@ export function reinforceQuestion(tag, mode, rnd = Math.random) {
   if (t === 'peca' || t === 'combo') {
     const ap = partsOf(v); const pool = t === 'combo' ? C610 : ap.some((x) => ['sg', 'sa', 'sr'].includes(x)) ? ['sn', 'sg', 'sa', 'sr'] : ap[0] === 'ho' ? ['hh', 'ho', 'hf'] : ALL1;
     const ids = drumOptions(v, pool.includes(v) ? pool : [v, ...pool], learned, rnd, 4);
-    q = { kind: 'drum', key: tag, ans: v, options: ids.map((id) => ({ id, label: symName(id), img: kitImage(partsOf(id)) })), promptSvg: drumStaff(ap), say: ap.length > 1 ? 'quem toca nessas notas juntas?' : 'que peça é essa?', sound: { type: 'drum', ids: ap }, tags: [tag], explain: (c) => explainDrum({ ans: v }, c) };
+    q = { kind: 'drum', key: tag, ans: v, options: ids.map((id) => ({ id, label: symName(id), img: kitImage(partsOf(id), null, true) })), promptSvg: drumStaff(ap), say: ap.length > 1 ? 'quem toca nessas notas juntas?' : 'que peça é essa?', sound: { type: 'drum', ids: ap }, tags: [tag], explain: (c) => explainDrum({ ans: v }, c) };
   } else if (t === 'fig') q = drumFigQ(v, rnd);
   else if (t === 'art') q = reinforceQuestion(`peca:${v}`, mode, rnd);
   else if (t === 'nota') { const nn = parseNoteName(v); if (nn != null) { const clef = nn < 28 ? 'fa' : nn > 28 ? 'sol' : (rnd() < 0.5 ? 'sol' : 'fa'); const pool = unique([...notePool(clef, 8), nn]); q = noteQuestion(clef, 8, mode, rnd, 0, { clef, pool, notes: [nn], len: 1, opts: 4, sp: { oct: false } }); } }

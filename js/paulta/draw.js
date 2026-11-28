@@ -98,11 +98,21 @@ const BADGE = {
 };
 const DOTS = (n) => `<svg viewBox="0 0 120 34" role="img" aria-label="batidas dentro de um tempo">${Array.from({ length: n }, (_, i) => `<ellipse cx="${n === 1 ? 60 : n === 2 ? 40 + i * 40 : 18 + i * 28}" cy="17" rx="9" ry="7" fill="${RED}" transform="rotate(-20 ${n === 1 ? 60 : n === 2 ? 40 + i * 40 : 18 + i * 28} 17)"/>`).join('')}</svg>`;
 /** A bateria com as peças pintadas (e selos: círculo, pedal, parênteses, >, X). Sem nenhum nome. */
-export function kitImage(parts, fig = null) {
+const KBOX = { cr: [15, 25, 140, 155], rd: [272, 30, 140, 150], hh: [0, 110, 90, 175], tt: [128, 75, 86, 90], mt: [208, 75, 86, 90], ft: [290, 145, 112, 130], sn: [62, 158, 112, 80], bd: [124, 132, 172, 172] };
+/** Recorte (viewBox) em volta das peças pintadas, com folga e proporção 6:5. */
+function zoomBox(kits) {
+  const bs = kits.map((k) => KBOX[k]).filter(Boolean); if (!bs.length) return [0, 0, 420, 300];
+  const x0 = Math.min(...bs.map((b) => b[0])); const y0 = Math.min(...bs.map((b) => b[1])); const x1 = Math.max(...bs.map((b) => b[0] + b[2])); const y1 = Math.max(...bs.map((b) => b[1] + b[3]));
+  let w = (x1 - x0) * 1.25; let h = (y1 - y0) * 1.25; if (w / h < 1.2) w = h * 1.2; else h = w / 1.2; w = Math.max(w, 150); h = w / 1.2;
+  return [(x0 + x1) / 2 - w / 2, (y0 + y1) / 2 - h / 2, w, h];
+}
+export function kitImage(parts, fig = null, zoom = false) {
   const ids = [].concat(parts); const d = ids.map((i) => DRUM[i]);
   const only = [...new Set(d.flatMap((k) => k.kit))].join('+');
-  const badges = d.filter((k) => k.badge).map((k, i) => `<g transform="translate(${44 + i * 52} 40)">${BADGE[k.badge]}</g>`).join('');
-  const svg = kitSvg(null, false, only).replace(/<\/svg>\s*$/, `${badges}</svg>`);
+  const z = zoom ? zoomBox(only.split('+')) : [0, 0, 420, 300];
+  const badges = d.filter((k) => k.badge).map((k, i) => `<g transform="translate(${z[0] + 30 + i * 48} ${z[1] + 30}) scale(${zoom ? z[2] / 420 * 1.9 : 1})">${BADGE[k.badge]}</g>`).join('');
+  let svg = kitSvg(null, false, only).replace(/<\/svg>\s*$/, `${badges}</svg>`);
+  if (zoom) svg = svg.replace('viewBox="0 0 420 300"', `viewBox="${z.map((n) => n.toFixed(1)).join(' ')}"`);
   return fig ? `<div class="pl-kit">${svg}<div class="pl-dots">${DOTS(FIGN[fig])}</div></div>` : svg;
 }
 export const dotsImage = (fig) => `<div class="pl-dots big">${DOTS(FIGN[fig])}</div>`;

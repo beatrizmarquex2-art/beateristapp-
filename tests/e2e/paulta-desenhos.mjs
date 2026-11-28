@@ -1,0 +1,24 @@
+// pauLta: modo DESENHOS dentro da fase (troca na hora, nome em maiúsculas embaixo do desenho), 3 visuais e a fase cabe sem rolar pra achar o botão.
+import { serve, launch, sleep, check, done } from './harness.mjs';
+const { srv, url } = await serve(); const { browser, ctx } = await launch(); const page = await ctx.newPage();
+const errs = []; page.on('pageerror', (e) => errs.push(String(e)));
+await page.setViewportSize({ width: 390, height: 844 });
+await ctx.route('**/rest/v1/rpc/aluno_codigo_ok', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: 'true' }));
+await page.addInitScript(() => { try { localStorage.setItem('beaterista-aluno-nome', 'Teste'); localStorage.setItem('beaterista-aluno-codigo', 'TESTE1'); } catch { /* ok */ } });
+await page.goto(url + '/aluno.html#/paulta'); await page.waitForSelector('.kx-cards .kx-g');
+await page.evaluate(() => { location.hash = '#/paulta/drumF/1/nomes'; }); await sleep(450);
+check('o botão "bora!" aparece sem rolar a página', await page.evaluate(() => { const r = document.querySelector('.kx-go').getBoundingClientRect(); return r.bottom <= innerHeight; }));
+await page.evaluate(() => document.querySelector('.kx-go').click()); await sleep(400);
+check('modo nomes: alternativas em texto', (await page.$$('.pl-opt-btn .pl-optimg')).length === 0);
+await page.evaluate(() => [...document.querySelectorAll('.pl-modes-run .kd-chip')].find((b) => /desenhos/.test(b.textContent)).click()); await sleep(250);
+check('trocou pra desenhos na hora: 3 desenhos, cada um com o nome', (await page.$$('.pl-opt-btn .pl-optimg')).length === 3 && (await page.$$('.pl-optname')).length === 3);
+check('o nome vem em letra de forma maiúscula', await page.evaluate(() => [...document.querySelectorAll('.pl-optname')].every((e) => getComputedStyle(e).textTransform === 'uppercase')));
+check('a pergunta cabe na tela sem rolar', await page.evaluate(() => { const r = document.querySelector('.pl-opts').getBoundingClientRect(); return r.bottom <= innerHeight; }));
+check('a escolha do modo fica lembrada', await page.evaluate(() => localStorage.getItem('beaterista-paulta-mode') === 'imagens'));
+const t0 = await page.evaluate(() => document.querySelector('.pl-run').dataset.tema);
+await page.evaluate(() => document.querySelector('.pl-tema').click());
+check('botão 🎨 troca o visual', (await page.evaluate(() => document.querySelector('.pl-run').dataset.tema)) !== t0);
+await page.evaluate(() => document.querySelector('.pl-opt-btn').click()); await sleep(500);
+check('responder no modo desenhos mostra a resposta certa', !!(await page.$('.pl-opt-btn.right')));
+check('sem erros de script', errs.length === 0);
+await browser.close(); srv.close?.(); done();
