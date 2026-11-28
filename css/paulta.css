@@ -75,3 +75,46 @@
 .pl-optimg g.kp:not([style*="cfc6b6"]) path,.pl-optimg g.kp:not([style*="cfc6b6"]) ellipse,.pl-optimg g.kp:not([style*="cfc6b6"]) circle,.pl-minikit g.kp:not([style*="cfc6b6"]) path,.pl-minikit g.kp:not([style*="cfc6b6"]) ellipse,.pl-minikit g.kp:not([style*="cfc6b6"]) circle{stroke-width:9;fill-opacity:.42}
 .pl-opts.img .pl-opt-btn{min-height:118px}.pl-optimg svg{max-height:128px}
 .pl-minikit{display:block;width:100%;max-height:96px;margin:0 auto 4px}.pl-tcard .pl-minikit{max-width:150px}
+
+/* ===== v788 · pauLta cabe na tela + modo DESENHOS (pedido da Bea, 28/nov/2026) =====
+   Três visuais (botão 🎨 na fase, lembrado no aparelho): palco (padrão), limpo e arcade. Alternativas lado a lado, desenho da peça com zoom e NOME EM LETRA DE FORMA MAIÚSCULA embaixo. */
+.pl-run { padding: 12px 12px 14px; margin: 0 0 96px; border-radius: 22px; background: var(--pt-bg); color: var(--pt-ink); }
+.pl-run .kx-botrow { padding: 0; } .pl-run .kx-dots { padding: 2px 0 8px; gap: 6px; } .pl-run .kx-dots i { flex: 1; width: auto; height: 7px; border: 0; border-radius: 9px; background: var(--pt-dot); } .pl-run .kx-dots i.done { background: var(--pt-dot-on); opacity: .55; } .pl-run .kx-dots i.now { background: var(--pt-dot-on); }
+.pl-run .kx-head { padding: 0 0 6px; } .pl-run .kx-head b { color: var(--pt-ink); font: 800 15px var(--body); letter-spacing: .04em; text-transform: uppercase; }
+.pl-run .kx-head .btn, .pl-run .kd-chip { background: var(--pt-chip); color: var(--pt-chip-ink); border: 0; box-shadow: none; border-radius: 999px; font: 800 12px var(--body); letter-spacing: .05em; text-transform: uppercase; padding: 8px 12px; }
+.pl-run .kd-chip.on { background: var(--pt-chip-on); color: var(--pt-chip-on-ink); }
+.pl-modes-run { margin: 0 0 6px; justify-content: flex-start; gap: 6px; } .pl-modes-run .pl-tema { margin-left: auto; padding: 8px 10px; }
+.pl-run .kd-q { color: var(--pt-ink); font: 900 19px/1.1 var(--body); letter-spacing: .02em; text-transform: uppercase; text-align: center; margin: 2px 0 0; }
+.pl-run .pl-prompt { max-width: none; margin: 0; padding: 4px; background: #fff; border: 0; border-radius: 18px; box-shadow: var(--pt-prompt-shadow); } .pl-run .pl-prompt svg { max-height: 150px; margin: 0 auto; }
+.pl-run .pl-opts { margin: 10px 0 6px; gap: 10px; }
+.pl-run .pl-opt-btn { color: var(--pt-card-ink); background: var(--pt-card); border: var(--pt-card-border); border-radius: 18px; box-shadow: var(--pt-card-shadow); font-weight: 800; }
+.pl-run .pl-opts.n2, .pl-run .pl-opts.n3, .pl-run .pl-opts.n4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pl-run .pl-opts.n3 { grid-template-columns: 1fr; }
+.pl-run .pl-opts.img.n3, .pl-run .pl-opts.img.n5, .pl-run .pl-opts.img.n6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pl-run .pl-opts.img .pl-opt-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 6px 8px; min-height: 0; }
+.pl-run .pl-opts.img .pl-optimg { width: 100%; aspect-ratio: 6 / 5; border-radius: 12px; background: var(--pt-img); overflow: hidden; } .pl-run .pl-opts.img .pl-optimg svg { width: 100%; height: 100%; max-height: none; }
+.pl-run .pl-optname { display: block; width: 100%; padding: 8px 2px; border-radius: 10px; background: var(--pt-name); color: var(--pt-name-ink); font: 900 13px/1.05 var(--body); letter-spacing: .05em; text-transform: uppercase; text-align: center; overflow-wrap: anywhere; }
+.pl-run .pl-optimg g.kp[style*="cfc6b6"] { opacity: .5; }
+.pl-run .pl-opt-btn.right { outline: 4px solid #3ddc84; outline-offset: 2px; background: #e6f6e9; } .pl-run .pl-opt-btn.right .pl-optimg { background: #fff; }
+.pl-run .kd-fb { color: var(--pt-ink); } .pl-run .pl-why { color: #1b1818; }
+.pl-run .kx-intro h2 { color: var(--pt-ink); font: 900 24px/1.1 var(--body); } .pl-run .kx-tag { color: var(--pt-ink); font: 700 13px var(--kmono); opacity: .85; } .pl-run .kx-intro .muted, .pl-run .pl-new { color: var(--pt-ink); opacity: .85; }
+.pl-run .kx-intro { gap: 6px; padding: 4px 0; }
+.pl-run .pl-teach { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 4px 0; } .pl-run .pl-tcard { padding: 6px 4px; gap: 1px; border-width: 0; border-radius: 14px; } .pl-run .pl-tcard b { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; } .pl-run .pl-tcard small { font-size: 10.5px; line-height: 1.15; }
+.pl-run .pl-tcard .pl-minikit { max-height: 58px; max-width: 100%; } .pl-run .pl-tcard .pl-mini svg { max-height: 56px; }
+.pl-run .pl-intro .kx-go { position: sticky; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); z-index: 5; width: 100%; max-width: 360px; min-height: 52px; margin-top: 6px; }
+.pl-run .pl-count { color: var(--pt-ink); text-shadow: none; }
+@media (min-width: 700px) { .pl-run { max-width: 620px; margin-left: auto; margin-right: auto; } .pl-run .pl-prompt svg { max-height: 190px; } }
+@media (max-height: 740px) { .pl-run .pl-prompt svg { max-height: 118px; } .pl-run .pl-opts.img .pl-optimg { aspect-ratio: 7 / 5; } }
+
+.pl-run[data-tema="palco"] { --pt-bg: radial-gradient(120% 70% at 50% 0, #274a86, #0f1d3a 72%); --pt-ink: #fff; --pt-dot: #ffffff33; --pt-dot-on: #e3a82f; --pt-chip: #ffffff1f; --pt-chip-ink: #fff; --pt-chip-on: #e3a82f; --pt-chip-on-ink: #1b1818;
+  --pt-prompt-shadow: 0 0 0 4px #e3a82f, 0 8px 0 #0006; --pt-card: #fff; --pt-card-ink: #0f1d3a; --pt-card-border: 0; --pt-card-shadow: 0 6px 0 #a31d30; --pt-img: #fff; --pt-name: #0f1d3a; --pt-name-ink: #fff; }
+.pl-run[data-tema="palco"] .pl-opt-btn:nth-child(2) { box-shadow: 0 6px 0 #14284b; } .pl-run[data-tema="palco"] .pl-opt-btn:nth-child(3) { box-shadow: 0 6px 0 #e3a82f; } .pl-run[data-tema="palco"] .pl-opt-btn:nth-child(4) { box-shadow: 0 6px 0 #1f5d63; }
+.pl-run[data-tema="limpo"] { --pt-bg: #f4f6fb; --pt-ink: #12172b; --pt-dot: #dfe4f0; --pt-dot-on: #e0364d; --pt-chip: #fff; --pt-chip-ink: #12172b; --pt-chip-on: #12172b; --pt-chip-on-ink: #fff;
+  --pt-prompt-shadow: 0 6px 20px #12172b22; --pt-card: #fff; --pt-card-ink: #12172b; --pt-card-border: 2px solid transparent; --pt-card-shadow: 0 6px 18px #12172b1f; --pt-img: #f4f6fb; --pt-name: #eef1f9; --pt-name-ink: #12172b; }
+.pl-run[data-tema="arcade"] { --pt-bg: #8c1426; --pt-ink: #fff; --pt-dot: #ffffff66; --pt-dot-on: #ffd23f; --pt-chip: #1b1818; --pt-chip-ink: #fff; --pt-chip-on: #ffd23f; --pt-chip-on-ink: #1b1818;
+  --pt-prompt-shadow: 0 0 0 4px #1b1818, 6px 6px 0 #1b1818; --pt-card: #fff; --pt-card-ink: #1b1818; --pt-card-border: 4px solid #1b1818; --pt-card-shadow: 5px 5px 0 #1b1818; --pt-img: #ffe3e6; --pt-name: #1b1818; --pt-name-ink: #fff; }
+.pl-run[data-tema="arcade"] .pl-opt-btn:nth-child(2) .pl-optimg { background: #dde7fb; } .pl-run[data-tema="arcade"] .pl-opt-btn:nth-child(3) .pl-optimg { background: #fff0c2; } .pl-run[data-tema="arcade"] .pl-opt-btn:nth-child(4) .pl-optimg { background: #dff3e6; }
+.pl-run .pl-tcard b, .pl-run .pl-tcard small { color: #1b1818; }
+.pl-run .kd-q { display: none; } /* o balão do Paul já diz a pergunta (não repetir) */
+.pl-run .pl-redo { padding: 8px 12px; font-size: 16px; line-height: 1; }
+@media (min-height: 780px) { .pl-run .pl-opts.img .pl-optimg { aspect-ratio: 1 / 1; } .pl-run .pl-prompt svg { max-height: 175px; } }
+.pl-run .pl-opts.img.n4 .pl-optimg { aspect-ratio: 5 / 3; } .pl-run .pl-opts.img .pl-optimg svg[aria-label^="Teclado"] { padding: 4px; }

@@ -11,7 +11,7 @@ import { h } from '../util.js';
 import { toast } from '../ui.js';
 import { session } from '../session.js';
 import { corSrc, poseDe, poseDoJogo, stkSrc, ELEMENTOS } from '../paul-cor.js';
-import { temaButton } from '../campanha/tema.js';
+import { temaButton, estiloButton, getEstilo } from '../campanha/tema.js';
 import { sprite, DECOR } from './mapa-art.js';
 import { temaDoMapa } from './mapa-tema.js';
 import { mapSfx, soundOn, setSound } from './mapa-sfx.js';
@@ -47,7 +47,7 @@ export function mountProgressionMap(host, cfg) {
     h('div', { class: 'mp-reg', 'aria-live': 'polite' }, regionName, regionSub),
     h('span', { class: 'mp-prog', title: 'discos concluídos' }, h('span', { class: 'mp-vinyl-ico', 'aria-hidden': 'true' }), `${doneN}/${nodes.length}`),
     cfg.stars ? h('span', { class: 'mp-prog star', title: 'estrelas' }, `★ ${cfg.stars.have}/${cfg.stars.max}`) : null,
-    h('button', { type: 'button', class: 'mp-gradebtn', 'aria-haspopup': 'dialog', 'aria-label': `Ver as ${nodes.length} fases de uma vez`, title: `as ${nodes.length} fases`, onclick: () => abreGrade() }, '▦'), temaButton(), snd);
+    h('button', { type: 'button', class: 'mp-gradebtn', 'aria-haspopup': 'dialog', 'aria-label': `Ver as ${nodes.length} fases de uma vez`, title: `as ${nodes.length} fases`, onclick: () => abreGrade() }, '≡'), temaButton(), estiloButton(), snd);
 
   /* ---- mundo ---- */
   const world = h('div', { class: `mp-world${motion ? ' mp-anim' : ''}`, style: `aspect-ratio:${L.W} / ${L.H}` });
@@ -94,8 +94,9 @@ export function mountProgressionMap(host, cfg) {
 
   /* ---- Paul ---- */
   const paul = h('div', { class: 'mp-paul' }); const say = h('span', { class: 'mp-say', hidden: true });
-  const paulImg = h('span', { class: 'mp-pimg' }); const setMood = (m) => { paulImg.innerHTML = `<img class="mp-cor" src="${corSrc(poseDe(m, poseDoJogo(gameId)))}" alt="Paul" draggable="false">`; const im = paulImg.firstChild; let n = 0; im.onerror = () => { n++; if (n === 1) im.src = `${im.src.split('?')[0]}?r=${Date.now()}`; else if (n === 2) im.src = corSrc('ouvindo'); else { im.onerror = null; im.style.visibility = 'hidden'; } }; };
+  const paulImg = h('span', { class: 'mp-pimg' }); let moodAtual = 'happy'; const setMood = (m) => { moodAtual = m; paulImg.innerHTML = `<img class="mp-cor" src="${getEstilo() === 'serio' ? 'assets/paul/serio.png' : corSrc(poseDe(m, poseDoJogo(gameId)))}" alt="Paul" draggable="false">`; const im = paulImg.firstChild; let n = 0; im.onerror = () => { n++; if (n === 1) im.src = `${im.src.split('?')[0]}?r=${Date.now()}`; else if (n === 2) im.src = corSrc('ouvindo'); else { im.onerror = null; im.style.visibility = 'hidden'; } }; };
   paul.append(paulImg, say); world.append(paul);
+  { const onEstilo = () => setMood(moodAtual); window.addEventListener('estilo-mudou', onEstilo); S.add(() => window.removeEventListener('estilo-mudou', onEstilo)); } // minimalista usa o Paul sério
   let saidT = 0; const speak = (t, ms = 2400) => { say.textContent = t; say.hidden = false; S.cancel(saidT); saidT = S.later(() => { say.hidden = true; }, ms); };
   const place = (i) => { const w = world.clientWidth || 360; const k = w / L.W; const p = pos$(i); const side = p.x > 180 ? -1 : 1; const lado = side < 0 ? 'l' : 'r'; for (const d of decorEls) d.el.style.visibility = d.side === lado && Math.abs(d.y - p.y) < 64 ? 'hidden' : ''; paul.style.transform = `translate(${(p.x + side * 62) * k}px, ${(p.y - 40) * k}px)`; paul.dataset.at = String(i); paul.classList.toggle('flip', side < 0); };
   const startAt = celebrate ? Math.max(0, celebrate.pos) : current; // se acabou de concluir, o Paul sai do disco concluído e anda até o próximo

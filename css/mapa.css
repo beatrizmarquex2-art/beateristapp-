@@ -138,3 +138,77 @@ html.lite .mp-stk { animation: none; }
 .mp-gsec { margin: 12px 0 4px; padding: 4px 10px 12px; border: 3px solid var(--mp-purple); border-top: 3px solid var(--mp-yellow); background: linear-gradient(180deg, rgba(0, 0, 0, .22), rgba(0, 0, 0, .08)); box-shadow: 0 4px 0 rgba(0, 0, 0, .3); }
 .mp-gsec .mp-grg { margin-top: 10px; text-transform: none; letter-spacing: .04em; font-size: 13px; }
 .mp-gt { font-size: 11px; font-weight: 700; }
+
+/* ===== visual SÉRIO do mapa (pedido da Bea, 28/nov/2026): sem adesivos, sem Paul, sem pixel art; discos lisos, traço fino, texto grande e legível =====
+   Liga pelo botão "kids/adulto" do cabeçalho (js/campanha/tema.js, html[data-estilo="serio"]). Só desliga o enfeite: fases, regras, progresso e cliques são os mesmos. */
+html[data-estilo="serio"] .mp-stk, html[data-estilo="serio"] .mp-deco, html[data-estilo="serio"] .mp-say, html[data-estilo="serio"] .mp-sign small { display: none !important; }
+html[data-estilo="serio"] .mp-world, html[data-estilo="serio"] .mp-world.beat-mapa[data-beat-mundo]:has([data-beat-regiao]) { background: var(--avp-bg) !important; background-image: none !important; }
+html[data-estilo="serio"] .mp-band { background: var(--avp-bg) !important; background-image: none !important; border-top: 1px solid var(--avp-line) !important; image-rendering: auto; }
+html[data-estilo="serio"] .mp-band::before, html[data-estilo="serio"] .mp-band::after, html[data-estilo="serio"] .mp-world::before, html[data-estilo="serio"] .mp-world::after { display: none !important; }
+html[data-estilo="serio"] .mp-sign { background: transparent; border: 0; box-shadow: none; padding: 2cqw 0 0; } html[data-estilo="serio"] .mp-sign b { color: var(--avp-soft); font-size: 4.2cqw; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+html[data-estilo="serio"] .mp-road { stroke: var(--avp-line); stroke-width: 2; opacity: .55; } html[data-estilo="serio"] .mp-edge { display: none; } html[data-estilo="serio"] .mp-lit { stroke: var(--avp-gold); stroke-width: 3; filter: none; }
+html[data-estilo="serio"] .mp-disc { width: 74%; background: var(--avp-card); border: 2px solid var(--avp-line); box-shadow: none; } html[data-estilo="serio"] .mp-disc::before, html[data-estilo="serio"] .mp-disc::after { display: none; }
+html[data-estilo="serio"] .mp-lab { position: static; background: none; color: var(--avp-text); font: 800 6.4cqw var(--body, system-ui); text-shadow: none; }
+html[data-estilo="serio"] .mp-node.st-done .mp-disc { border-color: var(--avp-gold); } html[data-estilo="serio"] .mp-node.st-current .mp-disc { border: 3px solid var(--avp-gold); background: var(--avp-accent); } html[data-estilo="serio"] .mp-node.st-current .mp-lab { color: var(--avp-accent-ink); }
+html[data-estilo="serio"] .mp-node.st-locked .mp-disc { opacity: .5; border-style: dashed; }
+html[data-estilo="serio"] .mp-tag { background: transparent; color: var(--avp-text); font: 700 3.6cqw var(--body, system-ui); text-shadow: none; padding: 0; }
+html[data-estilo="serio"] .mp-reg small { font-size: 13px; }
+/* subtítulo da região legível em qualquer tema (antes podia ficar escuro sobre escuro) */
+.mp-reg small { color: var(--avp-text) !important; opacity: .88 !important; }
+.av-estilo { font: 800 12px var(--body, system-ui) !important; letter-spacing: .04em; }
+.mp-head .mp-gradebtn, .mp-head .av-tema, .mp-head .mp-snd { min-width: 42px; min-height: 42px; padding: 0 8px; } .mp-head { gap: 6px; }
+.mp-head { flex-wrap: wrap; } .mp-head .mp-reg { flex: 1 1 100%; }
+html[data-estilo="serio"] .mp-sign { width: 92%; max-width: 92%; } html[data-estilo="serio"] .mp-sign b { white-space: normal; text-transform: none; letter-spacing: .02em; font-size: 4.4cqw; line-height: 1.2; }
+
+/* sério com TEXTURA (pedido da Bea): granulado fino + linhas de pauta quase invisíveis + brilho dourado no topo; discos de vinil com sulcos finos; regiões com filete */
+html[data-estilo="serio"] .mp-world, html[data-estilo="serio"] .mp-world.beat-mapa[data-beat-mundo]:has([data-beat-regiao]) {
+  background-color: var(--avp-bg) !important;
+  background-image:
+    radial-gradient(120% 40% at 50% 0, color-mix(in srgb, var(--avp-gold) 16%, transparent), transparent 70%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='.10'/></svg>"),
+    repeating-linear-gradient(180deg, transparent 0 17px, color-mix(in srgb, var(--avp-text) 5%, transparent) 17px 18px) !important;
+}
+html[data-estilo="serio"] .mp-band { background: transparent !important; border-top: 1px solid color-mix(in srgb, var(--avp-gold) 45%, transparent) !important; }
+html[data-estilo="serio"] .mp-band[data-i="1"], html[data-estilo="serio"] .mp-band[data-i="3"] { background: color-mix(in srgb, var(--avp-text) 3.5%, transparent) !important; }
+html[data-estilo="serio"] .mp-sign { display: flex; align-items: center; gap: 3cqw; } html[data-estilo="serio"] .mp-sign::before, html[data-estilo="serio"] .mp-sign::after { content: ""; flex: 1; height: 1px; min-width: 6cqw; background: color-mix(in srgb, var(--avp-gold) 60%, transparent); }
+html[data-estilo="serio"] .mp-sign b { color: var(--avp-gold); flex: none; max-width: 66%; }
+html[data-estilo="serio"] .mp-road { stroke: color-mix(in srgb, var(--avp-text) 28%, transparent); stroke-width: 2.4; stroke-dasharray: 2 7; stroke-linecap: round; opacity: 1; }
+html[data-estilo="serio"] .mp-disc { background: repeating-radial-gradient(circle, var(--avp-vinyl-a) 0 .5cqw, var(--avp-vinyl-b) .5cqw 1cqw); border: 2px solid color-mix(in srgb, var(--avp-gold) 55%, var(--avp-line)); box-shadow: 0 1.4cqw 3cqw -1cqw #0009; }
+html[data-estilo="serio"] .mp-disc::before { display: block; inset: 27%; background: var(--avp-card); border: 1px solid var(--avp-line); } html[data-estilo="serio"] .mp-disc::after { display: block; inset: 0; background: conic-gradient(from 30deg, transparent 0 18%, rgba(255,255,255,.12) 24%, transparent 32% 68%, rgba(255,255,255,.08) 74%, transparent 82%); }
+html[data-estilo="serio"] .mp-lab { position: relative; z-index: 1; font-size: 6cqw; }
+html[data-estilo="serio"] .mp-node.st-done .mp-disc::before { background: color-mix(in srgb, var(--avp-gold) 78%, var(--avp-card)); } html[data-estilo="serio"] .mp-node.st-done .mp-lab { color: var(--avp-accent-ink); }
+html[data-estilo="serio"] .mp-node.st-current .mp-disc { background: repeating-radial-gradient(circle, var(--avp-vinyl-a) 0 .5cqw, var(--avp-vinyl-b) .5cqw 1cqw); border: 3px solid var(--avp-gold); box-shadow: 0 0 0 1.2cqw color-mix(in srgb, var(--avp-gold) 22%, transparent), 0 1.4cqw 3cqw -1cqw #000a; }
+html[data-estilo="serio"] .mp-node.st-current .mp-disc::before { background: var(--avp-accent); border-color: var(--avp-gold); }
+html[data-estilo="serio"] .mp-node.st-locked .mp-disc { opacity: .55; border-style: solid; }
+html[data-estilo="serio"] .mp-stars i.on { color: var(--avp-gold); }
+
+/* sério · acabamento: vinheta nas bordas, rótulos em pílula fina, caminho aceso com brilho discreto e números mais nítidos */
+html[data-estilo="serio"] .mp-world::after { display: block !important; content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2; background: radial-gradient(120% 90% at 50% 50%, transparent 55%, color-mix(in srgb, #000 38%, transparent)); }
+html[data-estilo="serio"] .mp-tag { display: inline-block; padding: .6cqw 2.4cqw; border: 1px solid color-mix(in srgb, var(--avp-gold) 50%, transparent); border-radius: 999px; background: color-mix(in srgb, var(--avp-bg) 82%, transparent); font-size: 3.2cqw; letter-spacing: .04em; }
+html[data-estilo="serio"] .mp-tag:empty { display: none; }
+html[data-estilo="serio"] .mp-lit { stroke-width: 3.4; filter: drop-shadow(0 0 4px color-mix(in srgb, var(--avp-gold) 70%, transparent)); }
+html[data-estilo="serio"] .mp-lab { font-weight: 900; letter-spacing: .02em; }
+html[data-estilo="serio"] .mp-node.st-locked .mp-disc::before { background: color-mix(in srgb, var(--avp-card) 60%, transparent); }
+html[data-estilo="serio"] .mp-sign b { font-size: 4cqw; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+
+/* minimalista: o Paul sério (assets/paul/serio.png) fica pequeno ao lado do disco atual, sem balão */
+html[data-estilo="serio"] .mp-paul .mp-cor { filter: drop-shadow(0 3px 5px #0008); }
+.av-estilo { white-space: nowrap; }
+
+/* controles discretos (pedido da Bea): grade ≡, claro/escuro e minimalista ◐ viram botões PEQUENOS e REDONDOS num canto do cabeçalho, em todos os mapas e na Aventura; nada de quadrado grande no meio da tela */
+html .mp-head .mp-gradebtn, html .mp-head .av-tema, html .mp-head .av-estilo, html .mp-head .mp-snd, html .av-tema, html .av-estilo, html .av-snd {
+  width: 32px; height: 32px; min-width: 32px; min-height: 32px; padding: 0; border-radius: 50%; display: inline-grid; place-items: center; flex: none; margin: 0;
+  background: color-mix(in srgb, var(--avp-bg) 72%, transparent); color: var(--avp-text); border: 1px solid var(--avp-line); box-shadow: none; font: 700 15px/1 system-ui; text-shadow: none; }
+html .mp-head .mp-gradebtn:active, html .mp-head .av-tema:active, html .mp-head .av-estilo:active, html .mp-head .mp-snd:active { transform: scale(.94); box-shadow: none; }
+html .mp-head, html .mp-head.mp-longo { flex-wrap: nowrap; gap: 5px; padding-top: calc(4px + env(safe-area-inset-top)); padding-bottom: 4px; }
+html .mp-head .mp-reg, html .mp-head.mp-longo .mp-reg { flex: 1 1 0; min-width: 0; }
+html .mp-head .mp-reg b { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; } html .mp-head .mp-reg small { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+html .mp-head .mp-prog { padding: 2px 6px; font-size: 10.5px; min-height: 0; gap: 3px; } html .mp-head .mp-prog.star { padding: 2px 6px; }
+html .mp-head .mp-back { min-width: 0; min-height: 32px; padding: 0 10px; font-size: 12px; border-width: 1px; box-shadow: none; }
+/* cabeçalho em 2 linhas finas: 1) nome da região + botões redondos · 2) progresso (a ordem visual não muda o que cada botão faz) */
+html .mp-head, html .mp-head.mp-longo { flex-wrap: wrap; row-gap: 3px; }
+html .mp-head .mp-back { order: 0; } html .mp-head .mp-reg, html .mp-head.mp-longo .mp-reg { order: 1; flex: 1 1 170px; }
+html .mp-head .mp-gradebtn, html .mp-head .av-tema, html .mp-head .av-estilo, html .mp-head .mp-snd { order: 2; }
+html .mp-head .mp-prog { order: 3; }
+/* o cabeçalho do mapa NÃO fica mais grudado: fica no começo do mapa e some ao rolar (antes boiava no meio da tela) */
+html .mp-head { position: relative !important; top: auto !important; z-index: 2; }

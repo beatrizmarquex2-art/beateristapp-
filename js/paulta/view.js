@@ -100,7 +100,7 @@ function worldScreen(host, w, modeArg) {
 
 /* ---------- resultado ---------- */
 async function finishPhase(ctx, res, spec) {
-  const { profile, world, n, mode } = ctx; const { bot, stage } = res;
+  const { profile, world, n } = ctx; const mode = res.mode || ctx.mode; const { bot, stage } = res;
   const before = V.getP(profile.id); const wasOpen = S.duelUnlocked(before);
   const out = S.applyRun(before, { world, n, mode, right: res.right, total: res.total, misses: res.misses, need: spec.need, sudden: spec.sudden });
   const free = livre(); // modo livre (sem código): joga, mas nada é salvo nem vale ponto
@@ -159,14 +159,14 @@ function phaseScreen(host, w, n, modeArg) {
   const mode = modeArg === 'imagens' ? 'imagens' : 'nomes'; const sp = phaseSpec(w, n); const p = V.getP(me.id);
   if (!sp || !(livre() || S.unlocked(p, w, n))) { location.hash = `${BASE}/${w}`; return () => {}; }
   if (!livre()) V.commit(me.id, (c) => S.start(c)).catch(() => {});
-  const ctx = { profile: me, world: w, n, mode, back: () => { location.hash = `${BASE}/${w}/-/${mode}`; }, go: (k) => { location.hash = `${BASE}/${w}/${k}/${mode}`; if (k === n) rerenderHook(); } };
-  const rerenderHook = () => { off(); host.replaceChildren(); off = phaseScreen(host, w, n, mode) || (() => {}); };
+  const ctx = { profile: me, world: w, n, mode, back: () => { location.hash = `${BASE}/${w}/-/${ctx.mode}`; }, go: (k) => { location.hash = `${BASE}/${w}/${k}/${ctx.mode}`; if (k === n) rerenderHook(); } };
+  const rerenderHook = () => { off(); host.replaceChildren(); off = phaseScreen(host, w, n, ctx.mode) || (() => {}); };
   const intro = h('div', { class: 'pl-introbox' }, teachCards(w, n) ? h('p', { class: 'pl-new' }, '🆕 o Paul vai te apresentar:') : null, teachCards(w, n),
     n <= 3 ? h('p', { class: 'pl-aulinha' }, h('a', { class: 'kd-chip', href: '#/estudos/aulas' }, '📖 o Paul explica nas aulas (Estudos)'), h('small', {}, ' concluindo as aulas lá você ganha estrela.')) : null, // primeiras fases: caminho pra aulinha
     isDrum(w) && /colcheia|figura|Técnica|Tudo|Misto|Mestre|semicolcheia/i.test(sp.title) ? h('p', { class: 'muted' }, 'lembrete: X = prato/chimbal · bolinha = tambor · parênteses = fantasma · > = acento.') : null);
   const hist = [];
   let off = runSession({
-    host, profile: me, mode, world: w, title: isDrum(w) ? `fase ${n}` : `${WORLDS[w].short} · fase ${n}`, sub: sp.title, spec: sp, say: sp.title, intro,
+    host, profile: me, mode, onMode: (m) => { ctx.mode = m; setMode(m); }, world: w, title: isDrum(w) ? `fase ${n}` : `${WORLDS[w].short} · fase ${n}`, sub: sp.title, spec: sp, say: sp.title, intro,
     make: (i) => { const q = makeQuestion(w, n, mode, Math.random, i, hist.slice(-2)); hist.push(q.sig || q.key); return q; }, onBack: ctx.back,
     onFinish: (res) => finishPhase(ctx, res, sp),
   });

@@ -1192,3 +1192,8 @@ html.en-on .login.en-main { padding: 0; margin: 0; max-width: none; background: 
 .lj-pay-op i{justify-self:stretch;margin-top:6px;padding:10px;text-align:center;font:400 17px 'Anton',sans-serif;font-style:normal;text-transform:uppercase;border:3px solid rgb(var(--ink-rgb));border-radius:12px;background:#fffdf7;color:rgb(var(--ink-rgb))}
 .lj-pay-op .lj-selo{justify-self:start}
 .lj-pay-op.pix small,.lj-pay-op.pix em{color:#fff}.lj-pay-op.pix small{color:#f6c44f}
+
+/* aviso de versão nova: pílula pequena no canto de baixo (acima do menu), nunca no meio nem tampando o topo; dá pra dispensar no ✕ */
+.atualiza-bar{left:auto;right:10px;top:auto;bottom:calc(var(--safe-b, env(safe-area-inset-bottom, 0px)) + 92px);transform:none;gap:8px;padding:5px 6px 5px 11px;border-radius:999px;border:1px solid #ffffff66;box-shadow:0 4px 14px #0006;font-size:12px;font-weight:700;opacity:.96}
+.atualiza-bar .btn{min-height:30px;padding:4px 12px;font-size:12px;border-radius:999px}
+.atualiza-x{border:0;background:transparent;color:#fffaf0;font:700 14px/1 system-ui;width:26px;height:26px;border-radius:50%;cursor:pointer;opacity:.8}
