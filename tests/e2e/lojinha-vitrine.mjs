@@ -27,7 +27,8 @@ check('banca do Paul: 6 produtos e 4 prateleiras', (await page.locator('#lj-banc
 await page.locator('#lj-banca .ljv-cat', { hasText: 'cartas' }).click(); await sleep(300);
 check('prateleira "cartas" mostra os 3 baralhos', (await page.locator('#lj-banca .ljv-cap').count()) === 3);
 const eco = await page.locator('#lj-combos .ljv-eco').allTextContents();
-check('3 combos; só mostra economia onde ela existe de verdade (baralhos: R$ 9,80; o das apostilas custa o mesmo que soltas)', (await page.locator('#lj-combos .ljv-combo').count()) === 3 && eco.join('|') === 'economia de R$ 9,80', eco.join('|'));
+check('3 combos; mostra economia só onde ela existe de verdade (Ensina: 3 apostilas de R$ 29,90 = R$ 89,70 contra R$ 79,90; baralhos: R$ 9,80; o Aprende Brincando ainda sem preço)', (await page.locator('#lj-combos .ljv-combo').count()) === 3 && eco.join('|') === 'economia de R$ 9,80|economia de R$ 9,80', eco.join('|'));
+check('a arte larga dos 3 combos aparece inteira no começo da seção', await page.evaluate(() => { const i = document.querySelector('#lj-combos .ljv-combos-arte'); return !!i && i.getBoundingClientRect().width > 300; }));
 check('Para músicos: Start, Mood e Violão', await page.locator('#lj-musicos .ljv-cap').evaluateAll((es) => es.map((e) => e.dataset.id).join()) === 'start,mood,violao');
 check('experimente grátis tem 4 caminhos', (await page.locator('#lj-gratis .ljv-gratis').count()) === 4);
 check('voltar ao início e já tenho um código existem', (await page.locator('.ljv-link', { hasText: 'voltar ao início' }).getAttribute('href')) === '#/inicio' && (await page.locator('.ljv-link', { hasText: 'já tenho um código' }).count()) === 1);

@@ -409,3 +409,6 @@ body:has(#view.lj-escura) { background: #070b19; }
 .ljv-azul .ljv-s-top p { font-size: 12px; }
 .ljv-hero-mat { gap: 10px; } .ljv-hero-mat h1 { font-size: clamp(26px, 7.6vw, 31px); } .ljv-hero-mat .ljv-hero-paul { width: 124px; height: 124px; }
 .ljv-hero-mat .ljv-hero-top { grid-template-columns: 1fr 120px; } .ljv-hero-mat .ljv-hero-chips { margin-top: 2px; }
+
+/* arte larga dos 3 combos no começo da seção de combos (pedido da Bea) */
+.ljv-combos-arte { display: block; width: 100%; height: auto; border-radius: 22px; box-shadow: 0 18px 36px -18px #000, 0 0 0 1px rgb(255 214 102 / .3); }

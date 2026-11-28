@@ -2,7 +2,7 @@
 // Produtos, preços e links vêm de js/loja-config.js (nada muda lá); a ARRUMAÇÃO vem de js/loja-vitrine-config.js.
 import { h } from '../util.js';
 import { toast } from '../ui.js';
-import { PASSE, PRODUTOS, AVISO_DIGITAL, DENTRO } from '../loja-config.js';
+import { PASSE, PRODUTOS, AVISO_DIGITAL, DENTRO, BANNER_COMBOS } from '../loja-config.js';
 import { precoPasse, URL_CARTAO } from '../passe-preco.js';
 import { GRATIS } from '../amostra.js';
 import * as AC from '../acesso.js';
@@ -226,7 +226,7 @@ export function vitrine(secao_ = '', { abrirCodigo, inicio = '#/inicio' } = {}) 
   const universo = secao('universo', 'Universo Robôterista', 'as apostilas do Paul: toque na capa e folheie por dentro', { src: 'assets/entrada/paul-professor.webp', alt: 'Paul professor' }, produtos(UNIVERSO));
   const musicos = secao('musicos', 'Para músicos', 'estudo de bateria, violão e os exercícios que a Bea leva pro palco', { src: 'assets/entrada/paul-guitarra.webp', alt: 'Paul com a guitarra' }, produtos(MUSICOS));
   const adultos = secao('adultos', 'Adolescentes e adultos', 'apostilas pra quem quer tocar de verdade: bateria e teclado', { src: 'assets/paul/animacoes/web/paul-pensativo.webp', alt: 'Paul pensando' }, produtos(ADULTOS));
-  const combos = secao('combos', 'Combos completos', 'tudo que vem dentro e quanto você economiza', { src: 'assets/paul/animacoes/web/paul-bau.webp', alt: 'Paul com o baú' }, ...COMBOS.map(combo));
+  const combos = secao('combos', 'Combos completos', 'tudo que vem dentro e quanto você economiza', { src: 'assets/paul/animacoes/web/paul-bau.webp', alt: 'Paul com o baú' }, h('img', { class: 'ljv-combos-arte', src: BANNER_COMBOS.img, alt: BANNER_COMBOS.alt, width: BANNER_COMBOS.w, height: BANNER_COMBOS.h, loading: 'lazy', draggable: 'false' }), ...COMBOS.map(combo));
   const resp = h('details', { class: 'ljv-resp' },
     h('summary', {}, 'para os responsáveis: pagamento e informações'),
     h('ul', {}, h('li', {}, AVISO_DIGITAL), h('li', {}, 'o passe: 12 meses de acesso, pagamento único (pix) pelo WhatsApp. os materiais: pagamento na página da Hotmart.'), h('li', {}, CONTATO)),
