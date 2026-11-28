@@ -360,7 +360,15 @@ export function mount(host) {
   async function carrega() { try { resumo = Object.fromEntries((await CODE.resumoAparelhos()).map((r) => [r.code, r.aparelhos])); } catch { resumo = {}; } try { list = await CODE.listar(); } catch (e) { toast(e.message === 'entre no app' ? 'entre no app pra ver os códigos' : `não consegui ler os códigos (${e.message})`, { id: 'cod-err', ms: 3500 }); } if (!gone) desenhaLista(); }
   const mais = h('details', { class: 'card pad cod-mais' }, h('summary', {}, 'mais ferramentas: importar lista, passe anual, test drive'), h('div', { class: 'cod-mais-in' }));
   const leadsCard = h('details', { class: 'card pad cod-leads' }, h('summary', {}, 'presente do Paul: contatos, idade e instrumento'), h('div', { class: 'cod-mais-in' })); let leadsOk = false; leadsCard.addEventListener('toggle', () => { if (leadsCard.open && !leadsOk) { leadsOk = true; montarLeads(leadsCard.querySelector('.cod-mais-in')); } });
-  host.append(banner('Códigos', 'gere, compartilhe e controle o acesso'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, escolaCard, novoCard, listaCard, mais, leadsCard));
+  // venda no Pix: o link do site dos alunos é o que já funciona de ponta a ponta; "abrir aqui" é a cópia da página dentro deste app
+  const LINK_PIX = 'https://jogos.beaterista.com.br/pix/';
+  const pixCard = h('section', { class: 'card pad cod-pix' }, h('b', {}, 'venda do passe no Pix'),
+    h('p', { class: 'muted' }, 'a página onde a pessoa preenche os dados, paga no Pix e recebe o código por e-mail. manda o link pra quem quer comprar.'),
+    h('div', { class: 'row', style: 'flex-wrap:wrap;gap:8px' },
+      h('a', { class: 'btn primary', href: LINK_PIX, target: '_blank', rel: 'noopener' }, 'abrir a página do Pix'),
+      h('button', { class: 'btn ghost', type: 'button', onclick: () => copy(LINK_PIX, 'link do Pix copiado') }, 'copiar link'),
+      h('a', { class: 'btn small ghost', href: 'pix/', target: '_blank', rel: 'noopener' }, 'abrir aqui no app')));
+  host.append(banner('Códigos', 'gere, compartilhe e controle o acesso'), h('div', { class: 'pad-x', style: 'display:grid;gap:12px' }, pixCard, escolaCard, novoCard, listaCard, mais, leadsCard));
   let legado = null; mais.addEventListener('toggle', () => { if (mais.open && !legado) legado = montarLegado(mais.querySelector('.cod-mais-in'), { semBanner: true }); });
   desenhaNovo(); desenhaLista(); carrega().then(() => { if (!salvo && !list.some((x) => x.code === code)) return; });
   return () => { gone = true; if (typeof legado === 'function') legado(); };
