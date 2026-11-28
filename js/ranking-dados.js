@@ -9,8 +9,8 @@ export const CATEGORIAS = [
   { id: 'estrelas', titulo: 'Mais estrelas', sub: 'estrelas ganhas nos jogos e nas fases', emoji: '', unidade: ['estrela', 'estrelas'], mensal: true },
   { id: 'figurinhas', titulo: 'Mais figurinhas', sub: 'quem tem mais figurinhas no álbum', emoji: '🃏', unidade: ['figurinha', 'figurinhas'], mensal: true },
   { id: 'estudos', titulo: 'Quem mais estudou', sub: 'aulas, dicas e caminhos de estudo feitos', emoji: '📚', unidade: ['estudo', 'estudos'], mensal: true },
-  { id: 'dias', titulo: 'Dias seguidos', sub: 'maior sequência de dias treinando', emoji: '', unidade: ['dia', 'dias'], mensal: false },
   { id: 'eco', titulo: 'Eco do Paul', sub: 'mais notas decoradas de uma vez', emoji: '🥁', unidade: ['nota', 'notas'], mensal: false },
+  { id: 'dias', titulo: 'Dias em sequência', sub: 'quem entrou mais dias seguidos', emoji: '', unidade: ['dia', 'dias'], mensal: false },
 ];
 export const categoriaPorId = (id) => CATEGORIAS.find((c) => c.id === id) || CATEGORIAS[0];
 export const textoUnidade = (cat, n) => `${n} ${cat.unidade[n === 1 ? 0 : 1]}`;

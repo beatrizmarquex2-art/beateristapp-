@@ -27,7 +27,7 @@ test('pódio com 1º 2º 3º e o resto', () => {
 });
 test('setinhas dão a volta; categorias e unidades', () => {
   assert.equal(anda(0, -1), CATEGORIAS.length - 1); assert.equal(anda(CATEGORIAS.length - 1, 1), 0); assert.equal(textoUnidade(categoriaPorId('mundos'), 1), '1 mundo'); assert.equal(textoUnidade(categoriaPorId('mundos'), 3), '3 mundos'); assert.equal(categoriaPorId('x').id, 'mundos');
-  assert.deepEqual(CATEGORIAS.filter((c) => c.mensal).map((c) => c.id), ['estrelas', 'figurinhas', 'estudos']); assert.equal(CATEGORIAS.length, 7);
+  assert.deepEqual(CATEGORIAS.filter((c) => c.mensal).map((c) => c.id), ['estrelas', 'figurinhas', 'estudos']); assert.equal(CATEGORIAS.length, 7); assert.equal(CATEGORIAS[CATEGORIAS.length - 1].id, 'dias');
 });
 test('dias seguidos: conta até hoje (ou até ontem se hoje ainda não entrou)', () => {
   const h = new Date(2026, 10, 28); assert.equal(sequenciaDeDias(['2026-11-26', '2026-11-27', '2026-11-28'], h), 3); assert.equal(sequenciaDeDias(['2026-11-26', '2026-11-27'], h), 2);

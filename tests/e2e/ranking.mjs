@@ -20,7 +20,7 @@ await page.click('.rk-seta[aria-label="próximo quadro"]'); await sleep(300); ch
 await page.click('.rk-seta[aria-label="próximo quadro"]'); await sleep(1200); check('depois "Mais figurinhas", com este mês e de sempre', (await tit()) === 'Mais figurinhas' && (await page.locator('.rk-abas button').count()) === 2);
 check('figurinhas do mês: 1º Duda, lista do 4º (Fabi) e o aluno destacado', /Duda L\./.test(await page.textContent('.rk-lugar.l1')) && /4º/.test(await page.textContent('.rk-lista')) && (await page.locator('.rk-lugar.eu').count()) === 1);
 await page.screenshot({ path: SH('rank-figurinhas') });
-for (let k = 0; k < 4; k++) await page.click('.rk-seta[aria-label="quadro anterior"]'); await sleep(900);
+for (let k = 0; k < 5; k++) await page.click('.rk-seta[aria-label="quadro anterior"]'); await sleep(900);
 check('seta ‹ volta e dá a volta até "Eco do Paul"', (await tit()) === 'Eco do Paul');
 check('quadro vazio convida: "seja o primeiro"', /seja o primeiro/.test(await page.textContent('.rk-corpo')));
 await page.screenshot({ path: SH('rank-eco') });
